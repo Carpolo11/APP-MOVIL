@@ -32,7 +32,7 @@
               />
             </ion-item>
 
-            <!-- Botón login -->
+            <!-- BotÃ³n login -->
             <ion-button expand="block" type="submit" class="login-btn">
               INICIAR SESION
             </ion-button>
@@ -69,23 +69,14 @@ import {
   IonCheckbox,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 
 const login = () => {
   if (email.value && password.value) {
-    // Guardar usuario en localStorage
-    localStorage.setItem("usuario", JSON.stringify({
-      nombre: email.value,
-      email: email.value
-    }));
-    
-    // Redirigir al dashboard
-    router.push("/dashboard");
+    alert(`Bienvenido: ${email.value}`);
   } else {
     alert("Por favor ingresa todos los campos");
   }
@@ -93,13 +84,15 @@ const login = () => {
 </script>
 
 <style scoped>
+
 .login-wrapper {
-  height: 100%;
+  height: 100%; /* ocupa todo el ion-content */
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;   /* centra vertical */
+  justify-content: center; /* centra horizontal */
 }
 
+/* Fondo con degradado */
 .login-bg {
   --background: linear-gradient(to bottom, #00c6ff, #0072ff, #7a00ff);
   display: flex;
@@ -107,6 +100,7 @@ const login = () => {
   align-items: center;
 }
 
+/* Caja del login */
 .login-container {
   width: 350px;
   padding: 30px;
@@ -116,6 +110,7 @@ const login = () => {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
+/* Avatar */
 .avatar img {
   width: 180px;
   height: 180px;
@@ -123,6 +118,7 @@ const login = () => {
   border-radius: 50%;
 }
 
+/* Inputs */
 .input-group {
   margin-bottom: 15px;
   border-radius: 25px;
@@ -130,6 +126,7 @@ const login = () => {
   --highlight-color-focused: #0072ff;
 }
 
+/* BotÃ³n login */
 .login-btn {
   --background: #ffb703;
   --color: black;
@@ -143,6 +140,7 @@ const login = () => {
   --background: #ff9800;
 }
 
+/* Opciones */
 .options {
   display: flex;
   align-items: center;
@@ -159,8 +157,10 @@ const login = () => {
 
 .options a:hover {
   text-decoration: underline;
+  
 }
 
+/* Crear cuenta */
 .redirect {
   margin-top: 20px;
   font-size: 14px;

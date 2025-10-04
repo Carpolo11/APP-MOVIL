@@ -16,6 +16,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['@ionic/vue', '@ionic/vue-router']
+  },
   test: {
     globals: true,
     environment: 'jsdom'

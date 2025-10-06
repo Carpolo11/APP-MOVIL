@@ -1,4 +1,3 @@
-// src/router/index.ts
 import { createRouter, createWebHistory } from '@ionic/vue-router'
 import { RouteRecordRaw } from 'vue-router'
 
@@ -6,6 +5,7 @@ import { RouteRecordRaw } from 'vue-router'
 import LoginApp from '@/views/LoginApp.vue'
 import Registro from '@/views/Registro.vue'
 import CrearEntrada from '@/views/CrearEntrada.vue'
+import Dashboard from '@/views/Dashboard.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,7 +27,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'CrearEntrada',
     component: CrearEntrada
   },
- 
+  
 ]
 
 const router = createRouter({

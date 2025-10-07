@@ -8,26 +8,45 @@ import CrearEntrada from '@/views/CrearEntrada.vue'
 import Dashboard from '@/views/Dashboard.vue'
 
 const routes: Array<RouteRecordRaw> = [
+  // Redirección inicial
   {
     path: '/',
-    redirect: '/home' // redirige automáticamente a la pantalla de inicio (Login)
+    redirect: '/home'
   },
+
+  // Página de inicio (login)
   {
     path: '/home',
     name: 'Home',
     component: LoginApp
   },
+
+  // Página de registro de usuarios
   {
     path: '/registro',
     name: 'Registro',
     component: Registro
   },
+
+  // Página principal del sistema (Dashboard)
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard
+  },
+
+  // Página para crear nuevas entradas
   {
     path: '/crear-entrada',
     name: 'CrearEntrada',
     component: CrearEntrada
   },
-  
+
+  // Ruta por defecto para páginas no encontradas
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/home'
+  }
 ]
 
 const router = createRouter({

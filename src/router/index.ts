@@ -6,6 +6,7 @@ import LoginApp from '@/views/LoginApp.vue'
 import Registro from '@/views/Registro.vue'
 import CrearEntrada from '@/views/CrearEntrada.vue'
 import Dashboard from '@/views/Dashboard.vue'
+import Deudas from '@/views/Deudas.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
@@ -40,6 +41,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/crear-entrada',
     name: 'CrearEntrada',
     component: CrearEntrada
+  },
+  // Página para gestionar deudas
+  {
+    path: '/deudas',
+    name: 'Deudas',
+    component: Deudas
   },
 
   // Ruta por defecto para páginas no encontradas

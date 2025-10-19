@@ -54,9 +54,9 @@
             </ion-button>
             </div>
 
-                        <!-- Botón volver -->
+            <!-- Botón volver -->
             <div class="button-row">
-             <ion-button expand="block" router-link="/categorias" class="back-btn">
+             <ion-button expand="block" router-link="/dashboard" class="back-btn">
                VOLVER
             </ion-button>
             </div>
@@ -78,6 +78,11 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ref } from "vue";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+import { useRouter } from "vue-router"; // ✅ Importa el router
+
+const router = useRouter(); // ✅ Instancia de router
 
 const titulo = ref("");
 const fecha = ref("");
@@ -85,7 +90,7 @@ const descripcion = ref("");
 const porcentajeMax = ref<number>(0);
 
 
-const crearCat = () => {
+const crearCat = async () => {
   if (!titulo.value || !fecha.value || !descripcion.value || !porcentajeMax.value) {
     alert("Por favor completa todos los campos");
     return;
@@ -94,7 +99,26 @@ const crearCat = () => {
     alert("Ingresa un porcentaje válido (0–100)");
     return;
   }
-  alert(`Categoria creada: ${titulo.value}`);
+
+      try {
+    // Guarda en la colección "Categorias"
+    await addDoc(collection(db, "categorias"), {
+      titulo: titulo.value,
+      fecha: fecha.value,
+      descripcion: descripcion.value,
+      porcentaje: porcentajeMax.value, 
+      fechaRegistro: new Date(),
+    });
+
+    alert(`Creacion exitosa: ${titulo.value}`);
+    // Aquí podrías redirigir a la página de login
+     router.push("/categoria");
+  } catch (error) {
+    console.error("Error al crear categoria:", error);
+    alert("Hubo un error al crear categoria");
+  }
+
+  
 };
 </script>
 

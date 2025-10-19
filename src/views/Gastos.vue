@@ -52,7 +52,7 @@
 
                         <!-- Botón volver -->
             <div class="button-row">
-             <ion-button expand="block" router-link="/categorias" class="back-btn">
+             <ion-button expand="block" router-link="/dashboard" class="back-btn">
                VOLVER
             </ion-button>
             </div>

@@ -22,9 +22,9 @@ import { IonIcon, IonBadge } from '@ionic/vue';
 defineEmits<{ navigate: [route: string] }>();
 
 const menuItems = [
-  { label: 'Categorías', icon: 'pricetag', route: '/crear-categoria', color: '#6a0dad', disabled: false },
+  { label: 'Categorías', icon: 'pricetag', route: '/categoria', color: '#6a0dad', disabled: false },
   { label: 'Entradas', icon: 'trending-up', route: '/crear-entrada', color: '#4caf50', disabled: false },
-  { label: 'Gastos', icon: 'wallet', route: '/crear-gasto', color: '#f57c00', disabled: true },
+  { label: 'Gastos', icon: 'wallet', route: '/gasto', color: '#f57c00', disabled: true },
   { label: 'Metas', icon: 'flag', route: '/metas', color: '#00bcd4', disabled: true },
   { label: 'Recurrentes', icon: 'repeat', route: '/recurrentes', color: '#e91e63', disabled: true },
   { label: 'Reportes', icon: 'bar-chart', route: '/reportes', color: '#2196f3', disabled: true },

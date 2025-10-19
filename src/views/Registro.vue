@@ -86,6 +86,8 @@ import { ref } from "vue";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase/firebaseConfig";
 
 const router = useRouter(); // ✅ Instancia de router
 
@@ -106,20 +108,51 @@ const register = async () => {
   }
 
     try {
-    // Guarda en la colección "usuarios"
+
+    // 1. 🔑 CREAR EL USUARIO EN FIREBASE AUTH
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+    const user = userCredential.user;
+
+    // 2. 📝 GUARDAR DATOS ADICIONALES (Nombre) EN FIRESTORE
+    // Es CRUCIAL usar el 'uid' generado por Firebase Auth como identificador.
     await addDoc(collection(db, "usuarios"), {
+      uid: user.uid, // ✅ ID único generado por Auth
       nombre: name.value,
       email: email.value,
-      password: password.value, // ⚠️ solo para pruebas; en producción usa Auth
       fechaRegistro: new Date(),
+      // ⚠️ No guardamos la contraseña en Firestore
     });
 
-    alert(`Cuenta creada correctamente para: ${name.value}`);
-    // Aquí podrías redirigir a la página de login
-     router.push("/home");
-  } catch (error) {
-    console.error("Error al guardar el usuario:", error);
-    alert("Hubo un error al registrar el usuario");
+    alert(`Cuenta creada correctamente para: ${name.value}. ¡Ahora puedes iniciar sesión!`);
+    
+    // 3. ↩️ REDIRIGIR AL LOGIN
+    router.push("/home"); // Asumo que '/home' es tu ruta de login
+    
+  } catch (error: any) {
+    console.error("Error al registrar el usuario:", error.code, error.message);
+    
+    let errorMessage = "Hubo un error al registrar el usuario.";
+
+    // Manejo de errores comunes de Firebase Auth
+    switch (error.code) {
+        case 'auth/email-already-in-use':
+            errorMessage = "El email ya está registrado.";
+            break;
+        case 'auth/invalid-email':
+            errorMessage = "El formato del email es inválido.";
+            break;
+        case 'auth/weak-password':
+            errorMessage = "La contraseña debe tener al menos 6 caracteres.";
+            break;
+        default:
+            break;
+    }
+
+    alert(errorMessage);
   }
 };
 

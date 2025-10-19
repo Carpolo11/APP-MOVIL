@@ -70,25 +70,42 @@
   } from "@ionic/vue";
   import { ref } from "vue";
   import { useRouter } from "vue-router"; // ✅ Importa el router
+  import { signInWithEmailAndPassword } from "firebase/auth";
+  import { auth } from "@/firebase/firebaseConfig";
 
   const router = useRouter(); // ✅ Instancia de router
-
   const email = ref("");
   const password = ref("");
   const rememberMe = ref(false);
 
-  const login = () => {
-    if (email.value && password.value) {
-      alert(`Bienvenido: ${email.value}`);
-      redi();
-    } else {
-      alert("Por favor ingresa todos los campos");
-    }
-  };
+const login = async () => {
+if (!email.value || !password.value) {
+alert("Por favor ingresa todos los campos");
+return;
+}
 
-  const redi = () => {
-    router.push("/dashboard"); // ✅ Redirige al registro
-  };
+console.log("📧 Intentando login con:", email.value);
+console.log("🔑 Contraseña ingresada:", password.value ? "********" : "(vacía)");
+console.log("🔥 Auth importado:", auth);
+console.log("🧩 Firebase App:", auth.app ? auth.app.name : "No inicializada");
+
+try {
+const userCredential = await signInWithEmailAndPassword(
+auth,
+email.value,
+password.value
+);
+const user = userCredential.user;
+alert(`Bienvenido: ${user.email}`);
+router.push("/dashboard");
+} catch (error: any) {
+console.error("❌ Error de autenticación:", error.code, error.message);
+alert(`Error: ${error.code}`);
+}
+};
+
+
+
   </script>
 
 <style scoped>

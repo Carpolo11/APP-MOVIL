@@ -1,7 +1,6 @@
 <template>
   <ion-page>
-    <ion-content class="ion-padding register-bg">
-      <div class="register-wrapper">
+    <ion-content class="ion-padding creatCat-bg">
         <div class="register-container">
 
             <h2> CREAR NUEVAS CATEGORIAS </h2>
@@ -49,15 +48,22 @@
             </ion-item>
 
             <!-- Botón registro -->
-            <ion-button expand="block" type="submit" class="register-btn">
+             <div class="button-row">
+
+            <ion-button expand="block" type="submit" class="back-btn">
               CREAR CATEGORIA
             </ion-button>
-          </form>
+            </div>
 
-            <!-- Botón volver -->
+                        <!-- Botón volver -->
+            <div class="button-row">
              <ion-button expand="block" router-link="/categorias" class="back-btn">
                VOLVER
             </ion-button>
+            </div>
+          </form>
+
+
 
 
           <!-- Volver a login -->
@@ -66,7 +72,7 @@
             </ion-button>
           </p>
         </div>
-      </div>
+      
     </ion-content>
   </ion-page>
 </template>
@@ -102,20 +108,6 @@ const crearCat = () => {
 </script>
 
 <style scoped>
-/* Fondo con glassmorphism */
-.create-cat-bg {
-  --background: linear-gradient(135deg, #6a11cb, #2575fc);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.create-cat-wrapper {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 /* Caja contenedora */
 .create-cat-container {
@@ -129,10 +121,7 @@ const crearCat = () => {
   color: #fff;
 }
 
-/* Encabezado */
-.header {
-  margin-bottom: 25px;
-}
+
 .header-icon {
   font-size: 45px;
   color: #ffd166;
@@ -141,10 +130,7 @@ h2 {
   font-weight: 700;
   margin: 10px 0 5px;
 }
-.header p {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
+
 
 /* Inputs */
 .input-group {
@@ -157,7 +143,7 @@ h2 {
 }
 
 /* Botón crear */
-.create-btn {
+.back-btn {
   --background: #ffd166;
   --color: #333;
   font-weight: 600;
@@ -165,7 +151,7 @@ h2 {
   margin-top: 10px;
   box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
 }
-.create-btn:hover {
+.back-btn:hover {
   --background: #ffb703;
 }
 
@@ -178,6 +164,12 @@ h2 {
 }
 .back-btn:hover {
   opacity: 1;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-start; /* o flex-end si lo quieres a la derecha */
+  width: 100%;
 }
 
 /* Responsivo */

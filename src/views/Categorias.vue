@@ -1,9 +1,8 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
-        <div class="register-container">
-
-            <h2> CREAR NUEVAS CATEGORIAS </h2>
+        <ion-title class="app-title">🏷️➕ CREA UNA NUEVA CATEGORIA</ion-title>
+        <div class="create-cat-container">
 
           <!-- Formulario -->
           <form @submit.prevent="crearCat">
@@ -63,14 +62,6 @@
             </div>
           </form>
 
-
-
-
-          <!-- Volver a login -->
-          <p class="redirect">
-            <ion-button fill="outline" size="small" router-link="/categoria">
-            </ion-button>
-          </p>
         </div>
       
     </ion-content>
@@ -111,14 +102,12 @@ const crearCat = () => {
 
 /* Caja contenedora */
 .create-cat-container {
-  width: 380px;
-  padding: 30px 25px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-  text-align: center;
-  color: #fff;
+padding: 50px 40px; /* ↓ antes 30px 25px */
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(12px);
+border-radius: 20px;
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
 }
 
 
@@ -171,6 +160,15 @@ h2 {
   justify-content: flex-start; /* o flex-end si lo quieres a la derecha */
   width: 100%;
 }
+
+.app-title {
+  font-weight: 800;
+  font-size: 22px;
+}
+
+  .app-title {
+    font-size: 20px;
+  }
 
 /* Responsivo */
 @media (max-width: 400px) {

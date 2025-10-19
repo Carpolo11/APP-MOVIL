@@ -58,30 +58,38 @@
   </ion-page>
 </template>
 
-<script setup lang="ts">
-import {
-  IonPage,
-  IonContent,
-  IonItem,
-  IonInput,
-  IonButton,
-  IonIcon,
-  IonCheckbox,
-} from "@ionic/vue";
-import { ref } from "vue";
+  <script setup lang="ts">
+  import {
+    IonPage,
+    IonContent,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonIcon,
+    IonCheckbox,
+  } from "@ionic/vue";
+  import { ref } from "vue";
+  import { useRouter } from "vue-router"; // ✅ Importa el router
 
-const email = ref("");
-const password = ref("");
-const rememberMe = ref(false);
+  const router = useRouter(); // ✅ Instancia de router
 
-const login = () => {
-  if (email.value && password.value) {
-    alert(`Bienvenido: ${email.value}`);
-  } else {
-    alert("Por favor ingresa todos los campos");
-  }
-};
-</script>
+  const email = ref("");
+  const password = ref("");
+  const rememberMe = ref(false);
+
+  const login = () => {
+    if (email.value && password.value) {
+      alert(`Bienvenido: ${email.value}`);
+      redi();
+    } else {
+      alert("Por favor ingresa todos los campos");
+    }
+  };
+
+  const redi = () => {
+    router.push("/dashboard"); // ✅ Redirige al registro
+  };
+  </script>
 
 <style scoped>
 

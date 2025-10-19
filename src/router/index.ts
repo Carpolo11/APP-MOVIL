@@ -9,12 +9,13 @@ import Dashboard from '@/views/Dashboard.vue'
 import Deudas from '@/views/Deudas.vue'
 import Ahorros from '@/views/Ahorros.vue'
 import Categorias from '@/views/Categorias.vue'
+import Gastos from '@/views/Gastos.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
   {
     path: '/',
-    redirect: '/categoria'
+    redirect: '/gasto'
   },
 
   // Página de inicio (login)
@@ -69,6 +70,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/categoria',
     name: '/Categora',
     component: Categorias
+  },
+
+  // Gastos
+  {
+    path: '/gasto',
+    name: '/Gastos',
+    component: Gastos
   }
 
 ]

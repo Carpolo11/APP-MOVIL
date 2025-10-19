@@ -83,13 +83,19 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ref } from "vue";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+import { useRouter } from "vue-router"; // ✅ Importa el router
+
+const router = useRouter(); // ✅ Instancia de router
+
 
 const name = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 
-const register = () => {
+const register = async () => {
   if (!name.value || !email.value || !password.value || !confirmPassword.value) {
     alert("Por favor completa todos los campos");
     return;
@@ -98,8 +104,26 @@ const register = () => {
     alert("Las contraseñas no coinciden");
     return;
   }
-  alert(`Cuenta creada para: ${name.value} (${email.value})`);
+
+    try {
+    // Guarda en la colección "usuarios"
+    await addDoc(collection(db, "usuarios"), {
+      nombre: name.value,
+      email: email.value,
+      password: password.value, // ⚠️ solo para pruebas; en producción usa Auth
+      fechaRegistro: new Date(),
+    });
+
+    alert(`Cuenta creada correctamente para: ${name.value}`);
+    // Aquí podrías redirigir a la página de login
+     router.push("/home");
+  } catch (error) {
+    console.error("Error al guardar el usuario:", error);
+    alert("Hubo un error al registrar el usuario");
+  }
 };
+
+
 </script>
 
 <style scoped>

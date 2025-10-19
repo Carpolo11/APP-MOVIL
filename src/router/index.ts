@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
   {
     path: '/',
-    redirect: '/gasto'
+    redirect: '/home'
   },
 
   // Página de inicio (login)

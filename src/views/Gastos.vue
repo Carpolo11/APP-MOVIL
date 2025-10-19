@@ -74,6 +74,10 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ref } from "vue";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+import { useRouter } from "vue-router"; // ✅ Importa el router
+const router = useRouter(); // ✅ Instancia de router
 
 const titulo = ref("");
 const monto = ref<number>(0);
@@ -82,7 +86,7 @@ const cate = ref("")
 
 
 
-const crearGas = () => {
+const crearGas = async () => {
   if (!titulo.value || !monto.value || !descripcion.value || !cate.value) {
     alert("Por favor completa todos los campos");
     return;
@@ -91,7 +95,25 @@ const crearGas = () => {
     alert("Ingresa un gasto válido ");
     return;
   }
-  alert(`Gasto Asignado`);
+
+   try {
+    // Guarda en la colección "Categorias"
+    await addDoc(collection(db, "gastos"), {
+      titulo: titulo.value,
+      monto: monto.value,
+      descripcion: descripcion.value,
+      categoria: cate.value, 
+      fechaRegistro: new Date(),
+    });
+
+    alert(`Creacion exitosa: ${titulo.value}`);
+    // Aquí podrías redirigir a la página de login
+     router.push("/gasto");
+  } catch (error) {
+    console.error("Error al crear gasto:", error);
+    alert("Hubo un error al crear hgasto");
+  }
+  
 };
 </script>
 

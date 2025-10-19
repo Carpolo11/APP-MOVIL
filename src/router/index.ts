@@ -8,12 +8,13 @@ import CrearEntrada from '@/views/CrearEntrada.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Deudas from '@/views/Deudas.vue'
 import Ahorros from '@/views/Ahorros.vue'
+import Categorias from '@/views/Categorias.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/categoria'
   },
 
   // Página de inicio (login)
@@ -61,7 +62,15 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/home'
+  },
+
+  // Categorias
+  {
+    path: '/categoria',
+    name: '/Categora',
+    component: Categorias
   }
+
 ]
 
 const router = createRouter({

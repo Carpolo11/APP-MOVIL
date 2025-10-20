@@ -83,8 +83,8 @@ const emit = defineEmits(['guardar', 'cancelar'])
 
 const form = ref<Ahorro>({
   nombre: '',
-  montoMeta: "" as unknown as number,
-  porcentaje: "" as unknown as number,
+  montoMeta: null as unknown as number,
+  porcentaje: null as unknown as number,
 })
 
 // Si se edita un ahorro, cargar sus valores
@@ -94,7 +94,7 @@ watch(
     if (nuevoAhorro) {
       form.value = { ...nuevoAhorro }
     } else {
-      form.value = { nombre: '', montoMeta: "" as unknown as number, porcentaje: "" as unknown as number}
+      form.value = { nombre: '', montoMeta: null as unknown as number, porcentaje: null as unknown as number }
     }
   },
   { immediate: true }

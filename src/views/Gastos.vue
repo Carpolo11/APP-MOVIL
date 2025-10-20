@@ -134,6 +134,11 @@ const crearGas = async () => {
       fechaRegistro: new Date(),
     });
 
+    titulo.value = "";
+    monto.value = 0;
+    descripcion.value = "";
+    cate.value = "";
+
     alert(`Creación exitosa: ${titulo.value}`);
     router.push("/gasto");
   } catch (error) {

@@ -77,8 +77,8 @@ import {
   IonButton,
   IonIcon,
 } from "@ionic/vue";
-import { ref } from "vue";
-import { collection, addDoc, getDoc } from "firebase/firestore";
+import { onMounted, ref } from "vue";
+import { collection, addDoc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
 
@@ -88,6 +88,26 @@ const titulo = ref("");
 const fecha = ref("");
 const descripcion = ref("");
 const porcentajeMax = ref<number>(0);
+const sumaPorcentajes = ref<number>(0);
+
+const TraerPorcen = async () => {
+
+      const CargarCate = await getDocs(collection(db, "categorias"))
+        let SumaPorcen = 0;
+        CargarCate.forEach((doc) => {
+          const data = doc.data();
+          SumaPorcen += Number(data.porcentaje) || 0;
+
+       });
+
+       sumaPorcentajes.value = SumaPorcen;
+
+};
+
+onMounted(() => {
+  TraerPorcen(); // 🔹 Cargamos al iniciar
+});
+
 
 
 const crearCat = async () => {
@@ -100,6 +120,18 @@ const crearCat = async () => {
     return;
   }
 
+  await TraerPorcen();
+
+    // Validar que la suma no supere el 100 %
+  const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
+  const sobrante = (Number(sumaPorcentajes.value) - 100);
+  if (nuevoTotal > 100) {
+    alert(
+      `⚠️ No puedes crear esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
+    );
+    return;
+  }
+   
       try {
 
     // Guarda en la colección "Categorias"
@@ -107,7 +139,7 @@ const crearCat = async () => {
       titulo: titulo.value,
       fecha: fecha.value,
       descripcion: descripcion.value,
-      porcentaje: porcentajeMax.value, 
+      porcentaje: Number(porcentajeMax.value), 
       fechaRegistro: new Date(),
     });
 

@@ -95,7 +95,7 @@ const descripcion = ref("");
 const categorias = ref<any[]>([]);
 const cate = ref("");
 
-// ✅ Función para cargar categorías solo una vez
+
 const cargarCategorias = async () => {
   try {
     const snapshot = await getDocs(collection(db, "categorias"));
@@ -124,6 +124,8 @@ const crearGas = async () => {
     alert("Ingresa un gasto válido");
     return;
   }
+
+  await cargarCategorias();
 
   try {
     await addDoc(collection(db, "gastos"), {

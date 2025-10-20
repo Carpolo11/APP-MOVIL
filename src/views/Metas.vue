@@ -34,35 +34,11 @@ watch(metas, (nuevas) => {
 .metas-view {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   padding: 40px 20px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-}
-.decor-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
-}
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.15;
-  animation: float 15s infinite ease-in-out;
-}
-.circle-1 {
-  width: 400px; height: 400px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  top: -150px; left: -100px;
-}
-.circle-2 {
-  width: 300px; height: 300px;
-  background: linear-gradient(135deg, #43e97b, #38f9d7);
-  bottom: -150px; right: -150px;
-  animation-delay: 8s;
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }

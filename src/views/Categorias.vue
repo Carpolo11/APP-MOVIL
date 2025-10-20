@@ -78,7 +78,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
 
@@ -101,6 +101,7 @@ const crearCat = async () => {
   }
 
       try {
+
     // Guarda en la colección "Categorias"
     await addDoc(collection(db, "categorias"), {
       titulo: titulo.value,
@@ -109,6 +110,11 @@ const crearCat = async () => {
       porcentaje: porcentajeMax.value, 
       fechaRegistro: new Date(),
     });
+
+    titulo.value = "";
+    fecha.value = "";
+    descripcion.value = "";
+    porcentajeMax.value = 0;
 
     alert(`Creacion exitosa: ${titulo.value}`);
     // Aquí podrías redirigir a la página de login
@@ -131,6 +137,7 @@ background: rgba(255, 255, 255, 0.15);
 backdrop-filter: blur(12px);
 border-radius: 20px;
 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
 
 }
 

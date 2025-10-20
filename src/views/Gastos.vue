@@ -31,15 +31,22 @@
             </ion-item>
 
             <!-- Categorias -->
-            <ion-item class="input-group">
-              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-              <ion-input
-                v-model="cate"
-                type="text"
-                placeholder="Asignalo a la categoria"
-                required
-              />
-            </ion-item>
+<ion-item class="input-group">
+  <ion-icon name="list-outline" slot="start"></ion-icon>
+  <ion-select
+    v-model="cate"
+    placeholder="Selecciona una categoría"
+    required
+  >
+    <ion-select-option
+      v-for="categoria in categorias"
+      :key="categoria.titulo"
+      :value="categoria.titulo"
+    >
+      {{ categoria.titulo }}
+    </ion-select-option>
+  </ion-select>
+</ion-item>
 
 
             <!-- Botón registro -->
@@ -72,50 +79,70 @@ import {
   IonInput,
   IonButton,
   IonIcon,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/vue";
-import { ref } from "vue";
-import { collection, addDoc } from "firebase/firestore";
+import { ref, onMounted } from "vue";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
-import { useRouter } from "vue-router"; // ✅ Importa el router
-const router = useRouter(); // ✅ Instancia de router
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const titulo = ref("");
 const monto = ref<number>(0);
 const descripcion = ref("");
-const cate = ref("")
+const categorias = ref<any[]>([]);
+const cate = ref("");
 
+// ✅ Función para cargar categorías solo una vez
+const cargarCategorias = async () => {
+  try {
+    const snapshot = await getDocs(collection(db, "categorias"));
+    const lista: any[] = [];
+    snapshot.forEach((doc) => {
+      lista.push(doc.data());
+    });
+    categorias.value = lista;
+    console.log("Categorías cargadas:", categorias.value);
+  } catch (error) {
+    console.error("Error al obtener categorías:", error);
+  }
+};
 
+onMounted(() => {
+  cargarCategorias(); // 🔹 Cargamos al iniciar
+});
 
+// ✅ Crear gasto
 const crearGas = async () => {
   if (!titulo.value || !monto.value || !descripcion.value || !cate.value) {
     alert("Por favor completa todos los campos");
     return;
   }
   if (monto.value < 0) {
-    alert("Ingresa un gasto válido ");
+    alert("Ingresa un gasto válido");
     return;
   }
 
-   try {
-    // Guarda en la colección "Categorias"
+  try {
     await addDoc(collection(db, "gastos"), {
       titulo: titulo.value,
       monto: monto.value,
       descripcion: descripcion.value,
-      categoria: cate.value, 
+      categoria: cate.value,
       fechaRegistro: new Date(),
     });
 
-    alert(`Creacion exitosa: ${titulo.value}`);
-    // Aquí podrías redirigir a la página de login
-     router.push("/gasto");
+    alert(`Creación exitosa: ${titulo.value}`);
+    router.push("/gasto");
   } catch (error) {
     console.error("Error al crear gasto:", error);
-    alert("Hubo un error al crear hgasto");
+    alert("Hubo un error al crear el gasto");
   }
-  
 };
 </script>
+
 
 <style scoped>
 

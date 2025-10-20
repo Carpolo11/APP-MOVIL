@@ -79,6 +79,12 @@ import {
   IonButton
 } from '@ionic/vue'
 
+
+// 🔹 Importar Firestore
+import { collection, addDoc } from 'firebase/firestore'
+import { db } from '@/firebase/firebaseConfig' // Ruta hacia tu archivo
+
+
 interface Deuda {
   nombre: string
   montoTotal: number
@@ -93,8 +99,8 @@ const emit = defineEmits(['guardar', 'cancelar'])
 
 const form = ref<Deuda>({
   nombre: '',
-  montoTotal: "" as unknown as number,
-  cuotaMinima: "" as unknown as number,
+  montoTotal: null as unknown as number,
+  cuotaMinima: null as unknown as number,
   fechaLimite: ''
 })
 
@@ -105,24 +111,40 @@ watch(
     if (nuevaDeuda) {
       form.value = { ...nuevaDeuda }
     } else {
-      form.value = { nombre: '', montoTotal: "" as unknown as number, cuotaMinima: "" as unknown as number, fechaLimite: '' }
+      form.value = { nombre: '', montoTotal: null as unknown as number, cuotaMinima: null as unknown as number, fechaLimite: '' }
     }
   },
   { immediate: true }
 )
 
-// Guardar deuda
-const guardar = () => {
-  if (!form.value.nombre || !form.value.montoTotal || !form.value.fechaLimite) {
+
+
+// 🔹 Guardar deuda en Firestore
+const guardar = async () => {
+  if (!form.value.nombre || form.value.montoTotal == null || !form.value.fechaLimite) {
     alert('Por favor completa todos los campos obligatorios.')
     return
   }
-  emit('guardar', { 
-    nombre: form.value.nombre,
-    montoTotal: Number(form.value.montoTotal),
-    cuotaMinima: Number(form.value.cuotaMinima),
-    fechaLimite: form.value.fechaLimite
-  })
+
+
+try {
+    await addDoc(collection(db, 'deudas'), {
+      nombre: form.value.nombre.trim(),
+      montoTotal: Number(form.value.montoTotal) || 0,
+      cuotaMinima: Number(form.value.cuotaMinima) || 0,
+      fechaLimite: form.value.fechaLimite,
+      fechaRegistro: new Date().toISOString()
+    })
+
+    alert('✅ Deuda guardada con éxito')
+
+    form.value = { nombre: '', montoTotal: null as unknown as number, cuotaMinima: null as unknown as number, fechaLimite: '' }
+
+  } catch (error) {
+    console.error('Error al guardar en Firestore:', error)
+    alert('❌ Error al guardar la deuda')
+  }
+
 }
 </script>
 

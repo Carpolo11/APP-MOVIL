@@ -10,6 +10,7 @@ import Deudas from '@/views/Deudas.vue'
 import Ahorros from '@/views/Ahorros.vue'
 import Categorias from '@/views/Categorias.vue'
 import Gastos from '@/views/Gastos.vue'
+import Metas  from '@/views/Metas.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
@@ -77,6 +78,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/gasto',
     name: '/Gastos',
     component: Gastos
+  },
+
+
+  {
+    path: '/metas',
+    name: 'Metas',
+    component: Metas
   }
 
 ]

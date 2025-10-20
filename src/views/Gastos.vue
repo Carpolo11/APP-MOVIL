@@ -2,7 +2,9 @@
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
         <ion-title class="app-title">💸➕ CREA UN NUEVO GASTO</ion-title>
+        <div class="card">
         <div class="create-cat-container">
+          
 
           <!-- Formulario -->
           <form @submit.prevent="crearGas">
@@ -64,6 +66,9 @@
             </ion-button>
             </div>
           </form>
+
+
+          </div>
 
         </div>
       
@@ -130,7 +135,7 @@ const crearGas = async () => {
   try {
     await addDoc(collection(db, "gastos"), {
       titulo: titulo.value,
-      monto: monto.value,
+      monto: Number(monto.value),
       descripcion: descripcion.value,
       categoria: cate.value,
       fechaRegistro: new Date(),
@@ -151,83 +156,90 @@ const crearGas = async () => {
 </script>
 
 
+
 <style scoped>
+/* 🎨 Fondo general */
+.creatCat-bg {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
 
-/* Caja contenedora */
+/* 🧱 Contenedor centrado */
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+/* 💎 Contenedor principal (tarjeta) */
 .create-cat-container {
-padding: 50px 40px; /* ↓ antes 30px 25px */
-background: rgba(255, 255, 255, 0.15);
-backdrop-filter: blur(12px);
-border-radius: 20px;
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-
+  width: 90%;
+  max-width: 420px;
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  margin-top: 20px;
+  
 }
 
-
-.header-icon {
-  font-size: 45px;
-  color: #ffd166;
-}
-h2 {
-  font-weight: 700;
-  margin: 10px 0 5px;
-}
-
-
-/* Inputs */
+/* ✨ Inputs */
 .input-group {
-  --border-color: rgba(255, 255, 255, 0.3);
-  --highlight-color-focused: #ffd166;
-  background: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(0, 4, 255, 0.3);
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
+  color: white;
   border-radius: 15px;
   margin-bottom: 18px;
-  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Botón crear */
+.input-group:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px rgba(255, 152, 25, 0.45);
+}
+
+/* 🟡 Botones */
 .back-btn {
-  --background: #ffd166;
-  --color: #333;
-  font-weight: 600;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
   border-radius: 30px;
-  margin-top: 10px;
+  margin-top: 12px;
   box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
-}
-.back-btn:hover {
-  --background: #ffb703;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Botón volver */
-.back-btn {
-  --color: #fff;
-  text-transform: none;
-  margin-top: 20px;
-  opacity: 0.85;
-}
 .back-btn:hover {
-  opacity: 1;
+  transform: translateY(-2px);
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+
 }
 
+/* 🔘 Fila de botones */
 .button-row {
   display: flex;
-  justify-content: flex-start; /* o flex-end si lo quieres a la derecha */
+  justify-content: center;
   width: 100%;
 }
 
+/* 🏷️ Título */
 .app-title {
+  text-align: center;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 15px;
 }
 
-  .app-title {
-    font-size: 20px;
-  }
-
-/* Responsivo */
+/* 📱 Responsivo */
 @media (max-width: 400px) {
   .create-cat-container {
-    width: 90%;
+    width: 95%;
     padding: 25px 20px;
+  }
+  .app-title {
+    font-size: 20px;
   }
 }
 </style>

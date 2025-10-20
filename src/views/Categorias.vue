@@ -2,6 +2,7 @@
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
         <ion-title class="app-title">🏷️➕ CREA UNA NUEVA CATEGORIA</ion-title>
+        <div class="card">
         <div class="create-cat-container">
 
           <!-- Formulario -->
@@ -62,6 +63,7 @@
             </div>
           </form>
 
+        </div>
         </div>
       
     </ion-content>
@@ -162,16 +164,34 @@ const crearCat = async () => {
 
 <style scoped>
 
-/* Caja contenedora */
-.create-cat-container {
-padding: 50px 40px; /* ↓ antes 30px 25px */
-background: rgba(255, 255, 255, 0.15);
-backdrop-filter: blur(12px);
-border-radius: 20px;
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+/* 🎨 Fondo general */
+.creatCat-bg {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
 
+
+/* 🧱 Contenedor centrado */
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
 }
+
+
+/* Caja contenedora */
+.create-cat-container {
+  width: 90%;
+  max-width: 420px;
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  margin-top: 20px;
+
+}
+
+
 
 
 .header-icon {
@@ -195,38 +215,37 @@ h2 {
 }
 
 /* Botón crear */
+/* 🟡 Botones */
 .back-btn {
-  --background: #ffd166;
-  --color: #333;
-  font-weight: 600;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
   border-radius: 30px;
-  margin-top: 10px;
+  margin-top: 12px;
   box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
-}
-.back-btn:hover {
-  --background: #ffb703;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Botón volver */
-.back-btn {
-  --color: #fff;
-  text-transform: none;
-  margin-top: 20px;
-  opacity: 0.85;
-}
 .back-btn:hover {
-  opacity: 1;
+  transform: translateY(-2px);
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+
 }
 
+/* 🔘 Fila de botones */
 .button-row {
   display: flex;
-  justify-content: flex-start; /* o flex-end si lo quieres a la derecha */
+  justify-content: center;
   width: 100%;
 }
 
 .app-title {
+  text-align: center;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 15px;
 }
 
   .app-title {

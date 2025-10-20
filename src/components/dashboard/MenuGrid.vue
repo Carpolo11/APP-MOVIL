@@ -24,12 +24,12 @@ defineEmits<{ navigate: [route: string] }>();
 const menuItems = [
   { label: 'Categorías', icon: 'pricetag', route: '/categoria', color: '#6a0dad', disabled: false },
   { label: 'Entradas', icon: 'trending-up', route: '/crear-entrada', color: '#4caf50', disabled: false },
-  { label: 'Gastos', icon: 'wallet', route: '/gasto', color: '#f57c00', disabled: true },
-  { label: 'Metas', icon: 'flag', route: '/metas', color: '#00bcd4', disabled: true },
-  { label: 'Recurrentes', icon: 'repeat', route: '/recurrentes', color: '#e91e63', disabled: true },
-  { label: 'Reportes', icon: 'bar-chart', route: '/reportes', color: '#2196f3', disabled: true },
-  { label: 'Ahorros', icon: 'gift', route: '/ahorros', color: '#ffc107', disabled: true },
-  { label: 'Deudas', icon: 'card', route: '/deudas', color: '#d32f2f', disabled: true },
+  { label: 'Gastos', icon: 'wallet', route: '/gasto', color: '#f57c00', disabled: false },
+  { label: 'Metas', icon: 'flag', route: '/metas', color: '#00bcd4', disabled: false },
+  { label: 'Recurrentes', icon: 'repeat', route: '/recurrentes', color: '#e91e63', disabled: false },
+  { label: 'Reportes', icon: 'bar-chart', route: '/reportes', color: '#2196f3', disabled: false },
+  { label: 'Ahorros', icon: 'gift', route: '/ahorros', color: '#ffc107', disabled: false },
+  { label: 'Deudas', icon: 'card', route: '/deudas', color: '#d32f2f', disabled: false },
 ];
 </script>
 

@@ -1,27 +1,36 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
-        <ion-title class="app-title">💸➕ CREA UN NUEVO GASTO</ion-title>
-        <div class="card">
-        <div class="create-cat-container">
-          
+      <ion-title class="app-title">
+        💸➕ CREA UN NUEVO GASTO
+      </ion-title>
 
-          <!-- Formulario -->
+      <div class="card">
+        <div class="create-cat-container">
+
+          
           <form @submit.prevent="crearGas">
-            <!-- Titulo -->
+            
             <ion-item class="input-group">
               <ion-icon name="person-outline" slot="start"></ion-icon>
-              <ion-input v-model="titulo" type="text" placeholder="Titulo del gasto" required
+              <ion-input 
+                v-model="titulo" 
+                type="text" 
+                placeholder="Titulo del gasto" 
+                required
               />
             </ion-item>
 
-            <!-- Monto -->
             <ion-item class="input-group">
               <ion-icon name="mail-outline" slot="start"></ion-icon>
-              <ion-input v-model="monto" type="number" placeholder="Monto del gasto" required />
+              <ion-input 
+                v-model="monto" 
+                type="number" 
+                placeholder="Monto del gasto" 
+                required 
+              />
             </ion-item>
 
-            <!-- Descripcion -->
             <ion-item class="input-group">
               <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
               <ion-input
@@ -32,14 +41,13 @@
               />
             </ion-item>
 
-            <!-- Categorias -->
+
 <ion-item class="input-group">
   <ion-icon name="list-outline" slot="start"></ion-icon>
   <ion-select
     v-model="cate"
     placeholder="Selecciona una categoría"
-    required
-  >
+    :selected-text="cate"  >
     <ion-select-option
       v-for="categoria in categorias"
       :key="categoria.titulo"
@@ -51,30 +59,26 @@
 </ion-item>
 
 
-            <!-- Botón registro -->
-             <div class="button-row">
-
-            <ion-button expand="block" type="submit" class="back-btn">
-              CREAR GASTO
-            </ion-button>
-            </div>
-
-                        <!-- Botón volver -->
             <div class="button-row">
-             <ion-button expand="block" router-link="/dashboard" class="back-btn">
-               VOLVER
-            </ion-button>
+              <ion-button expand="block" type="submit" class="back-btn">
+                CREAR GASTO
+              </ion-button>
             </div>
+
+
+            <div class="button-row">
+              <ion-button expand="block" router-link="/dashboard" class="back-btn">
+                VOLVER
+              </ion-button>
+            </div>
+
           </form>
-
-
-          </div>
-
         </div>
-      
+      </div>
     </ion-content>
   </ion-page>
 </template>
+
 
 <script setup lang="ts">
 import {
@@ -116,10 +120,10 @@ const cargarCategorias = async () => {
 };
 
 onMounted(() => {
-  cargarCategorias(); // 🔹 Cargamos al iniciar
+  cargarCategorias(); 
 });
 
-// ✅ Crear gasto
+
 const crearGas = async () => {
   if (!titulo.value || !monto.value || !descripcion.value || !cate.value) {
     alert("Por favor completa todos los campos");
@@ -152,18 +156,19 @@ const crearGas = async () => {
     console.error("Error al crear gasto:", error);
     alert("Hubo un error al crear el gasto");
   }
+
 };
 </script>
 
 
 
 <style scoped>
-/* 🎨 Fondo general */
+/*  Fondo general */
 .creatCat-bg {
   --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
-/* 🧱 Contenedor centrado */
+/* Contenedor centrado */
 .card {
   display: flex;
   justify-content: center;
@@ -171,7 +176,7 @@ const crearGas = async () => {
 
 }
 
-/* 💎 Contenedor principal (tarjeta) */
+/* Contenedor principal (tarjeta) */
 .create-cat-container {
   width: 90%;
   max-width: 420px;
@@ -183,7 +188,7 @@ const crearGas = async () => {
   
 }
 
-/* ✨ Inputs */
+/* Inputs */
 .input-group {
   --border-color: rgba(0, 4, 255, 0.3);
   background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
@@ -198,7 +203,8 @@ const crearGas = async () => {
   box-shadow: 0 0 10px rgba(255, 152, 25, 0.45);
 }
 
-/* 🟡 Botones */
+
+/* Botones */
 .back-btn {
   --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   --color: white;
@@ -215,14 +221,14 @@ const crearGas = async () => {
 
 }
 
-/* 🔘 Fila de botones */
+/* Fila de botones */
 .button-row {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-/* 🏷️ Título */
+/* Título */
 .app-title {
   text-align: center;
   font-weight: 800;

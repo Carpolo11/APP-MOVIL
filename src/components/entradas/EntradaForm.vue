@@ -95,6 +95,7 @@ function mostrarMensaje(texto: string, tipo: string) {
 </script>
 
 <style scoped>
+/* Inputs*/
 .input-group { margin-bottom: 1.2rem; }
 label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: #444; font-size: 0.9rem; }
 input, textarea {
@@ -105,15 +106,17 @@ input:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 
 .monto .input-wrap { display: flex; align-items: center; border: 2px solid #e3e3e3; border-radius: 8px; padding: 0.4rem 0.8rem; }
 .monto .input-wrap span { font-weight: bold; color: #43e97b; margin-right: 0.5rem; font-size: 1.4rem; }
 .monto input { border: none; flex: 1; font-size: 1.5rem; font-weight: 600; }
+
+/* Botones */
 button {
   width: 100%; padding: 0.9rem; border: none; border-radius: 10px;
   font-weight: 600; font-size: 1rem; color: #fff;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   margin-top: 0.5rem; transition: 0.2s; cursor: pointer;
 }
 button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(118,75,162,0.3); }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secundario { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.btn-secundario { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
 
 /* Estilos para mensajes */
 .mensaje {

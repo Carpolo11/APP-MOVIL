@@ -31,11 +31,15 @@
 <script setup lang="ts">
 import { IonIcon } from '@ionic/vue';
 
+import {getDocs, collection,getDoc} from "firebase/firestore"
+import { db } from '@/firebase/firebaseConfig';
+
 defineProps<{
   categorias: number;
   entradas: number;
   saldo: number;
 }>();
+
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CO', { 

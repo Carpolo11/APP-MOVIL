@@ -63,6 +63,8 @@
       </div>
 
       <button type="submit" class="btn-guardar">Guardar Meta</button>
+      
+      
     </form>
   </div>
 </template>
@@ -202,7 +204,7 @@ input:focus {
   padding: 0.95rem;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   color: #fff;
   font-weight: 800;
   font-size: 1rem;
@@ -211,6 +213,10 @@ input:focus {
   box-shadow: 0 8px 28px rgba(79,70,229,0.18);
 }
 .btn-guardar:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(79,70,229,0.22); }
+
+
+
+
 
 /* responsive */
 @media (max-width: 520px) {

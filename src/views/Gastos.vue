@@ -103,8 +103,10 @@ const monto = ref<number>(0);
 const descripcion = ref("");
 const categorias = ref<any[]>([]);
 const cate = ref("");
+const entradas = ref<number>(0);
+const gastos = ref<number>(0);
 
-
+//Trae las categorias
 const cargarCategorias = async () => {
   try {
     const snapshot = await getDocs(collection(db, "categorias"));
@@ -119,9 +121,56 @@ const cargarCategorias = async () => {
   }
 };
 
-onMounted(() => {
-  cargarCategorias(); 
-});
+
+//Trae las entradas
+const traerEntradas = async () => {
+
+  try {
+
+    const CargarEntradas = await getDocs(collection(db, "entradas"))
+    let totalEntradas = 0;
+    CargarEntradas.forEach((doc) => {
+      const data = doc.data();
+      totalEntradas += Number(data.monto) || 0;
+    });
+
+    entradas.value = totalEntradas;
+    console.log("entradas cargadas:", entradas.value);
+  } catch (error) {
+    console.error("Error al obtener Entradas:", error);
+  }
+
+  };
+  
+
+//Trae los Gastos
+const TrearGastos = async () => {
+
+  try {
+
+    const CargarGastos = await getDocs(collection(db, "gastos"))
+    let totalGasto = 0;
+    CargarGastos.forEach((doc) => {
+      const data = doc.data();
+      totalGasto += Number(data.monto) || 0;
+      
+    });
+
+    gastos.value = totalGasto;
+    console.log("gastos cargadas:", gastos.value);
+  } catch (error) {
+    console.error("Error al obtener Entradas:", error);
+  }
+  
+}
+
+    onMounted(() => {
+     cargarCategorias();
+     traerEntradas(); 
+     TrearGastos();
+  });
+
+
 
 
 const crearGas = async () => {
@@ -135,6 +184,18 @@ const crearGas = async () => {
   }
 
   await cargarCategorias();
+  await traerEntradas(); 
+  await TrearGastos();
+  
+
+
+  const nuevoTotal = Number(entradas.value) - Number(gastos.value);
+  if (monto.value > entradas.value) {
+    alert(
+      `⚠️ No puedes crear este gasto. El total de gastos supera las entradas disponibles. monto disponible ($${nuevoTotal}) )`
+    );
+    return;
+  }
 
   try {
     await addDoc(collection(db, "gastos"), {
@@ -145,12 +206,17 @@ const crearGas = async () => {
       fechaRegistro: new Date(),
     });
 
+
+
+    alert(`Creación exitosa: ${titulo.value}`);
     titulo.value = "";
     monto.value = 0;
     descripcion.value = "";
     cate.value = "";
 
-    alert(`Creación exitosa: ${titulo.value}`);
+    await TrearGastos();
+    await traerEntradas();
+
     router.push("/gasto");
   } catch (error) {
     console.error("Error al crear gasto:", error);

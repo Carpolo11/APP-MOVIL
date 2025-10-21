@@ -95,6 +95,7 @@ import { ref, onMounted } from "vue";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router";
+import { onSnapshot } from "firebase/firestore";
 
 const router = useRouter();
 
@@ -125,52 +126,39 @@ const cargarCategorias = async () => {
 //Trae las entradas
 const traerEntradas = async () => {
 
-  try {
-
-    const CargarEntradas = await getDocs(collection(db, "entradas"))
+  const refEntradas = collection(db, "entradas");
+  onSnapshot(refEntradas, (snapshot) => {
     let totalEntradas = 0;
-    CargarEntradas.forEach((doc) => {
-      const data = doc.data();
-      totalEntradas += Number(data.monto) || 0;
+    snapshot.forEach((doc) => {
+      totalEntradas += Number(doc.data().monto) || 0;
     });
-
     entradas.value = totalEntradas;
-    console.log("entradas cargadas:", entradas.value);
-  } catch (error) {
-    console.error("Error al obtener Entradas:", error);
-  }
+    console.log("Entradas actualizadas en tiempo real:", entradas.value);
+  });
 
   };
   
 
+  
 //Trae los Gastos
 const TrearGastos = async () => {
-
-  try {
-
-    const CargarGastos = await getDocs(collection(db, "gastos"))
+  const refGastos = collection(db, "gastos");
+  onSnapshot(refGastos, (snapshot) => {
     let totalGasto = 0;
-    CargarGastos.forEach((doc) => {
-      const data = doc.data();
-      totalGasto += Number(data.monto) || 0;
-      
+    snapshot.forEach((doc) => {
+      totalGasto += Number(doc.data().monto) || 0;
     });
-
     gastos.value = totalGasto;
-    console.log("gastos cargadas:", gastos.value);
-  } catch (error) {
-    console.error("Error al obtener Entradas:", error);
-  }
+    console.log("Gastos actualizados en tiempo real:", gastos.value);
+  });
   
-}
+};
 
     onMounted(() => {
      cargarCategorias();
      traerEntradas(); 
      TrearGastos();
   });
-
-
 
 
 const crearGas = async () => {
@@ -181,18 +169,13 @@ const crearGas = async () => {
   if (monto.value < 0) {
     alert("Ingresa un gasto válido");
     return;
-  }
-
-  await cargarCategorias();
-  await traerEntradas(); 
-  await TrearGastos();
-  
+  }  
 
 
   const nuevoTotal = Number(entradas.value) - Number(gastos.value);
-  if (monto.value > entradas.value) {
+  if (monto.value > nuevoTotal) {
     alert(
-      `⚠️ No puedes crear este gasto. El total de gastos supera las entradas disponibles. monto disponible ($${nuevoTotal}) )`
+      `⚠️ No puedes crear este gasto. El monto ($${monto.value}) supera el saldo disponible actual. Saldo disponible: ($${nuevoTotal})`
     );
     return;
   }
@@ -213,9 +196,6 @@ const crearGas = async () => {
     monto.value = 0;
     descripcion.value = "";
     cate.value = "";
-
-    await TrearGastos();
-    await traerEntradas();
 
     router.push("/gasto");
   } catch (error) {

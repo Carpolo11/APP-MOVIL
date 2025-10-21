@@ -114,8 +114,7 @@ button {
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   margin-top: 0.5rem; transition: 0.2s; cursor: pointer;
 }
-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(118,75,162,0.3); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .btn-secundario { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
 
 /* Estilos para mensajes */

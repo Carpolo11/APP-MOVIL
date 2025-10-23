@@ -34,7 +34,7 @@
 
             <!-- BotÃ³n login -->
             <ion-button expand="block" type="submit" class="login-btn">
-              INICIAR SESION
+              LOGIN 
             </ion-button>
 
             <!-- Opciones -->

@@ -95,6 +95,7 @@ import { ref, onMounted } from "vue";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router";
+import { onSnapshot } from "firebase/firestore";
 
 const router = useRouter();
 
@@ -103,8 +104,10 @@ const monto = ref<number>(0);
 const descripcion = ref("");
 const categorias = ref<any[]>([]);
 const cate = ref("");
+const entradas = ref<number>(0);
+const gastos = ref<number>(0);
 
-
+//Trae las categorias
 const cargarCategorias = async () => {
   try {
     const snapshot = await getDocs(collection(db, "categorias"));
@@ -119,9 +122,43 @@ const cargarCategorias = async () => {
   }
 };
 
-onMounted(() => {
-  cargarCategorias(); 
-});
+
+//Trae las entradas
+const traerEntradas = async () => {
+
+  const refEntradas = collection(db, "entradas");
+  onSnapshot(refEntradas, (snapshot) => {
+    let totalEntradas = 0;
+    snapshot.forEach((doc) => {
+      totalEntradas += Number(doc.data().monto) || 0;
+    });
+    entradas.value = totalEntradas;
+    console.log("Entradas actualizadas en tiempo real:", entradas.value);
+  });
+
+  };
+  
+
+  
+//Trae los Gastos
+const TrearGastos = async () => {
+  const refGastos = collection(db, "gastos");
+  onSnapshot(refGastos, (snapshot) => {
+    let totalGasto = 0;
+    snapshot.forEach((doc) => {
+      totalGasto += Number(doc.data().monto) || 0;
+    });
+    gastos.value = totalGasto;
+    console.log("Gastos actualizados en tiempo real:", gastos.value);
+  });
+  
+};
+
+    onMounted(() => {
+     cargarCategorias();
+     traerEntradas(); 
+     TrearGastos();
+  });
 
 
 const crearGas = async () => {
@@ -132,9 +169,16 @@ const crearGas = async () => {
   if (monto.value < 0) {
     alert("Ingresa un gasto válido");
     return;
-  }
+  }  
 
-  await cargarCategorias();
+
+  const nuevoTotal = Number(entradas.value) - Number(gastos.value);
+  if (monto.value > nuevoTotal) {
+    alert(
+      `⚠️ No puedes crear este gasto. El monto ($${monto.value}) supera el saldo disponible actual. Saldo disponible: ($${nuevoTotal})`
+    );
+    return;
+  }
 
   try {
     await addDoc(collection(db, "gastos"), {
@@ -145,12 +189,14 @@ const crearGas = async () => {
       fechaRegistro: new Date(),
     });
 
+
+
+    alert(`Creación exitosa: ${titulo.value}`);
     titulo.value = "";
     monto.value = 0;
     descripcion.value = "";
     cate.value = "";
 
-    alert(`Creación exitosa: ${titulo.value}`);
     router.push("/gasto");
   } catch (error) {
     console.error("Error al crear gasto:", error);

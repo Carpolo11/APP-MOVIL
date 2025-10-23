@@ -1,227 +1,87 @@
 <template>
-  <div class="meta-form-container">
-    <h2>💡 Nueva Meta</h2>
+  <form @submit.prevent="emitirMeta" class="formulario">
+    <ion-item class="input-group">
+      <ion-icon name="flag-outline" slot="start"></ion-icon>
+      <ion-input v-model="nombre" placeholder="Nombre de la meta" required />
+    </ion-item>
 
-    <form @submit.prevent="agregarMeta" class="meta-form">
-      <div class="form-group">
-        <label>Nombre</label>
-        <input
-          v-model="nombre"
-          type="text"
-          placeholder="Ej: Viaje a la playa 🌴"
-          required
-        />
-      </div>
+    <ion-item class="input-group">
+      <ion-icon name="cash-outline" slot="start"></ion-icon>
+      <ion-input v-model.number="monto" type="number" min="1" placeholder="Monto objetivo" required />
+    </ion-item>
 
-      <div class="form-group">
-        <label>Monto Objetivo</label>
-        <div class="input-wrap">
-          <span>$</span>
-          <input
-            v-model.number="monto"
-            type="number"
-            min="1"
-            step="0.01"
-            placeholder="0.00"
-            required
-          />
-        </div>
-      </div>
+    <ion-item class="input-group">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-input v-model="plazo" placeholder="Plazo (fecha o meses)" required />
+    </ion-item>
 
-      <div class="form-group">
-        <label>Plazo</label>
+    <ion-item class="input-group">
+      <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+      <ion-input v-model.number="porcentaje" type="number" min="0" max="100" placeholder="% de ingreso" required />
+    </ion-item>
 
-        <!-- Contenedor para input fecha + icono -->
-        <div class="date-wrap">
-          <input
-            ref="dateInput"
-            v-model="plazo"
-            type="date"
-            :max="maxFechaStr"
-            required
-            @focus="openDatePicker"
-            @keydown.enter.prevent="openDatePicker"
-          />
+    <div class="button-row">
+      <ion-button expand="block" type="submit" class="back-btn">
+        CREAR META
+      </ion-button>
+    </div>
 
-          <!-- Icono calendario: abre el date picker al hacer click -->
-          <button
-            type="button"
-            class="calendar-btn"
-            @click="openDatePicker"
-            aria-label="Abrir calendario"
-          >
-            <!-- SVG calendar -->
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 11H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 15H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-guardar">Guardar Meta</button>
-      
-      
-    </form>
-  </div>
+    <div class="button-row">
+      <ion-button expand="block" router-link="/dashboard" class="back-btn">
+        VOLVER
+      </ion-button>
+    </div>
+  </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { IonItem, IonInput, IonButton, IonIcon } from "@ionic/vue";
+import { ref } from "vue";
 
-const emit = defineEmits(['nuevaMeta'])
+const emit = defineEmits(["crear-meta"]);
 
-const nombre = ref('')
-const monto = ref<number | null>(null)
-const plazo = ref('')
+const nombre = ref("");
+const monto = ref<number>(0);
+const plazo = ref("");
+const porcentaje = ref<number>(0);
 
-// referencia al input date
-const dateInput = ref<HTMLInputElement | null>(null)
-
-// Fecha máxima opcional (5 años a futuro)
-const maxFecha = new Date()
-maxFecha.setFullYear(maxFecha.getFullYear() + 5)
-const maxFechaStr = maxFecha.toISOString().split('T')[0]
-
-function openDatePicker() {
-  const el = dateInput.value
-  if (!el) return
-
-  try {
-   
-    if (typeof (el as any).showPicker === 'function') {
-      ;(el as any).showPicker()
-      return
-    }
-  } catch (e) {
-    // ignore
-  }
-
- 
-  el.focus()
- 
-  try {
-    el.click()
-  } catch (e) {
-    
-  }
-}
-
-function agregarMeta() {
-  if (!nombre.value || !monto.value || monto.value <= 0 || !plazo.value) return
-
-  emit('nuevaMeta', {
-    id: Date.now(),
+const emitirMeta = () => {
+  if (!nombre.value || !monto.value || !plazo.value || porcentaje.value < 0 || porcentaje.value > 100) return;
+  emit("crear-meta", {
     nombre: nombre.value,
     monto: monto.value,
-    // guardamos en formato YYYY-MM-DD
-    plazo: new Date(plazo.value).toISOString().split('T')[0],
-    ahorroActual: 0
-  })
-
-  nombre.value = ''
-  monto.value = null
-  plazo.value = ''
-}
+    plazo: plazo.value,
+    porcentajeAsignado: porcentaje.value,
+    acumulado: 0
+  });
+  nombre.value = "";
+  monto.value = 0;
+  plazo.value = "";
+  porcentaje.value = 0;
+};
 </script>
 
 <style scoped>
-.meta-form-container {
-  backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(250,250,255,0.75));
-  border: 1px solid rgba(255,255,255,0.6);
-  padding: 2rem;
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.input-group {
+  background: linear-gradient(135deg, #a1c4fd, #c2e9fb, #fbc2eb);
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-  color: #111827;
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
+  margin-bottom: 20px;
 }
-h2 {
-  text-align: center;
-  margin-bottom: 1.25rem;
-  color: #4f46e5;
+.back-btn {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
-.form-group { margin-bottom: 1rem; }
-label { font-weight: 700; color: #374151; display:block; margin-bottom:0.4rem; }
-
-/* inputs generales */
-input {
-  width: 100%;
-  padding: 0.9rem;
-  border-radius: 12px;
-  border: 1px solid rgba(203,213,225,0.7);
-  background: rgba(255,255,255,0.95);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
-  transition: all 0.18s ease;
-  font-size: 0.95rem;
-}
-input:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 6px 18px rgba(99,102,241,0.12);
-}
-
-/* input monto */
-.input-wrap { display:flex; align-items:center; gap:0.5rem; }
-.input-wrap span { color:#059669; font-weight:800; }
-
-/* date wrapper: input + icon */
-.date-wrap {
-  position: relative;
-}
-.date-wrap input {
-  padding-right: 3.5rem; /* espacio para el botón calendario */
-}
-.calendar-btn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
+.button-row {
+  display: flex;
   justify-content: center;
-  background: linear-gradient(135deg,#ff8aa0,#ff6bcb);
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(255,107,203,0.18);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-.calendar-btn:hover { transform: translateY(-50%) scale(1.03); box-shadow: 0 10px 24px rgba(255,107,203,0.22); }
-.calendar-btn svg { opacity: 0.95; }
-
-/* botón guardar */
-.btn-guardar {
-  width: 100%;
-  padding: 0.95rem;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: #fff;
-  font-weight: 800;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 0.6rem;
-  box-shadow: 0 8px 28px rgba(79,70,229,0.18);
-}
-.btn-guardar:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(79,70,229,0.22); }
-
-
-
-
-
-/* responsive */
-@media (max-width: 520px) {
-  .meta-form-container { padding: 1.25rem; border-radius: 14px; }
-  .date-wrap input { padding-right: 3rem; }
-  .calendar-btn { right: 6px; width: 34px; height: 34px; }
 }
 </style>

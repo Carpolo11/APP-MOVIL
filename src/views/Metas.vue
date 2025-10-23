@@ -1,60 +1,59 @@
 <template>
-  <section class="metas-view">
-    <div class="decor-bg">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-    </div>
-
-    <div class="content">
-      <h1>🎯Metas de Ahorro</h1>
-      <MetaForm @nuevaMeta="agregarMeta" />
-      <MetaList :metas="metas" />
-    </div>
-  </section>
+  <ion-page>
+    <ion-content class="ion-padding metas-bg">
+      <ion-title class="app-title">🎯 METAS DE AHORRO</ion-title>
+      <div class="card">
+        <div class="metas-container">
+          <MetaForm @crear-meta="agregarMeta" />
+          <div class="metas-list">
+            <MetaCard v-for="(meta, i) in metas" :key="i" :meta="meta" />
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import MetaForm from '@/components/metas/MetaForm.vue'
-import MetaList from '@/components/metas/MetaList.vue'
+import { IonPage, IonContent, IonTitle } from "@ionic/vue";
+import { ref } from "vue";
+import MetaForm from "@/components/metas/MetaForm.vue";
+import MetaCard from "@/components/metas/MetaCard.vue";
 
-const metas = ref(JSON.parse(localStorage.getItem('metas') || '[]'))
+const metas = ref<any[]>([]);
 
-function agregarMeta(meta: any) {
-  metas.value.push(meta)
-  localStorage.setItem('metas', JSON.stringify(metas.value))
-}
-
-watch(metas, (nuevas) => {
-  localStorage.setItem('metas', JSON.stringify(nuevas))
-}, { deep: true })
+const agregarMeta = (meta: any) => {
+  metas.value.push(meta);
+};
 </script>
 
 <style scoped>
-.metas-view {
-  position: relative;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  padding: 40px 20px;
+.metas-bg {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+.card {
   display: flex;
-  align-items: flex-start;
   justify-content: center;
 }
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-25px); }
+.metas-container {
+  width: 95%;
+  max-width: 500px;
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  border-radius: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
-.content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 700px;
-}
-h1 {
+.app-title {
   text-align: center;
-  color: #2d3748;
-  margin-bottom: 30px;
-  font-size: 2rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-weight: 900;
+  font-size: 30px;
+  color: #fff;
+  margin-top: 20px;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+.metas-list {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.5rem;
 }
 </style>

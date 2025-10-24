@@ -21,6 +21,7 @@
           min="0.01"
           placeholder="0.00"
           required
+          class="monto-input"
         />
       </div>
     </div>
@@ -95,14 +96,23 @@ const onSubmit = () => {
 .input-wrap {
   display: flex;
   align-items: center;
-  background-color: #fff;
   border-radius: 8px;
-  padding: 5px 10px;
+  padding: 0;
+  background-color: transparent;
 }
 .input-wrap span {
   font-weight: bold;
   margin-right: 5px;
-  color: #3a1c71;
+  color: #fff;
+}
+.monto-input {
+  background-color:#333;
+  color: #ccc;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
 }
 .btn-crear {
   background-color: #0f2027;

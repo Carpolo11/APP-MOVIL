@@ -12,6 +12,7 @@ import Categorias from '@/views/Categorias.vue'
 import Gastos from '@/views/Gastos.vue'
 import Metas  from '@/views/Metas.vue'
 import GastosRecurrentes from "@/views/GastosRecurrentes.vue";
+import ReportesEstadisticas from "@/views/ReportesEstadisticas.vue";
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
@@ -93,12 +94,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/recurrentes',
     name: 'GastosRecurrentes',
     component: GastosRecurrentes
-  }
+  },
+
+  // Reportes y Estadisticas
+  {
+    path: '/reportes',
+    name: 'ReportesEstadisticas',
+    component: ReportesEstadisticas
+  },
 
 
-  
 
-  
 
 ]
 

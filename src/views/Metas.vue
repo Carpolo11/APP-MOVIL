@@ -6,7 +6,7 @@
         <div class="metas-container">
           <MetaForm @crear-meta="agregarMeta" />
           <div class="metas-list">
-            <MetaCard v-for="(meta, i) in metas" :key="i" :meta="meta" />
+            <MetaCard v-for="meta in metas" :key="meta.id" :meta="meta" />
           </div>
         </div>
       </div>
@@ -16,15 +16,61 @@
 
 <script setup lang="ts">
 import { IonPage, IonContent, IonTitle } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import MetaForm from "@/components/metas/MetaForm.vue";
 import MetaCard from "@/components/metas/MetaCard.vue";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
 
 const metas = ref<any[]>([]);
 
-const agregarMeta = (meta: any) => {
-  metas.value.push(meta);
+// Cargar metas en tiempo real
+const cargarMetas = () => {
+  const refMetas = collection(db, "metas");
+  onSnapshot(refMetas, (snapshot) => {
+    const lista: any[] = [];
+    snapshot.forEach((doc) => {
+      lista.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    metas.value = lista;
+    console.log("Metas actualizadas en tiempo real:", metas.value);
+  });
 };
+
+const agregarMeta = async (meta: any) => {
+  if (!meta.titulo || !meta.montoObjetivo) {
+    alert("Por favor completa todos los campos");
+    return;
+  }
+  
+  if (meta.montoObjetivo <= 0) {
+    alert("Ingresa un monto objetivo válido");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "metas"), {
+      titulo: meta.titulo,
+      montoObjetivo: Number(meta.montoObjetivo),
+      montoActual: meta.montoActual || 0,
+      descripcion: meta.descripcion || "",
+      fechaRegistro: new Date(),
+      completada: false
+    });
+
+    alert(`Meta creada exitosamente: ${meta.titulo}`);
+  } catch (error) {
+    console.error("Error al crear meta:", error);
+    alert("Hubo un error al crear la meta");
+  }
+};
+
+onMounted(() => {
+  cargarMetas();
+});
 </script>
 
 <style scoped>

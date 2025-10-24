@@ -81,19 +81,22 @@ const routes: Array<RouteRecordRaw> = [
     component: Gastos
   },
 
-
+  //Metas
   {
     path: '/metas',
     name: 'Metas',
     component: Metas
   },
 
-
+  //Gastos Recurrentes
   {
-    path: "/recurrentes",
-    name: "GastosRecurrentes",
-    component: GastosRecurrentes,
+    path: '/recurrentes',
+    name: 'GastosRecurrentes',
+    component: GastosRecurrentes
   }
+
+
+  
 
   
 

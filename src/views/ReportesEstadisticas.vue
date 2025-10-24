@@ -62,43 +62,13 @@ const ingresosTotales = ref(0)
 const gastosTotales = ref(0)
 const balanceMensual = ref(0)
 const graficoCanvas = ref<HTMLCanvasElement | null>(null)
-let graficoInstancia: Chart | null = null
-
-function obtenerRangoFechas(periodo: string) {
-  const hoy = new Date()
-  let inicio = new Date()
-
-  switch (periodo) {
-    case 'diario':
-      inicio.setHours(0, 0, 0, 0)
-      break
-    case 'semanal':
-      inicio.setDate(hoy.getDate() - 7)
-      break
-    case 'mensual':
-      inicio.setMonth(hoy.getMonth() - 1)
-      break
-    case 'anual':
-      inicio.setFullYear(hoy.getFullYear() - 1)
-      break
-  }
-
-  return { inicio, fin: hoy }
-}
 
 async function cargarDatos() {
-  const { inicio, fin } = obtenerRangoFechas(periodoSeleccionado.value)
-
   const entradasSnap = await getDocs(collection(db, 'entradas'))
   const gastosSnap = await getDocs(collection(db, 'gastos'))
 
-  const entradas = entradasSnap.docs
-    .map(doc => doc.data())
-    .filter(e => new Date(e.fecha) >= inicio && new Date(e.fecha) <= fin)
-
-  const gastos = gastosSnap.docs
-    .map(doc => doc.data())
-    .filter(g => new Date(g.fechaRegistro) >= inicio && new Date(g.fechaRegistro) <= fin)
+  const entradas = entradasSnap.docs.map(doc => doc.data())
+  const gastos = gastosSnap.docs.map(doc => doc.data())
 
   ingresosTotales.value = entradas.reduce((acc, e) => acc + e.monto, 0)
   gastosTotales.value = gastos.reduce((acc, g) => acc + g.monto, 0)
@@ -111,16 +81,12 @@ async function cargarDatos() {
 function renderGrafico() {
   if (!graficoCanvas.value) return
 
-  if (graficoInstancia) {
-    graficoInstancia.destroy()
-  }
-
-  graficoInstancia = new Chart(graficoCanvas.value, {
+  new Chart(graficoCanvas.value, {
     type: 'bar',
     data: {
       labels: ['Ingresos', 'Gastos'],
       datasets: [{
-        label: `Periodo: ${periodoSeleccionado.value}`,
+        label: 'Comparativo',
         data: [ingresosTotales.value, gastosTotales.value],
         backgroundColor: ['#43e97b', '#ff6a6a']
       }]
@@ -138,7 +104,6 @@ function renderGrafico() {
 onMounted(cargarDatos)
 watch(periodoSeleccionado, cargarDatos)
 </script>
-
 
 <style scoped>
 .creatCat-bg {

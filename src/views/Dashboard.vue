@@ -1,129 +1,192 @@
 <template>
-  <ion-page>
-    <ion-header class="ion-no-border">
-      <ion-toolbar>
-        <ion-title class="app-title">💰 FinanceApp</ion-title>
-        <ion-buttons slot="end">
-          <ion-button @click="logout" class="logout-btn">
-            <ion-icon name="log-out-outline" size="large"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding-top">
-      <div class="container">
-        <QuickInfo :userName="userName" />
-        
-        <StatsCard :categorias="totalCategorias" :entradas="totalEntradas" :saldo="saldoTotal" />
-        
-        <h2 class="section-title">Opciones Disponibles</h2>
-        
-        <MenuGrid @navigate="navigate" />
+  <section class="dashboard">
+    <header class="dashboard-header">
+      <h1>💰 FinanceApp</h1>
+      <p>Hola, <strong>Usuario!</strong> Tu resumen financiero te espera.</p>
+      <p>Gestiona tus recursos de forma inteligente. 📊</p>
+    </header>
+
+    <div class="dashboard-cards">
+      <!-- Card Saldo Total -->
+      <div class="card saldo">
+        <div class="card-content">
+          <h3>Saldo Total</h3>
+          <p class="monto">${{ saldoTotal.toLocaleString() }}</p>
+        </div>
       </div>
-    </ion-content>
-  </ion-page>
+
+      <!-- Card Total Entradas -->
+      <div class="card entradas">
+        <div class="card-content">
+          <h3>Total Entradas</h3>
+          <p class="numero-destacado">{{ totalEntradas }}</p>
+        </div>
+      </div>
+
+      <!-- Card Total Categorías -->
+      <div class="card categorias">
+        <div class="card-content">
+          <h3>Total Categorías</h3>
+          <p class="numero-destacado">{{ totalCategorias }}</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="opciones-title">Opciones Disponibles</h2>
+    <div class="opciones-grid">
+      <div
+        v-for="opcion in opciones"
+        :key="opcion.nombre"
+        class="opcion-card"
+        @click="irARuta(opcion.route)"
+      >
+        <div class="icono">{{ opcion.icono }}</div>
+        <p>{{ opcion.nombre }}</p>
+      </div>
+    </div>
+  </section>
 </template>
 
-<script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon } from '@ionic/vue';
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import StatsCard from '@/components/dashboard/StatsCard.vue';
-import MenuGrid from '@/components/dashboard/MenuGrid.vue';
-import QuickInfo from '@/components/dashboard/QuickInfo.vue';
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+
+const totalEntradas = ref(0);
+const totalCategorias = ref(0);
+const saldoTotal = ref(0);
 
 const router = useRouter();
-const userName = ref('Usuario');
-const categorias = ref<any[]>([]);
-const entradas = ref<any[]>([]);
+const irARuta = (ruta) => router.push(ruta);
+
+const opciones = [
+  { nombre: "Categorías", icono: "🗂️", route: "/categoria" },
+  { nombre: "Entradas", icono: "💰", route: "/crear-entrada" },
+  { nombre: "Gastos", icono: "💸", route: "/gasto" },
+  { nombre: "Metas", icono: "🎯", route: "/metas" },
+  { nombre: "Recurrentes", icono: "♻️", route: "/recurrentes" },
+  { nombre: "Reportes", icono: "📈", route: "/reportes" },
+  { nombre: "Ahorros", icono: "🏦", route: "/ahorros" },
+  { nombre: "Deudas", icono: "💳", route: "/deudas" },
+];
+
+const cargarEntradas = async () => {
+  const refEntradas = collection(db, "entradas");
+  onSnapshot(refEntradas, (snapshot) => {
+    let totalMonto = 0;
+    snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
+    totalEntradas.value = snapshot.size;
+    saldoTotal.value = totalMonto;
+  });
+};
+
+const cargarCategorias = async () => {
+  const snapshot = await getDocs(collection(db, "categorias"));
+  totalCategorias.value = snapshot.size;
+};
 
 onMounted(() => {
-  const usuario = localStorage.getItem('usuario');
-  if (usuario) {
-    userName.value = JSON.parse(usuario).nombre || 'Usuario';
-  }
-  const cats = localStorage.getItem('categorias');
-  if (cats) categorias.value = JSON.parse(cats);
-  const ents = localStorage.getItem('entradas');
-  if (ents) entradas.value = JSON.parse(ents);
+  cargarEntradas();
+  cargarCategorias();
 });
-
-const totalCategorias = computed(() => categorias.value.length);
-const totalEntradas = computed(() => entradas.value.length);
-const saldoTotal = computed(() => entradas.value.reduce((sum, e) => sum + (e.monto || 0), 0));
-
-function navigate(route: string) {
-  router.push(route);
-}
-
-function logout() {
-  router.push('/home');
-}
 </script>
 
 <style scoped>
-/* Colores y Tipografía */
-:root {
-  --primary-color: #6a0dad; 
-  --secondary-color: #ffd700; 
-  --background-light: #f4f5f8; 
-  --text-dark: #1f2937;
+.dashboard {
+  padding: 20px;
+  background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  min-height: 100vh;
 }
 
-/* 1. ESTILOS CLAVE PARA EL FONDO: ion-page y ion-content */
-ion-page {
-
-  background: var(--background-light); 
+.dashboard-header {
+  text-align: center;
+  background: linear-gradient(90deg, #a8edea, #fed6e3);
+  color: #001f3f;
+  padding: 2px 6px;       
+  border-radius: 6px;     
+  margin-bottom: 10px;    
+  line-height: 1.2;       
 }
 
-ion-content {
-  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+
+
+.dashboard-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
 }
 
-
-/* FIN DE ESTILOS CLAVE */
-
-ion-toolbar {
-  --background: var(--primary-color);
-  --color: white;
-  padding: 0 10px;
+.card {
+  border-radius: 15px;
+  padding: 20px;
+  width: 250px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: scale(1.03);
 }
 
-.app-title {
+.saldo {
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+}
+.entradas {
+  background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+.categorias {
+  background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+
+.monto {
+  font-size: 1.8rem;
   font-weight: 800;
-  font-size: 22px;
 }
 
-.logout-btn {
-  --color: white;
+
+.numero-destacado {
+  font-size: 2.2rem;
+  font-weight: 800;
 }
 
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px 20px 20px;
+.opciones-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-.section-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin: 25px 0 15px 0;
-  border-left: 4px solid var(--primary-color);
-  padding-left: 10px;
+.opciones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 15px 15px 15px;
-  }
-  .app-title {
-    font-size: 20px;
-  }
-  .section-title {
-    font-size: 18px;
-    margin-top: 20px;
-  }
+.opcion-card {
+  background: #ffffff10;
+  border-radius: 15px;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.opcion-card:hover {
+  transform: scale(1.05);
+  background: #ffffff20;
+}
+
+.icono {
+  font-size: 2rem;
 }
 </style>

@@ -1,11 +1,10 @@
 <template>
-  <form @submit.prevent="onSubmit" class="formulario">
+  <form @submit.prevent="emitirEntrada" class="formulario">
     <ion-item class="input-group">
-      <ion-icon name="receipt-outline" slot="start"></ion-icon>
+      <ion-icon name="create-outline" slot="start"></ion-icon>
       <ion-input 
-        v-model="nombre" 
-        placeholder="Nombre del Gasto" 
-        required 
+        v-model="descripcion" 
+        placeholder="Descripción (opcional):" 
       />
     </ion-item>
 
@@ -14,32 +13,19 @@
       <ion-input 
         v-model="monto" 
         type="number" 
+        min="0.01"
         step="0.01"
-        min="0.01" 
-        placeholder="Monto" 
+        placeholder="Monto:" 
         required 
       />
     </ion-item>
 
     <ion-item class="input-group">
-      <ion-icon name="sync-outline" slot="start"></ion-icon>
-      <ion-select 
-        v-model="frecuencia" 
-        placeholder="Selecciona la frecuencia"
-        interface="popover"
-        required
-      >
-        <ion-select-option value="mensual">Mensual</ion-select-option>
-        <ion-select-option value="semanal">Semanal</ion-select-option>
-        <ion-select-option value="anual">Anual</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item class="input-group">
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
       <input 
-        v-model="fechaInicio" 
+        v-model="fecha" 
         type="date" 
+        :max="maxDate"
         class="date-input" 
         required 
       />
@@ -47,7 +33,7 @@
 
     <div class="button-row">
       <ion-button expand="block" type="submit" class="back-btn">
-        REGISTRAR GASTO
+        GUARDAR
       </ion-button>
     </div>
 
@@ -64,31 +50,44 @@ import {
   IonItem, 
   IonInput, 
   IonButton, 
-  IonIcon,
-  IonSelect,
-  IonSelectOption
+  IonIcon
 } from "@ionic/vue";
 import { ref } from "vue";
 
-const emit = defineEmits(["crear-gasto"]);
+const emit = defineEmits(["crear-entrada"]);
 
-const nombre = ref("");
-const monto = ref<number | null>(null);
-const frecuencia = ref("");
-const fechaInicio = ref("");
+const descripcion = ref("");
+const monto = ref("");
+const fecha = ref("");
 
-const onSubmit = () => {
-  emit("crear-gasto", {
-    nombre: nombre.value.trim(),
-    monto: monto.value,
-    frecuencia: frecuencia.value,
-    fechaInicio: fechaInicio.value
+// Fecha máxima (hoy)
+const maxDate = new Date().toISOString().split('T')[0];
+
+const emitirEntrada = () => {
+  // Validaciones
+  if (!monto.value || !fecha.value) {
+    alert("Por favor completa todos los campos obligatorios");
+    return;
+  }
+
+  const montoNum = Number(monto.value);
+
+  if (montoNum <= 0) {
+    alert("Ingresa un monto válido mayor a 0");
+    return;
+  }
+
+  // Emitir evento con los datos
+  emit("crear-entrada", {
+    descripcion: descripcion.value,
+    monto: montoNum,
+    fecha: fecha.value
   });
 
-  nombre.value = "";
-  monto.value = null;
-  frecuencia.value = "";
-  fechaInicio.value = "";
+  // Limpiar formulario
+  descripcion.value = "";
+  monto.value = "";
+  fecha.value = "";
 };
 </script>
 

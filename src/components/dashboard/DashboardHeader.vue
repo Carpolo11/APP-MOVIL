@@ -36,9 +36,31 @@ onMounted(() => {
   text-align: center;
   background: linear-gradient(90deg, #a8edea, #fed6e3);
   color: #001f3f;
-  padding: 2px 6px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  line-height: 1.2;
+  padding: 20px 30px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.dashboard-header.compact {
+  padding: 10px 18px;
+  margin-bottom: 15px;
+  max-width: 550px;
+}
+
+.dashboard-header h1,
+.dashboard-header .title {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header p,
+.dashboard-header .subtitle {
+  font-size: 1.05rem;
+  margin: 0;
 }
 </style>

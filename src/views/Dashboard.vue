@@ -26,8 +26,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 // Componentes
 import DashboardHeader from "@/components/dashboard/DashboardHeader.vue";
@@ -52,6 +55,7 @@ const opciones = [
 ];
 
 const cargarEntradas = async () => {
+
   const refEntradas = collection(db, "entradas");
   onSnapshot(refEntradas, (snapshot) => {
     let totalMonto = 0;
@@ -62,7 +66,9 @@ const cargarEntradas = async () => {
 };
 
 const cargarCategorias = async () => {
-  const snapshot = await getDocs(collection(db, "categorias"));
+  const user = auth.currentUser;
+  const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
+  const snapshot = await getDocs(q);
   totalCategorias.value = snapshot.size;
 };
 

@@ -80,11 +80,14 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { collection, addDoc, getDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
+import { getAuth } from "firebase/auth";
 
 const router = useRouter(); // ✅ Instancia de router
+const auth = getAuth();
+
 
 const titulo = ref("");
 const fecha = ref("");
@@ -108,6 +111,7 @@ const TraerPorcen = async () => {
 
 onMounted(() => {
   TraerPorcen(); // 🔹 Cargamos al iniciar
+
 });
 
 
@@ -136,14 +140,21 @@ const crearCat = async () => {
    
       try {
 
+        const user = auth.currentUser;
+
     // Guarda en la colección "Categorias"
+
+    if (user){
     await addDoc(collection(db, "categorias"), {
       titulo: titulo.value,
       fecha: fecha.value,
       descripcion: descripcion.value,
       porcentaje: Number(porcentajeMax.value), 
       fechaRegistro: new Date(),
+      userId: user.uid
     });
+
+    }
 
     titulo.value = "";
     fecha.value = "";

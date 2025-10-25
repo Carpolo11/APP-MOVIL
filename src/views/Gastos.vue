@@ -92,10 +92,13 @@ import {
   IonSelectOption,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router";
 import { onSnapshot } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 const router = useRouter();
 
@@ -110,7 +113,10 @@ const gastos = ref<number>(0);
 //Trae las categorias
 const cargarCategorias = async () => {
   try {
-    const snapshot = await getDocs(collection(db, "categorias"));
+
+    const user = auth.currentUser;
+    const q = query(collection(db,"categorias"), where("userId", "==", user?.uid));
+    const snapshot = await getDocs(q);
     const lista: any[] = [];
     snapshot.forEach((doc) => {
       lista.push(doc.data());
@@ -181,15 +187,20 @@ const crearGas = async () => {
   }
 
   try {
+
+    const user = auth.currentUser;
+
+    if(user){
     await addDoc(collection(db, "gastos"), {
       titulo: titulo.value,
       monto: Number(monto.value),
       descripcion: descripcion.value,
       categoria: cate.value,
       fechaRegistro: new Date(),
+      UserId: user.uid
     });
 
-
+    };
 
     alert(`Creación exitosa: ${titulo.value}`);
     titulo.value = "";

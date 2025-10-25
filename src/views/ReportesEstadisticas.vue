@@ -52,10 +52,12 @@ import {
   IonTitle
 } from "@ionic/vue";
 import { ref, onMounted, watch } from 'vue'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '@/firebase/firebaseConfig'
+import { getAuth } from "firebase/auth";
 import Chart from 'chart.js/auto'
 
+const auth = getAuth();
 const periodoSeleccionado = ref('mensual')
 const saldoDisponible = ref(0)
 const ingresosTotales = ref(0)
@@ -64,8 +66,22 @@ const balanceMensual = ref(0)
 const graficoCanvas = ref<HTMLCanvasElement | null>(null)
 
 async function cargarDatos() {
-  const entradasSnap = await getDocs(collection(db, 'entradas'))
-  const gastosSnap = await getDocs(collection(db, 'gastos'))
+  const user = auth.currentUser;
+  if (!user) return;
+
+  // Query para entradas del usuario actual
+  const qEntradas = query(
+    collection(db, 'entradas'),
+    where("UserId", "==", user.uid)
+  );
+  const entradasSnap = await getDocs(qEntradas);
+
+  // Query para gastos del usuario actual
+  const qGastos = query(
+    collection(db, 'gastos'),
+    where("UserId", "==", user.uid)
+  );
+  const gastosSnap = await getDocs(qGastos);
 
   const entradas = entradasSnap.docs.map(doc => doc.data())
   const gastos = gastosSnap.docs.map(doc => doc.data())

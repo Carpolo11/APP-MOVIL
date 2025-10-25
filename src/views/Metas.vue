@@ -19,15 +19,24 @@ import { IonPage, IonContent, IonTitle } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import MetaForm from "@/components/metas/MetaForm.vue";
 import MetaCard from "@/components/metas/MetaCard.vue";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
+import { getAuth } from "firebase/auth";
 
+const auth = getAuth();
 const metas = ref<any[]>([]);
 
 // Cargar metas en tiempo real
 const cargarMetas = () => {
-  const refMetas = collection(db, "metas");
-  onSnapshot(refMetas, (snapshot) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const q = query(
+    collection(db, "metas"),
+    where("userId", "==", user.uid)
+  );
+
+  onSnapshot(q, (snapshot) => {
     const lista: any[] = [];
     snapshot.forEach((doc) => {
       lista.push({
@@ -52,16 +61,21 @@ const agregarMeta = async (meta: any) => {
   }
 
   try {
-    await addDoc(collection(db, "metas"), {
-      titulo: meta.titulo,
-      montoObjetivo: Number(meta.montoObjetivo),
-      montoActual: meta.montoActual || 0,
-      descripcion: meta.descripcion || "",
-      fechaRegistro: new Date(),
-      completada: false
-    });
+    const user = auth.currentUser;
 
-    alert(`Meta creada exitosamente: ${meta.titulo}`);
+    if (user) {
+      await addDoc(collection(db, "metas"), {
+        titulo: meta.titulo,
+        montoObjetivo: Number(meta.montoObjetivo),
+        montoActual: meta.montoActual || 0,
+        descripcion: meta.descripcion || "",
+        fechaRegistro: new Date(),
+        completada: false,
+        userId: user.uid
+      });
+
+      alert(`Meta creada exitosamente: ${meta.titulo}`);
+    }
   } catch (error) {
     console.error("Error al crear meta:", error);
     alert("Hubo un error al crear la meta");

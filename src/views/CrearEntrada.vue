@@ -42,8 +42,6 @@ import EntradaForm from '@/components/entradas/EntradaForm.vue';
   margin-top: 20px;
 }
 
-
-
 h1 {
   text-align: center;
   font-size: 1.7rem;
@@ -60,10 +58,4 @@ h1 {
   z-index: 0;
   pointer-events: none;
 }
-
-
-
-
-
-
 </style>

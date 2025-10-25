@@ -21,17 +21,26 @@
 <script setup lang="ts">
 import { IonPage, IonContent, IonTitle } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
+import { getAuth } from "firebase/auth";
 import GastosRecurrentesForm from "@/components/gastosrecurrentes/GastosRecurrentesForm.vue";
 import GastosRecurrentesCard from "@/components/gastosrecurrentes/GastosRecurrentesCard.vue";
 
+const auth = getAuth();
 const gastos = ref<any[]>([]);
 
 // Cargar gastos recurrentes en tiempo real
 const cargarGastos = () => {
-  const refGastos = collection(db, "gastosRecurrentes");
-  onSnapshot(refGastos, (snapshot) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const q = query(
+    collection(db, "gastosRecurrentes"),
+    where("userId", "==", user.uid)
+  );
+
+  onSnapshot(q, (snapshot) => {
     const lista: any[] = [];
     snapshot.forEach((doc) => {
       lista.push({
@@ -57,15 +66,20 @@ const agregarGasto = async (gasto: any) => {
   }
 
   try {
-    await addDoc(collection(db, "gastosRecurrentes"), {
-      nombre: gasto.nombre,
-      monto: Number(gasto.monto),
-      frecuencia: gasto.frecuencia,
-      fechaInicio: gasto.fechaInicio,
-      fechaRegistro: new Date()
-    });
+    const user = auth.currentUser;
 
-    alert(`Gasto recurrente registrado: ${gasto.nombre}`);
+    if (user) {
+      await addDoc(collection(db, "gastosRecurrentes"), {
+        nombre: gasto.nombre,
+        monto: Number(gasto.monto),
+        frecuencia: gasto.frecuencia,
+        fechaInicio: gasto.fechaInicio,
+        fechaRegistro: new Date(),
+        userId: user.uid
+      });
+
+      alert(`Gasto recurrente registrado: ${gasto.nombre}`);
+    }
   } catch (error) {
     console.error("Error al registrar gasto recurrente:", error);
     alert("Hubo un error al registrar el gasto recurrente");

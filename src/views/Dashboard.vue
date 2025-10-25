@@ -56,8 +56,9 @@ const opciones = [
 
 const cargarEntradas = async () => {
 
-  const refEntradas = collection(db, "entradas");
-  onSnapshot(refEntradas, (snapshot) => {
+  const user = auth.currentUser;
+  const q = query(collection(db,"entradas"), where("userId", "==", user?.uid));
+  onSnapshot(q, (snapshot) => {
     let totalMonto = 0;
     snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
     totalEntradas.value = snapshot.size;
@@ -70,6 +71,7 @@ const cargarCategorias = async () => {
   const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
   const snapshot = await getDocs(q);
   totalCategorias.value = snapshot.size;
+  return totalCategorias.value;
 };
 
 onMounted(() => {

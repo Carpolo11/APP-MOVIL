@@ -1,10 +1,35 @@
 <template>
   <header class="dashboard-header">
     <h1>💰 FinanceApp</h1>
-    <p>Hola, <strong>Usuario!</strong> Tu resumen financiero te espera.</p>
+    <p>Hola, <strong>{{userEmail}}</strong> Tu resumen financiero te espera.</p>
     <p>Gestiona tus recursos de forma inteligente. 📊</p>
   </header>
 </template>
+
+
+<script setup lang="ts">
+
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ref, onMounted } from "vue";
+
+const userEmail = ref("Invitado"); // Valor por defecto
+
+const auth = getAuth();
+
+
+// Detectamos el usuario logueado
+onMounted(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userEmail.value = user.email || "Usuario sin correo";
+    } else {
+      userEmail.value = "Invitado";
+    }
+  });
+});
+</script>
+
+
 
 <style scoped>
 .dashboard-header {

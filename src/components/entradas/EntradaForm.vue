@@ -36,6 +36,9 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase/firebaseConfig'
+import { getAuth } from 'firebase/auth'
+
+const auth = getAuth();
 
 const router = useRouter()
 
@@ -56,14 +59,19 @@ async function onSubmit() {
 
   try {
     // Crear nueva entrada en Firebase
+    const user = auth.currentUser;
+    if (user){
     const nuevaEntrada = {
       monto: monto.value,
       fecha: fecha.value,
       descripcion: descripcion.value || 'Sin descripción',
-      createdAt: Timestamp.now()
+      createdAt: Timestamp.now(),
+      userId: user.uid
     }
+    
 
     await addDoc(collection(db, 'entradas'), nuevaEntrada)
+    };
 
     mostrarMensaje('¡Entrada registrada exitosamente!', 'exito')
 

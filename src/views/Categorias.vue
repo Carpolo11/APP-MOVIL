@@ -62,9 +62,31 @@
             </ion-button>
             </div>
           </form>
+        </div>
+        </div>
+            <div class="categoria-lista ion-margin-top">
+            <h2>🏷️ Mis Categorias</h2>
+              <!-- Cabecera de columnas -->
+            <div class="categoria-header">
+                  <span>Título</span>
+                  <span>Descripción</span>
+                  <span>Fecha</span>
+                  <span>Porcentaje</span>
+           </div>
 
-        </div>
-        </div>
+            <div class="categoria-contenido">
+            <ion-list>
+              <ion-item v-for="cat in categoriasUsuario" :key="cat.id" class="categoria-item">
+                <div class="categoria-info">
+                  <h3>{{ cat.titulo }}</h3>
+                  <p>{{ cat.descripcion }}</p>
+                  <p>📅 {{ cat.fecha }}</p>
+                  <p>💯 {{ cat.porcentaje }}%</p>
+                  </div>
+              </ion-item>
+            </ion-list>
+            </div>
+          </div>
       
     </ion-content>
   </ion-page>
@@ -80,7 +102,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { collection, addDoc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDoc, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
 import { getAuth } from "firebase/auth";
@@ -94,6 +116,26 @@ const fecha = ref("");
 const descripcion = ref("");
 const porcentajeMax = ref<number>(0);
 const sumaPorcentajes = ref<number>(0);
+const categoriasUsuario = ref<any[]>([]);
+
+
+//Trae las categorias
+const TraerCate = async () =>{
+  const user = auth.currentUser;
+
+  if (user) {
+    const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
+
+   
+    onSnapshot(q, (snapshot) => {
+      snapshot.forEach((doc) => {
+        categoriasUsuario.value.push({ id: doc.id, ...doc.data() });
+      });
+    });
+  }
+
+
+};
 
 const TraerPorcen = async () => {
 
@@ -111,6 +153,7 @@ const TraerPorcen = async () => {
 
 onMounted(() => {
   TraerPorcen(); // 🔹 Cargamos al iniciar
+  TraerCate();
 
 });
 
@@ -188,6 +231,68 @@ const crearCat = async () => {
   align-items: center;
 
 }
+
+/* Contenedor de la lista */
+.categoria-lista {
+  width: 90%;
+  max-width: 800px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin: 70px auto 0;
+  
+  
+}
+
+/* Título */
+.categoria-lista h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+  letter-spacing: 0.5px;
+
+}
+
+/* Ítems de la lista */
+.categoria-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  margin-bottom: 12px;
+  padding: 5px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+
+.categoria-info{
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 1fr;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 1px;
+  transition: background 0.3s ease, transform 0.2s ease;
+
+
+}
+
+/* Encabezado de columnas */
+.categoria-header {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 1fr;
+  font-weight: bold;
+  padding: 10px 15px;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+
 
 
 /* Caja contenedora */

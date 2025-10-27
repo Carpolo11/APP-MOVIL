@@ -37,12 +37,7 @@
               LOGIN 
             </ion-button>
 
-            <!-- Opciones -->
-            <div class="options">
-              <ion-checkbox v-model="rememberMe"></ion-checkbox>
-              <span>Remember me</span>
-              <a href="#">Forgot password?</a>
-            </div>
+            
           </form>
 
           <!-- Crear cuenta -->
@@ -84,10 +79,6 @@ alert("Por favor ingresa todos los campos");
 return;
 }
 
-console.log("📧 Intentando login con:", email.value);
-console.log("🔑 Contraseña ingresada:", password.value ? "********" : "(vacía)");
-console.log("🔥 Auth importado:", auth);
-console.log("🧩 Firebase App:", auth.app ? auth.app.name : "No inicializada");
 
 try {
 const userCredential = await signInWithEmailAndPassword(
@@ -119,7 +110,7 @@ alert(`Error: ${error.code}`);
 
 /* Fondo con degradado */
 .login-bg {
-  --background: linear-gradient(to bottom, #00c6ff, #0072ff, #7a00ff);
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -130,7 +121,7 @@ alert(`Error: ${error.code}`);
   width: 350px;
   padding: 30px;
   border-radius: 12px;
-  background: white;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
   text-align: center;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
@@ -147,14 +138,13 @@ alert(`Error: ${error.code}`);
 .input-group {
   margin-bottom: 15px;
   border-radius: 25px;
-  --border-color: #0072ff;
-  --highlight-color-focused: #0072ff;
+
 }
 
 /* BotÃ³n login */
 .login-btn {
-  --background: #ffb703;
-  --color: black;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
   font-weight: bold;
   border-radius: 25px;
   margin-top: 10px;
@@ -162,27 +152,7 @@ alert(`Error: ${error.code}`);
 }
 
 .login-btn:hover {
-  --background: #ff9800;
-}
-
-/* Opciones */
-.options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 12px 0;
-  font-size: 14px;
-  color: #000;
-}
-
-.options a {
-  color: black;
-  text-decoration: none;
-}
-
-.options a:hover {
-  text-decoration: underline;
-  
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
 /* Crear cuenta */
@@ -193,13 +163,13 @@ alert(`Error: ${error.code}`);
 }
 
 .redirect ion-button {
-  --border-color: #0072ff;
-  --color: #0072ff;
+  --border-color: black;
+  --color: black;
   border-radius: 25px;
 }
 
 .redirect ion-button:hover {
-  --background: #0072ff;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   --color: white;
 }
 </style>

@@ -170,7 +170,7 @@ const register = async () => {
 
 /* Fondo degradado */
 .register-bg {
-  --background: linear-gradient(to bottom, #00c6ff, #0072ff, #7a00ff);
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -181,7 +181,7 @@ const register = async () => {
   width: 350px;
   padding: 30px;
   border-radius: 12px;
-  background: white;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
   text-align: center;
   color: black;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
@@ -191,14 +191,13 @@ const register = async () => {
 .input-group {
   margin-bottom: 15px;
   border-radius: 25px;
-  --border-color: #0072ff;
-  --highlight-color-focused: #0072ff;
+
 }
 
 /* Botón registro */
 .register-btn {
-  --background: #ffb703;
-  --color: black;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
   font-weight: bold;
   border-radius: 25px;
   margin-top: 10px;
@@ -206,7 +205,7 @@ const register = async () => {
 }
 
 .register-btn:hover {
-  --background: #ff9800;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
 /* Redirección */
@@ -216,14 +215,14 @@ const register = async () => {
 }
 
 .redirect ion-button {
-  --border-color: #0072ff;
-  --color: #0072ff;
+  --border-color: black;
+  --color: black;
   border-radius: 25px;
 }
 
 .redirect ion-button:hover {
-  --background: #0072ff;
-  --color: white;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: black;
 }
 
 /* Avatar */

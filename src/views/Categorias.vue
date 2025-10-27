@@ -82,6 +82,11 @@
                   <p>{{ cat.descripcion }}</p>
                   <p>📅 {{ cat.fecha }}</p>
                   <p>💯 {{ cat.porcentaje }}%</p>
+
+                  <div class="botones">
+                      <ion-button class="ion-bottom"> Eliminar </ion-button>
+                      <ion-button class="ion-bottom"> Editar </ion-button>
+                  </div>
                   </div>
               </ion-item>
             </ion-list>
@@ -122,11 +127,8 @@ const categoriasUsuario = ref<any[]>([]);
 //Trae las categorias
 const TraerCate = async () =>{
   const user = auth.currentUser;
-
   if (user) {
     const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
-
-   
     onSnapshot(q, (snapshot) => {
       snapshot.forEach((doc) => {
         categoriasUsuario.value.push({ id: doc.id, ...doc.data() });
@@ -232,67 +234,191 @@ const crearCat = async () => {
 
 }
 
-/* Contenedor de la lista */
+/* Estilos generales para el contenedor principal de la lista */
 .categoria-lista {
-  width: 90%;
-  max-width: 800px;
-  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
-  border-radius: 20px;
-  padding: 40px 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  margin: 70px auto 0;
-  
-  
+    max-width: 900px; /* Limita el ancho máximo para una mejor lectura en pantallas grandes */
+    margin: 20px auto; /* Centra el componente y añade margen superior/inferior */
+    padding: 15px;
+    background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave para un efecto elevado */
 }
 
-/* Título */
+/* Estilo para el título de la sección */
 .categoria-lista h2 {
-  font-size: 1.4rem;
-  margin-bottom: 20px;
-  text-align: center;
-  color: white;
-  letter-spacing: 0.5px;
-
+    color: white; 
+    font-weight: 700;
+    font-size: 1.8rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef; /* Línea separadora */
+    margin-bottom: 20px;
 }
 
-/* Ítems de la lista */
-.categoria-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
-  margin-bottom: 12px;
-  padding: 5px;
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-
-
-.categoria-info{
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
-  width: 100%;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 1px;
-  transition: background 0.3s ease, transform 0.2s ease;
-
-
-}
-
-/* Encabezado de columnas */
+/* Estilo para la cabecera de las columnas (solo visible en pantallas medianas/grandes) */
 .categoria-header {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  font-weight: bold;
-  padding: 10px 15px;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 15px;
+    display: none; /* Ocultar por defecto en móvil */
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0; /* Bordes redondeados en la parte superior */
+    margin-bottom: 5px;
+    gap: 10px;
+}
+
+/* Diseño de la cabecera en pantallas más grandes */
+@media (min-width: 768px) {
+    .categoria-header {
+        display: grid;
+        /* Define la estructura de columnas */
+        grid-template-columns: 2fr 3fr 1fr 1fr 1fr; /* Título, Descripción, Fecha, Porcentaje, Acciones (espacio implícito) */
+        align-items: center;
+    }
+}
+
+/* Contenedor de la lista de ítems (dentro de ion-list) */
+.categoria-contenido ion-list {
+    padding: 0;
+    background: none; /* Quita el fondo de ion-list si lo tiene por defecto */
+}
+
+/* Estilo base para cada ítem de la categoría (tarjeta) */
+.categoria-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: auto;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Sombra suave para la tarjeta */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: white;
+    border-left: 5px solid ; /* Barra de color a la izquierda para destacar */
+}
+
+/* Efecto hover en el ítem */
+.categoria-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Contenedor de la información dentro de ion-item */
+.categoria-info {
+    display: block; /* Vuelve a ser un bloque para el diseño móvil */
+    width: 100%;
+    padding: 15px 20px;
+}
+
+/* Diseño de cada ítem en pantallas más grandes (fila tipo tabla) */
+@media (min-width: 768px) {
+    .categoria-info {
+        display: grid;
+        /* Define la estructura de columnas para la fila */
+        grid-template-columns: 2fr 3fr 1fr 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 20px; /* Menos padding vertical para parecerse más a una fila */
+    }
+
+    /* Oculta los labels redundantes en la vista de tabla */
+    .categoria-info p:not(.botones p) {
+        display: flex;
+        align-items: center; /* Alineación vertical para el contenido de las celdas */
+    }
+
+    .categoria-info h3,
+    .categoria-info p {
+        margin: 0; /* Quita los márgenes por defecto en la vista de tabla */
+    }
+
+    /* Esconde los labels de Fecha y Porcentaje en la vista de tabla */
+    .categoria-info p:nth-of-type(3):before, /* Fecha */
+    .categoria-info p:nth-of-type(4):before { /* Porcentaje */
+        content: none;
+    }
 }
 
 
+/* Estilo para el título del ítem */
+.categoria-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 5px;
+}
+
+/* Estilo para la descripción y otros párrafos (móvil) */
+.categoria-info p {
+    font-size: 0.9rem;
+    color: white;
+    margin-bottom: 5px;
+}
+
+/* Etiquetado para móvil: añade los nombres de las columnas antes del contenido */
+@media (max-width: 767px) {
+    /* Título */
+    .categoria-info h3:before {
+        content: 'Título: ';
+        font-weight: bold;
+        color: white;
+    }
+    /* Descripción */
+    .categoria-info p:nth-of-type(1):before {
+        content: 'Descripción: ';
+        font-weight: bold;
+        color: white;
+    }
+    /* Fecha */
+    .categoria-info p:nth-of-type(2):before {
+        content: 'Fecha: ';
+        font-weight: bold;
+        color: white;
+    }
+    /* Porcentaje */
+    .categoria-info p:nth-of-type(3):before {
+        content: 'Porcentaje: ';
+        font-weight: bold;
+        color: white;
+    }
+}
+
+
+
+/* Contenedor de los botones */
+.botones {
+    display: flex;
+    gap: 3px; /* Espacio entre los botones */
+    margin-top: 15px; /* Espacio superior en vista móvil */
+    justify-content: flex-end; /* Alinea los botones a la derecha en vista de tabla */
+}
+
+@media (min-width: 768px) {
+    .botones {
+        margin-top: 0; /* Quita el margen superior en vista de tabla */
+        justify-content: center; /* Centra los botones en su celda */
+    }
+}
+
+
+/* Estilo de los botones */
+.botones ion-button {
+    --border-radius: 20px; /* Botones más redondeados */
+    font-size: 0.8rem;
+    height: 35px;
+    text-transform: capitalize;
+}
+
+/* Estilo para el botón de Eliminar */
+.botones ion-button:nth-child(1) { /* Eliminar */
+    --background: #dc3545; /* Rojo */
+    --background-hover: red;
+}
+
+/* Estilo para el botón de Editar */
+.botones ion-button:nth-child(2) { /* Editar */
+    --background: #ffc107; /* Amarillo/Naranja */
+    --background-hover: #e0a800;
+    --color: #343a40; /* Color de texto oscuro para contraste */
+}
 
 
 /* Caja contenedora */

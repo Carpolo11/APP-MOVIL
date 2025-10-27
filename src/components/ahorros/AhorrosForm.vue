@@ -17,7 +17,6 @@
             label-placement="floating"
             placeholder="Ej: Vacaciones"
             required
-            class="input-nombre"
           ></ion-input>
         </ion-item>
 

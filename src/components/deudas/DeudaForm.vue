@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="formulario-deuda">
+  <ion-card style="--background: transparent; box-shadow: none;">
     <ion-card-header>
       <ion-card-title>
         {{ deudaEditada ? 'Editar Deuda / Crédito' : 'Nueva Deuda / Crédito' }}
@@ -80,10 +80,6 @@ import {
 } from '@ionic/vue'
 
 
-// 🔹 Importar Firestore
-import { collection, addDoc } from 'firebase/firestore'
-import { db } from '@/firebase/firebaseConfig' // Ruta hacia tu archivo
-
 
 interface Deuda {
   nombre: string
@@ -120,38 +116,21 @@ watch(
 
 
 // 🔹 Guardar deuda en Firestore
-const guardar = async () => {
+const guardar = () => {
   if (!form.value.nombre || form.value.montoTotal == null || !form.value.fechaLimite) {
     alert('Por favor completa todos los campos obligatorios.')
     return
   }
 
-
-try {
-    await addDoc(collection(db, 'deudas'), {
-      nombre: form.value.nombre.trim(),
-      montoTotal: Number(form.value.montoTotal) || 0,
-      cuotaMinima: Number(form.value.cuotaMinima) || 0,
-      fechaLimite: form.value.fechaLimite,
-      fechaRegistro: new Date().toISOString()
-    })
-
-    alert('✅ Deuda guardada con éxito')
-
-    form.value = { nombre: '', montoTotal: null as unknown as number, cuotaMinima: null as unknown as number, fechaLimite: '' }
-
-  } catch (error) {
-    console.error('Error al guardar en Firestore:', error)
-    alert('❌ Error al guardar la deuda')
-  }
-
+  // Emitimos el evento al componente padre
+  emit('guardar', { ...form.value })
 }
+
 </script>
 
 <style scoped>
 /* Fondo del formulario */
 .formulario-deuda {
-  background-color: #ffffff;
   color: #000000;
   border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -162,7 +141,7 @@ try {
 
 /* Título */
 ion-card-title {
-  color: #0d47a1;
+  color: #ffffff;
   font-weight: 700;
   text-align: center;
   font-size: 1.2rem;
@@ -172,19 +151,19 @@ ion-card-title {
 ion-item {
   --background: transparent;
   --color: #000000;
-  border-bottom: 1px solid #ccc;
   margin-bottom: 12px;
 }
 
 /* Labels */
 ion-label {
-  color: #0d47a1;
+  color: #797979;
   font-weight: 500;
 }
 
 /* Entradas */
 ion-input {
-  --color: #ffffff;
+  --highlight-color-focused: #bb76fc;
+  --color: #bbbbbb;
 }
 
 /* Contenedor botones */
@@ -197,30 +176,31 @@ ion-input {
 
 /* Botón Guardar */
 ion-button.guardar {
-  --background: #007bff;
-  --background-hover: #0066cc;
-  --color: #ffffff;
-  font-weight: bold;
-  border-radius: 8px;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
 
 
 /* Botón Volver */
 ion-button.volver {
-  --background: #e0e0e0;
-  --background-hover: #bdbdbd;
-  --color: #000000;
-  font-weight: 600;
-  border-radius: 8px;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
 
 /* Inputs */
 .input-group {
   margin-bottom: 15px;
   border-radius: 25px;
-  --border-color: #000000;
   --highlight-color-focused: #000000;
-  --background: #313131;
+  --background: #202020;
 }
 
 </style>

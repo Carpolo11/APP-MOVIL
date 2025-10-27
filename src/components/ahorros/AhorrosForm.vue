@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="formulario-ahorro">
+  <ion-card style="--background: transparent; box-shadow: none;">
     <ion-card-header>
       <ion-card-title>
         {{ ahorroEditado ? 'Editar Ahorro' : 'Nuevo Ahorro' }}
@@ -117,7 +117,6 @@ const guardar = () => {
 <style scoped>
 /* Fondo del formulario */
 .formulario-ahorro {
-  background-color: #ffffff;
   color: #000000;
   border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -128,7 +127,7 @@ const guardar = () => {
 
 /* Título */
 ion-card-title {
-  color: #0d47a1;
+  color: #ffffff;
   font-weight: 700;
   text-align: center;
   font-size: 1.2rem;
@@ -138,19 +137,19 @@ ion-card-title {
 ion-item {
   --background: transparent;
   --color: #000000;
-  border-bottom: 1px solid #ccc;
   margin-bottom: 12px;
 }
 
 /* Labels */
 ion-label {
-  color: #0d47a1;
+  color: #797979;
   font-weight: 500;
 }
 
 /* Entradas */
 ion-input {
-  --color: #ffffff;
+  --highlight-color-focused: #bb76fc;
+  --color: #bbbbbb;
 }
 
 /* Contenedor botones */
@@ -163,30 +162,32 @@ ion-input {
 
 /* Botón Guardar */
 ion-button.guardar {
-  --background: #007bff;
-  --background-hover: #0066cc;
-  --color: #ffffff;
-  font-weight: bold;
-  border-radius: 8px;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
 
 
 /* Botón Volver */
 ion-button.volver {
-  --background: #e0e0e0;
-  --background-hover: #bdbdbd;
-  --color: #000000;
-  font-weight: 600;
-  border-radius: 8px;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
 
 /* Inputs */
 .input-group {
   margin-bottom: 15px;
   border-radius: 25px;
-  --border-color: #000000;
   --highlight-color-focused: #000000;
-  --background: #313131;
+  --background: #202020;
 }
+
 
 </style>

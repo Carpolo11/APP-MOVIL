@@ -63,6 +63,9 @@ import {
 import { ref } from "vue";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 const nombre = ref("");
 const monto = ref("");
@@ -76,6 +79,12 @@ const emitirMeta = async () => {
   // Validaciones
   if (!nombre.value || !monto.value || !plazo.value || !porcentaje.value) {
     alert("Por favor completa todos los campos");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Debes iniciar sesión para crear metas");
     return;
   }
 
@@ -94,16 +103,14 @@ const emitirMeta = async () => {
 
   try {
     await addDoc(collection(db, "metas"), {
-      titulo: nombre.value,
       nombre: nombre.value,
-      montoObjetivo: montoNum,
       monto: montoNum,
-      montoActual: 0,
       acumulado: 0,
       plazo: plazo.value,
       porcentajeAsignado: porcentajeNum,
       fechaRegistro: new Date(),
-      completada: false
+      completada: false,
+      userId: user.uid
     });
 
     alert(`Meta creada exitosamente: ${nombre.value}`);

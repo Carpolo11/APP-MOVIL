@@ -4,8 +4,15 @@
       <ion-title class="app-title">🎯 METAS DE AHORRO</ion-title>
       <div class="card">
         <div class="metas-container">
-          <MetaForm @crear-meta="agregarMeta" />
-          <div class="metas-list">
+          <MetaForm />
+          
+          <!-- Mensaje si no hay metas -->
+          <div v-if="metas.length === 0" class="empty-message">
+            <p>📝 Aún no tienes metas creadas.</p>
+          </div>
+          
+          <!-- Lista de metas -->
+          <div v-else class="metas-list">
             <MetaCard v-for="meta in metas" :key="meta.id" :meta="meta" />
           </div>
         </div>
@@ -19,7 +26,7 @@ import { IonPage, IonContent, IonTitle } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import MetaForm from "@/components/metas/MetaForm.vue";
 import MetaCard from "@/components/metas/MetaCard.vue";
-import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 
@@ -29,7 +36,10 @@ const metas = ref<any[]>([]);
 // Cargar metas en tiempo real
 const cargarMetas = () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) {
+    console.log("No hay usuario autenticado");
+    return;
+  }
 
   const q = query(
     collection(db, "metas"),
@@ -45,41 +55,8 @@ const cargarMetas = () => {
       });
     });
     metas.value = lista;
-    console.log("Metas actualizadas en tiempo real:", metas.value);
+    console.log("Metas cargadas:", metas.value);
   });
-};
-
-const agregarMeta = async (meta: any) => {
-  if (!meta.titulo || !meta.montoObjetivo) {
-    alert("Por favor completa todos los campos");
-    return;
-  }
-  
-  if (meta.montoObjetivo <= 0) {
-    alert("Ingresa un monto objetivo válido");
-    return;
-  }
-
-  try {
-    const user = auth.currentUser;
-
-    if (user) {
-      await addDoc(collection(db, "metas"), {
-        titulo: meta.titulo,
-        montoObjetivo: Number(meta.montoObjetivo),
-        montoActual: meta.montoActual || 0,
-        descripcion: meta.descripcion || "",
-        fechaRegistro: new Date(),
-        completada: false,
-        userId: user.uid
-      });
-
-      alert(`Meta creada exitosamente: ${meta.titulo}`);
-    }
-  } catch (error) {
-    console.error("Error al crear meta:", error);
-    alert("Hubo un error al crear la meta");
-  }
 };
 
 onMounted(() => {
@@ -115,5 +92,11 @@ onMounted(() => {
   margin-top: 2rem;
   display: grid;
   gap: 1.5rem;
+}
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
 }
 </style>

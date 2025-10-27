@@ -26,7 +26,7 @@
       <ion-select 
         v-model="frecuencia" 
         placeholder="Selecciona la frecuencia"
-        interface="popover"
+        interface="action-sheet"
         required
       >
         <ion-select-option value="mensual">Mensual</ion-select-option>
@@ -98,12 +98,30 @@ const onSubmit = () => {
   flex-direction: column;
   gap: 1rem;
 }
+
 .input-group {
   background: linear-gradient(135deg, #a1c4fd, #c2e9fb, #fbc2eb);
   border-radius: 18px;
   margin-bottom: 20px;
   position: relative;
+  --padding-start: 12px;
+  --padding-end: 12px;
 }
+
+
+ion-select {
+  width: 100%;
+  --placeholder-color: #666;
+  --placeholder-opacity: 0.8;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+ion-select::part(text) {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
 .date-input {
   width: 100%;
   padding: 0.8rem;
@@ -114,9 +132,11 @@ const onSubmit = () => {
   color: #2c3e50;
   font-weight: 500;
 }
+
 .date-input:focus {
   outline: none;
 }
+
 .back-btn {
   --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   --color: white;
@@ -125,6 +145,7 @@ const onSubmit = () => {
   border-radius: 30px;
   box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
 }
+
 .button-row {
   display: flex;
   justify-content: center;

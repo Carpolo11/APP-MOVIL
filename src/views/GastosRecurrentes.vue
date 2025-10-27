@@ -4,8 +4,15 @@
       <ion-title class="app-title">💸 GASTOS RECURRENTES</ion-title>
       <div class="card">
         <div class="metas-container">
-          <GastosRecurrentesForm @crear-gasto="agregarGasto" />
-          <div class="metas-list">
+          <GastosRecurrentesForm @crear-gasto="crearGasto" />
+          
+          <!-- Mensaje si no hay gastos -->
+          <div v-if="gastos.length === 0" class="empty-message">
+            <p>📝 Aún no tienes gastos recurrentes registrados.</p>
+          </div>
+          
+          <!-- Lista de gastos -->
+          <div v-else class="metas-list">
             <GastosRecurrentesCard
               v-for="gasto in gastos"
               :key="gasto.id"
@@ -19,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonTitle } from "@ionic/vue";
+import { IonPage, IonContent, IonTitle, toastController } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where, addDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 import GastosRecurrentesForm from "@/components/gastosrecurrentes/GastosRecurrentesForm.vue";
@@ -30,10 +37,38 @@ import GastosRecurrentesCard from "@/components/gastosrecurrentes/GastosRecurren
 const auth = getAuth();
 const gastos = ref<any[]>([]);
 
+// Crear un nuevo gasto recurrente
+const crearGasto = async (nuevoGasto: any) => {
+  const user = auth.currentUser;
+  if (!user) {
+    mostrarToast("Debes iniciar sesión", "danger");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "gastosRecurrentes"), {
+      userId: user.uid,
+      nombre: nuevoGasto.nombre,
+      monto: parseFloat(nuevoGasto.monto),
+      frecuencia: nuevoGasto.frecuencia,
+      fechaInicio: nuevoGasto.fechaInicio,
+      fechaCreacion: new Date().toISOString()
+    });
+    
+    mostrarToast("¡Gasto recurrente registrado exitosamente!", "success");
+  } catch (error) {
+    console.error("Error al crear gasto:", error);
+    mostrarToast("Error al registrar el gasto", "danger");
+  }
+};
+
 // Cargar gastos recurrentes en tiempo real
 const cargarGastos = () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) {
+    console.log("No hay usuario autenticado");
+    return;
+  }
 
   const q = query(
     collection(db, "gastosRecurrentes"),
@@ -49,41 +84,19 @@ const cargarGastos = () => {
       });
     });
     gastos.value = lista;
-    console.log("Gastos recurrentes actualizados:", gastos.value);
+    console.log("Gastos recurrentes cargados:", gastos.value);
   });
 };
 
-// Agregar nuevo gasto recurrente
-const agregarGasto = async (gasto: any) => {
-  if (!gasto.nombre || !gasto.monto || !gasto.frecuencia || !gasto.fechaInicio) {
-    alert("Por favor completa todos los campos");
-    return;
-  }
-
-  if (gasto.monto <= 0) {
-    alert("Ingresa un monto válido");
-    return;
-  }
-
-  try {
-    const user = auth.currentUser;
-
-    if (user) {
-      await addDoc(collection(db, "gastosRecurrentes"), {
-        nombre: gasto.nombre,
-        monto: Number(gasto.monto),
-        frecuencia: gasto.frecuencia,
-        fechaInicio: gasto.fechaInicio,
-        fechaRegistro: new Date(),
-        userId: user.uid
-      });
-
-      alert(`Gasto recurrente registrado: ${gasto.nombre}`);
-    }
-  } catch (error) {
-    console.error("Error al registrar gasto recurrente:", error);
-    alert("Hubo un error al registrar el gasto recurrente");
-  }
+// Mostrar mensajes toast
+const mostrarToast = async (mensaje: string, color: string) => {
+  const toast = await toastController.create({
+    message: mensaje,
+    duration: 2000,
+    color: color,
+    position: "top"
+  });
+  await toast.present();
 };
 
 onMounted(() => {
@@ -119,5 +132,11 @@ onMounted(() => {
   margin-top: 2rem;
   display: grid;
   gap: 1.5rem;
+}
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
 }
 </style>

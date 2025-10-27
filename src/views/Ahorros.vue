@@ -1,9 +1,10 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding ahorros-view">
+      <ion-title class="titulo">🏦 GESTIÓN DE AHORROS</ion-title>
       <div class="wrapper">
         <div class="login-container">
-          <h1 class="titulo">Gestión de Ahorros</h1>
+          
 
           <AhorrosForm
             v-if="mostrarFormulario"
@@ -13,12 +14,10 @@
           />
 
           <div v-else>
-            <ion-button expand="block" color="primary" @click="nuevoAhorro">
-              Nuevo Ahorro
-            </ion-button>
+            
 
             <ion-list class="lista-ahorro">
-              <ion-item v-for="ahorro in ahorros" :key="ahorro.id">
+              <ion-item class="ahorrobd" v-for="ahorro in ahorros" :key="ahorro.id">
                 <ion-label>
                   <h2>{{ ahorro.nombre }}</h2>
                   <p>Monto meta: {{ ahorro.montoMeta.toLocaleString() }}</p>
@@ -26,15 +25,23 @@
                 </ion-label>
 
                 <div class="acciones">
-                  <ion-button color="warning" size="small" @click="editarAhorro(ahorro)">
+                  <ion-button class="boton-edit" size="small" @click="editarAhorro(ahorro)">
                     Editar
                   </ion-button>
-                  <ion-button color="danger" size="small" @click="eliminarAhorro(ahorro.id)">
+                  <ion-button class="boton-elim" size="small" @click="eliminarAhorro(ahorro.id)">
                     Eliminar
                   </ion-button>
                 </div>
               </ion-item>
             </ion-list>
+
+            <ion-button expand="block" class="nuevo-ahorro" @click="nuevoAhorro">
+              Nuevo Ahorro
+            </ion-button>
+            <ion-button expand="block" class="nuevo-ahorro" router-link="/dashboard">
+              VOLVER
+            </ion-button>
+
           </div>
         </div>
       </div>
@@ -155,12 +162,15 @@ onMounted(() => {
 .wrapper {
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 1rem;
+  margin-top: 40px;
+
 }
 
 .ahorros-view {
-  --background: linear-gradient(to bottom, #00c6ff, #0072ff, #7a00ff);
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -171,23 +181,27 @@ onMounted(() => {
 }
 
 .login-container {
-  width: 90%;
-  max-width: 400px;
-  background: white;
-  padding: 30px 25px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  width: 95%;
+  max-width: 500px;
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  border-radius: 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .titulo {
   text-align: center;
-  color: #0d47a1;
-  margin-bottom: 20px;
-  font-weight: 600;
+  font-weight: 900;
+  font-size: 30px;
+  color: #fff;
+  margin-top: 20px;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 .lista-ahorro {
-  margin-top: 20px;
+  --background: transparent;
+  background: transparent;
+  margin-top: 1px;
 }
 
 .acciones {
@@ -195,4 +209,35 @@ onMounted(() => {
   flex-direction: column;
   gap: 6px;
 }
+
+ion-button.nuevo-ahorro {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  box-shadow: 0 6px 14px rgba(255, 209, 102, 0.4);
+  margin-top: 20px;
+}
+
+.ahorrobd {
+  --background: rgb(32, 32, 32);
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.boton-elim {
+  --background: linear-gradient(90deg, #c73154, #ff7a5f);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.boton-edit {
+  --background: linear-gradient(90deg, #13c2ad, #32af19);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
 </style>

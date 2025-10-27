@@ -155,8 +155,13 @@ const cargarCategorias = async () => {
 
 //Trae las entradas
 const traerEntradas = async () => {
-  const refEntradas = collection(db, "entradas");
-  onSnapshot(refEntradas, (snapshot) => {
+
+  const user = auth.currentUser;
+
+  if(user){
+
+    const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
+  onSnapshot(q, (snapshot) => {
     let totalEntradas = 0;
     snapshot.forEach((doc) => {
       totalEntradas += Number(doc.data().monto) || 0;
@@ -164,6 +169,8 @@ const traerEntradas = async () => {
     entradas.value = totalEntradas;
     console.log("Entradas actualizadas en tiempo real:", entradas.value);
   });
+
+  };
 
   };
   

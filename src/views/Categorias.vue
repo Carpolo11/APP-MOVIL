@@ -106,7 +106,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { collection, addDoc, getDoc, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, getDoc, getDocs, query, where, onSnapshot, doc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
 import { getAuth } from "firebase/auth";
@@ -129,6 +129,7 @@ const TraerCate = async () =>{
   if (user) {
     const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
     onSnapshot(q, (snapshot) => {
+      categoriasUsuario.value = [];
       snapshot.forEach((doc) => {
         categoriasUsuario.value.push({ id: doc.id, ...doc.data() });
       });
@@ -138,17 +139,23 @@ const TraerCate = async () =>{
 
 };
 
+
+//Traer pocentaje
 const TraerPorcen = async () => {
 
-      const CargarCate = await getDocs(collection(db, "categorias"))
-        let SumaPorcen = 0;
-        CargarCate.forEach((doc) => {
-          const data = doc.data();
-          SumaPorcen += Number(data.porcentaje) || 0;
+  const user = auth.currentUser;
 
-       });
-
-       sumaPorcentajes.value = SumaPorcen;
+  if (user) { 
+    const q = query( collection(db, "categorias"), where("userId", "==", user.uid));
+    onSnapshot(q, (snapshot) => {
+      let SumaPorcen = 0;
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        SumaPorcen += Number(data.porcentaje) || 0;
+      });
+      sumaPorcentajes.value = SumaPorcen;
+    });
+  }
 
 };
 
@@ -174,7 +181,7 @@ const crearCat = async () => {
 
     // Validar que la suma no supere el 100 %
   const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
-  const sobrante = (Number(sumaPorcentajes.value) - 100);
+  const sobrante =  100 - (Number(sumaPorcentajes.value));
   if (nuevoTotal > 100) {
     alert(
       `⚠️ No puedes crear esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
@@ -500,4 +507,6 @@ h2 {
     padding: 25px 20px;
   }
 }
+
+
 </style>

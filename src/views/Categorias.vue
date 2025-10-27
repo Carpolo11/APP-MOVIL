@@ -31,7 +31,7 @@
               <ion-input
                 v-model="descripcion"
                 type="text"
-                placeholder="Descripcion"
+                placeholder="Descripcion (opcional)"
               />
             </ion-item>
 
@@ -41,7 +41,7 @@
               <ion-input
                 v-model="porcentajeMax"
                 type="number"
-                placeholder="Asigna el porcenta maximo"
+                placeholder="Porcentaje Máximo"
                 required
               />
             </ion-item>
@@ -118,8 +118,8 @@ const auth = getAuth();
 const titulo = ref("");
 const fecha = ref("");
 const descripcion = ref("");
-const porcentajeMax = ref<number>(0);
-const sumaPorcentajes = ref<number>(0);
+const porcentajeMax = ref<number>();
+const sumaPorcentajes = ref<number>();
 const categoriasUsuario = ref<any[]>([]);
 
 
@@ -348,14 +348,12 @@ const crearCat = async () => {
 .categoria-info h3 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: white;
     margin-bottom: 5px;
 }
 
 /* Estilo para la descripción y otros párrafos (móvil) */
 .categoria-info p {
     font-size: 0.9rem;
-    color: white;
     margin-bottom: 5px;
 }
 
@@ -365,25 +363,21 @@ const crearCat = async () => {
     .categoria-info h3:before {
         content: 'Título: ';
         font-weight: bold;
-        color: white;
     }
     /* Descripción */
     .categoria-info p:nth-of-type(1):before {
         content: 'Descripción: ';
         font-weight: bold;
-        color: white;
     }
     /* Fecha */
     .categoria-info p:nth-of-type(2):before {
         content: 'Fecha: ';
         font-weight: bold;
-        color: white;
     }
     /* Porcentaje */
     .categoria-info p:nth-of-type(3):before {
         content: 'Porcentaje: ';
         font-weight: bold;
-        color: white;
     }
 }
 
@@ -454,13 +448,11 @@ h2 {
 
 /* Inputs */
 .input-group {
-  --border-color: rgba(255, 255, 255, 0.3);
-  --highlight-color-focused: #ffd166;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 15px;
-  margin-bottom: 18px;
-  color: #fff;
+  margin-bottom: 15px;
+  border-radius: 25px;
+
 }
+
 
 /* Botón crear */
 /* 🟡 Botones */
@@ -473,6 +465,7 @@ h2 {
   box-shadow: 0 4px 10px rgba(255, 209, 102, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 
 .back-btn:hover {
   transform: translateY(-2px);

@@ -100,7 +100,7 @@ onMounted(() => {
   padding: 40px 30px;
   background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
   border-radius: 24px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(5, 5, 5, 0.884);
 }
 .app-title {
   text-align: center;

@@ -127,7 +127,7 @@ const auth = getAuth();
 const router = useRouter();
 
 const titulo = ref("");
-const monto = ref<number>(0);
+const monto = ref<number>();
 const descripcion = ref("");
 const categorias = ref<any[]>([]);
 const cate = ref("");
@@ -284,18 +284,10 @@ const crearGas = async () => {
 
 /* Inputs */
 .input-group {
-  --border-color: rgba(0, 4, 255, 0.3);
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
-  color: white;
-  border-radius: 15px;
-  margin-bottom: 18px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 15px;
+  border-radius: 25px;
 }
 
-.input-group:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 10px rgba(255, 152, 25, 0.45);
-}
 
 
 /* Botones */
@@ -422,7 +414,6 @@ const crearGas = async () => {
 @media (min-width: 768px) {
     .categoria-info {
         display: grid;
-        /* Define la estructura de columnas para la fila */
         grid-template-columns: 2fr 3fr 1fr 1fr auto;
         gap: 10px;
         align-items: center;
@@ -452,14 +443,12 @@ const crearGas = async () => {
 .categoria-info h3 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: white;
     margin-bottom: 5px;
 }
 
 /* Estilo para la descripción y otros párrafos (móvil) */
 .categoria-info p {
     font-size: 0.9rem;
-    color: white;
     margin-bottom: 5px;
 }
 
@@ -469,25 +458,21 @@ const crearGas = async () => {
     .categoria-info h3:before {
         content: 'Título: ';
         font-weight: bold;
-        color: white;
     }
     /* Descripción */
     .categoria-info p:nth-of-type(1):before {
         content: 'Descripción: ';
         font-weight: bold;
-        color: white;
     }
     /* Fecha */
     .categoria-info p:nth-of-type(2):before {
         content: 'Fecha: ';
         font-weight: bold;
-        color: white;
     }
     /* Porcentaje */
     .categoria-info p:nth-of-type(3):before {
         content: 'Porcentaje: ';
         font-weight: bold;
-        color: white;
     }
 }
 

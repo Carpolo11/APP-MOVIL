@@ -1,26 +1,31 @@
 <template>
-  <section class="dashboard">
-    <DashboardHeader />
+  <ion-page>
+    <ion-content scroll-y="true" class="dashboard-content">
+      <section class="dashboard">
+        <DashboardHeader />
 
-    <DashboardCards
-      :saldo-total="saldoTotal"
-      :total-entradas="totalEntradas"
-      :total-categorias="totalCategorias"
-    />
+        <DashboardCards
+          :saldo-total="saldoTotal"
+          :total-entradas="totalEntradas"
+          :total-categorias="totalCategorias"
+        />
 
-    <h2 class="opciones-title">Opciones Disponibles</h2>
-    <div class="opciones-grid">
-      <div
-        v-for="opcion in opciones"
-        :key="opcion.nombre"
-        class="opcion-card"
-        @click="irARuta(opcion.route)"
-      >
-        <div class="icono">{{ opcion.icono }}</div>
-        <p>{{ opcion.nombre }}</p>
-      </div>
-    </div>
-  </section>
+        <h2 class="opciones-title">Opciones Disponibles</h2>
+
+        <div class="opciones-grid">
+          <div
+            v-for="opcion in opciones"
+            :key="opcion.nombre"
+            class="opcion-card"
+            @click="irARuta(opcion.route)"
+          >
+            <div class="icono">{{ opcion.icono }}</div>
+            <p>{{ opcion.nombre }}</p>
+          </div>
+        </div>
+      </section>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup>
@@ -81,11 +86,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dashboard {
+.dashboard-content {
   padding: 20px;
-  background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+  --background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
   color: white;
   min-height: 100vh;
+    /* ✅ Claves para scroll correcto */
+  min-height: 100vh; /* Mantiene altura mínima */
+  overflow-y: auto;  /* Activa el scroll vertical */
+  overflow-x: hidden; /* Evita desplazamiento lateral */
 }
 
 .opciones-title {
@@ -123,4 +132,10 @@ onMounted(() => {
 .icono {
   font-size: 2rem;
 }
+
+ion-content {
+  --overflow: auto;
+}
+
+
 </style>

@@ -63,4 +63,5 @@ onMounted(() => {
   font-size: 1.05rem;
   margin: 0;
 }
+
 </style>

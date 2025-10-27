@@ -75,4 +75,6 @@ defineProps({
   font-size: 2.2rem;
   font-weight: 800;
 }
+
+
 </style>

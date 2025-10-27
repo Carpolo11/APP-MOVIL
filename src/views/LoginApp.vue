@@ -61,7 +61,7 @@
     IonInput,
     IonButton,
     IonIcon,
-    IonCheckbox,
+    
   } from "@ionic/vue";
   import { ref } from "vue";
   import { useRouter } from "vue-router"; // ✅ Importa el router
@@ -71,7 +71,6 @@
   const router = useRouter(); // ✅ Instancia de router
   const email = ref("");
   const password = ref("");
-  const rememberMe = ref(false);
 
 const login = async () => {
 if (!email.value || !password.value) {

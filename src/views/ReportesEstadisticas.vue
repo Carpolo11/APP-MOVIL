@@ -41,6 +41,11 @@
           </div>
         </div>
       </div>
+      <div class="button-row">
+        <ion-button expand="block" router-link="/dashboard" class="back-btn">
+          VOLVER
+        </ion-button>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -49,13 +54,16 @@
 import {
   IonPage,
   IonContent,
-  IonTitle
+  IonTitle,
+  // 👈 SE AGREGA IONBUTTON AQUÍ
+  IonButton 
 } from "@ionic/vue";
 import { ref, onMounted, watch } from 'vue'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '@/firebase/firebaseConfig'
 import { getAuth } from "firebase/auth";
 import Chart from 'chart.js/auto'
+
 
 const auth = getAuth();
 const periodoSeleccionado = ref('mensual')
@@ -204,5 +212,18 @@ select {
   .grafico {
     height: 180px;
   }
+}
+
+.back-btn {
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  
+}
+.button-row {
+  display: flex;
+  justify-content: center;
 }
 </style>

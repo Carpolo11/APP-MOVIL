@@ -37,7 +37,6 @@
                 v-model="descripcion"
                 type="text"
                 placeholder="Descripcion"
-                required
               />
             </ion-item>
 
@@ -77,6 +76,7 @@
                   <span>Título</span>
                   <span>Monto</span>
                   <span>Descripción</span>
+                  <span>Categorias Asignadas</span>
                   
 
            </div>
@@ -88,6 +88,7 @@
                   <h3>{{ gast.titulo }}</h3>
                   <p>{{ gast.monto }}</p>
                   <p>{{ gast.descripcion }}</p>
+                  <p>{{ gast.categoria }}</p>
                   
                   <div class="botones">
                       <ion-button class="ion-bottom"> Eliminar </ion-button>
@@ -197,7 +198,7 @@ const TrearGastos = async () => {
 
 
 const crearGas = async () => {
-  if (!titulo.value || !monto.value || !descripcion.value || !cate.value) {
+  if (!titulo.value || !monto.value || !cate.value) {
     alert("Por favor completa todos los campos");
     return;
   }

@@ -32,7 +32,6 @@
                 v-model="descripcion"
                 type="text"
                 placeholder="Descripcion"
-                required
               />
             </ion-item>
 
@@ -162,7 +161,7 @@ onMounted(() => {
 
 
 const crearCat = async () => {
-  if (!titulo.value || !fecha.value || !descripcion.value || !porcentajeMax.value) {
+  if (!titulo.value || !fecha.value || !porcentajeMax.value) {
     alert("Por favor completa todos los campos");
     return;
   }

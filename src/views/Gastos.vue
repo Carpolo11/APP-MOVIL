@@ -461,17 +461,17 @@ const crearGas = async () => {
     }
     /* Descripción */
     .categoria-info p:nth-of-type(1):before {
-        content: 'Descripción: ';
+        content: 'Monto $: ';
         font-weight: bold;
     }
     /* Fecha */
     .categoria-info p:nth-of-type(2):before {
-        content: 'Fecha: ';
+        content: 'Descripcion: ';
         font-weight: bold;
     }
-    /* Porcentaje */
-    .categoria-info p:nth-of-type(3):before {
-        content: 'Porcentaje: ';
+
+        .categoria-info p:nth-of-type(3):before {
+        content: 'Categoria Asignada: ';
         font-weight: bold;
     }
 }

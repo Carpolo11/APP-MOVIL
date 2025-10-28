@@ -55,57 +55,75 @@ import {
   IonPage,
   IonContent,
   IonTitle,
-  // 👈 SE AGREGA IONBUTTON AQUÍ
   IonButton 
 } from "@ionic/vue";
 import { ref, onMounted, watch } from 'vue'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '@/firebase/firebaseConfig'
 import { getAuth } from "firebase/auth";
 import Chart from 'chart.js/auto'
-
 
 const auth = getAuth();
 const periodoSeleccionado = ref('mensual')
 const saldoDisponible = ref(0)
 const ingresosTotales = ref(0)
-const gastosTotales = ref(0)
+const gastosTotales = ref<number>(0)
 const balanceMensual = ref(0)
 const graficoCanvas = ref<HTMLCanvasElement | null>(null)
+let chartInstance: Chart | null = null
 
-async function cargarDatos() {
+// Traer entradas en tiempo real
+const traerEntradas = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (user) {
+    const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
+    onSnapshot(q, (snapshot) => {
+      let totalEntradas = 0;
+      snapshot.forEach((doc) => {
+        totalEntradas += Number(doc.data().monto) || 0;
+      });
+      ingresosTotales.value = totalEntradas;
+      calcularBalance();
+      renderGrafico();
+      console.log("Entradas actualizadas en tiempo real:", ingresosTotales.value);
+    });
+  }
+};
 
-  // Query para entradas del usuario actual
-  const qEntradas = query(
-    collection(db, 'entradas'),
-    where("UserId", "==", user.uid)
-  );
-  const entradasSnap = await getDocs(qEntradas);
+// Traer gastos en tiempo real
+const traerGastos = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const q = query(collection(db, "gastos"), where("UserId", "==", user.uid));
+    onSnapshot(q, (snapshot) => {
+      let totalGastos = 0;
+      snapshot.forEach((doc) => {
+        totalGastos += Number(doc.data().monto) || 0;
+      });
+      gastosTotales.value = totalGastos;
+      calcularBalance();
+      renderGrafico();
+      console.log("Gastos actualizados en tiempo real:", gastosTotales.value);
+    });
+  }
+};
 
-  // Query para gastos del usuario actual
-  const qGastos = query(
-    collection(db, 'gastos'),
-    where("UserId", "==", user.uid)
-  );
-  const gastosSnap = await getDocs(qGastos);
-
-  const entradas = entradasSnap.docs.map(doc => doc.data())
-  const gastos = gastosSnap.docs.map(doc => doc.data())
-
-  ingresosTotales.value = entradas.reduce((acc, e) => acc + e.monto, 0)
-  gastosTotales.value = gastos.reduce((acc, g) => acc + g.monto, 0)
-  saldoDisponible.value = ingresosTotales.value - gastosTotales.value
-  balanceMensual.value = ingresosTotales.value - gastosTotales.value
-
-  renderGrafico()
+// Calcular balance
+function calcularBalance() {
+  saldoDisponible.value = ingresosTotales.value - gastosTotales.value;
+  balanceMensual.value = ingresosTotales.value - gastosTotales.value;
 }
 
+// Renderizar gráfico
 function renderGrafico() {
-  if (!graficoCanvas.value) return
+  if (!graficoCanvas.value) return;
 
-  new Chart(graficoCanvas.value, {
+  // Destruir el gráfico anterior si existe
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(graficoCanvas.value, {
     type: 'bar',
     data: {
       labels: ['Ingresos', 'Gastos'],
@@ -122,7 +140,13 @@ function renderGrafico() {
         legend: { display: false }
       }
     }
-  })
+  });
+}
+
+// Cargar datos iniciales
+async function cargarDatos() {
+  await traerEntradas();
+  await traerGastos();
 }
 
 onMounted(cargarDatos)
@@ -220,8 +244,8 @@ select {
   font-weight: 700;
   font-size: 1.1rem;
   border-radius: 30px;
-  
 }
+
 .button-row {
   display: flex;
   justify-content: center;

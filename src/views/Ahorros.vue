@@ -16,11 +16,28 @@
           <div v-else>
             <!-- Lista de ahorros -->
             <ion-list class="lista-ahorro">
-              <ion-item class="ahorrobd" v-for="ahorro in ahorros" :key="ahorro.id">
+              <div class="ahorrobd" v-for="ahorro in ahorros" :key="ahorro.id">
                 <ion-label>
-                  <h2>{{ ahorro.nombre }}</h2>
-                  <p>Monto meta: {{ ahorro.montoMeta.toLocaleString() }}</p>
-                  <p>Porcentaje: {{ ahorro.porcentaje }}%</p>
+                  <div class="card-header">
+                <h2>{{ ahorro.nombre }}</h2>
+                <span class="meta-icon">🏦</span>
+                </div>
+                
+                  <div class="info-item">
+                    <span class="icon">💰</span>
+                    <div>
+                      <p class="label">Monto meta</p>
+                      <p class="value">${{ ahorro.montoMeta.toLocaleString() }}</p>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <span class="icon">📊</span>
+                    <div>
+                      <p class="label">Porcentaje</p>
+                      <p class="value">{{ ahorro.porcentaje }}%</p>
+                    </div>
+                  </div>
                 </ion-label>
 
                 <div class="acciones">
@@ -31,7 +48,7 @@
                     Eliminar
                   </ion-button>
                 </div>
-              </ion-item>
+              </div>
             </ion-list>
 
             <!-- Botones -->
@@ -244,7 +261,8 @@ onMounted(() => {
 
 .acciones {
   display: flex;
-  flex-direction: column;
+  margin-top: 15px;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -259,8 +277,12 @@ ion-button.nuevo-ahorro {
 }
 
 .ahorrobd {
-  --background: rgb(32, 32, 32);
-  border-radius: 15px;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  --background: rgba(#3a1c71, 0.8);
+  padding: 1.2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin-bottom: 15px;
 }
 
@@ -276,6 +298,57 @@ ion-button.nuevo-ahorro {
   --color: white;
   font-weight: 70;
   border-radius: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+  margin-top: 15px;
+}
+
+
+.info-item .icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.meta-icon {
+    font-size: 1.5rem;
+  }
+
+.info-item .label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-weight: 500;
+}
+
+
+.card-header h2 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 </style>

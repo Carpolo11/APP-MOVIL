@@ -5,7 +5,7 @@
       <div class="wrapper">
         <div class="login-container">
           
-
+          <!-- Formulario -->
           <AhorrosForm
             v-if="mostrarFormulario"
             :ahorroEditado="ahorroSeleccionado"
@@ -14,8 +14,7 @@
           />
 
           <div v-else>
-            
-
+            <!-- Lista de ahorros -->
             <ion-list class="lista-ahorro">
               <ion-item class="ahorrobd" v-for="ahorro in ahorros" :key="ahorro.id">
                 <ion-label>
@@ -35,13 +34,13 @@
               </ion-item>
             </ion-list>
 
+            <!-- Botones -->
             <ion-button expand="block" class="nuevo-ahorro" @click="nuevoAhorro">
               Nuevo Ahorro
             </ion-button>
             <ion-button expand="block" class="nuevo-ahorro" router-link="/dashboard">
               VOLVER
             </ion-button>
-
           </div>
         </div>
       </div>
@@ -51,16 +50,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { IonButton, IonList, IonItem, IonLabel } from '@ionic/vue'
+import { IonButton, IonList, IonItem, IonLabel, alertController } from '@ionic/vue'
 import AhorrosForm from '../components/ahorros/AhorrosForm.vue'
 import { db } from '@/firebase/firebaseConfig'
+import { getAuth } from 'firebase/auth'
 import {
   collection,
   addDoc,
   getDocs,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  query,
+  where
 } from 'firebase/firestore'
 
 interface Ahorro {
@@ -68,6 +70,7 @@ interface Ahorro {
   nombre: string
   montoMeta: number
   porcentaje: number
+  userId?: string
 }
 
 // refs principales
@@ -79,9 +82,25 @@ const idEdicion = ref<string | null>(null)
 // referencia a la colección de Firestore
 const ahorrosRef = collection(db, 'ahorros')
 
-// cargar ahorros desde Firebase
+// Mostrar alerta con Ionic
+const mostrarAlerta = async (mensaje: string) => {
+  const alert = await alertController.create({
+    header: 'Información',
+    message: mensaje,
+    buttons: ['OK']
+  })
+  await alert.present()
+}
+
+// cargar ahorros solo del usuario autenticado
 const cargarAhorros = async () => {
-  const querySnapshot = await getDocs(ahorrosRef)
+  const auth = getAuth()
+  const user = auth.currentUser
+  if (!user) return
+
+  const q = query(ahorrosRef, where('userId', '==', user.uid))
+  const querySnapshot = await getDocs(q)
+
   ahorros.value = querySnapshot.docs.map((d) => ({
     id: d.id,
     ...(d.data() as Omit<Ahorro, 'id'>)
@@ -96,6 +115,14 @@ const nuevoAhorro = () => {
 
 // guardar ahorro (nuevo o editado)
 const guardarAhorro = async (ahorro: Ahorro) => {
+  const auth = getAuth()
+  const user = auth.currentUser
+
+  if (!user) {
+    await mostrarAlerta('Debes iniciar sesión para guardar tus ahorros.')
+    return
+  }
+
   try {
     if (idEdicion.value) {
       // actualizar existente
@@ -104,24 +131,24 @@ const guardarAhorro = async (ahorro: Ahorro) => {
         nombre: ahorro.nombre,
         montoMeta: ahorro.montoMeta,
         porcentaje: ahorro.porcentaje
-      
       })
-      alert('✅ Ahorro actualizado con éxito')
+      await mostrarAlerta('✅ Ahorro actualizado con éxito.')
     } else {
-      // agregar nuevo
+      // agregar nuevo con el UID del usuario
       await addDoc(ahorrosRef, {
         nombre: ahorro.nombre,
         montoMeta: ahorro.montoMeta,
-        porcentaje: ahorro.porcentaje
+        porcentaje: ahorro.porcentaje,
+        userId: user.uid
       })
-      alert('✅ Ahorro guardado con éxito')
+      await mostrarAlerta('✅ Ahorro guardado con éxito.')
     }
 
     await cargarAhorros()
     cancelarEdicion()
   } catch (e) {
     console.error('Error al guardar ahorro:', e)
-    alert('Ocurrió un error al guardar el ahorro.')
+    await mostrarAlerta('Ocurrió un error al guardar el ahorro.')
   }
 }
 
@@ -135,14 +162,25 @@ const editarAhorro = (ahorro: Ahorro) => {
 // eliminar ahorro
 const eliminarAhorro = async (id?: string) => {
   if (!id) return
-  if (confirm('¿Deseas eliminar este ahorro?')) {
-    try {
-      await deleteDoc(doc(db, 'ahorros', id))
-      await cargarAhorros()
-    } catch (e) {
-      console.error('Error al eliminar ahorro:', e)
-    }
-  }
+  const alert = await alertController.create({
+    header: 'Confirmar',
+    message: '¿Deseas eliminar este ahorro?',
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Eliminar',
+        handler: async () => {
+          try {
+            await deleteDoc(doc(db, 'ahorros', id))
+            await cargarAhorros()
+          } catch (e) {
+            console.error('Error al eliminar ahorro:', e)
+          }
+        }
+      }
+    ]
+  })
+  await alert.present()
 }
 
 // cancelar creación o edición

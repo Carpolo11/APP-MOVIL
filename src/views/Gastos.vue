@@ -69,7 +69,7 @@
         </div>
       </div>
 
-                  <div class="categoria-lista ion-margin-top">
+          <div class="categoria-lista ion-margin-top">
             <h2>💸 Mis Gastos</h2>
               <!-- Cabecera de columnas -->
             <div class="categoria-header">

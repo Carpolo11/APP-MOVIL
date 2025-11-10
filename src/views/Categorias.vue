@@ -10,8 +10,7 @@
             <!-- Titulo -->
             <ion-item class="input-group">
               <ion-icon name="person-outline" slot="start"></ion-icon>
-              <ion-input v-model="titulo" type="text" placeholder="Titulo de categoria" required
-              />
+              <ion-input v-model="titulo" type="text" placeholder="Titulo de categoria" required/>
             </ion-item>
 
             <!-- fecha -->
@@ -21,8 +20,7 @@
                 v-model="fecha"
                 type="date"
                 placeholder="Fecha"
-                required
-              />
+                required/>
             </ion-item>
 
             <!-- Descripcion -->
@@ -31,8 +29,7 @@
               <ion-input
                 v-model="descripcion"
                 type="text"
-                placeholder="Descripcion (opcional)"
-              />
+                placeholder="Descripcion (opcional)"/>
             </ion-item>
 
             <!-- Porcentaje Maximo -->
@@ -42,8 +39,7 @@
                 v-model="porcentajeMax"
                 type="number"
                 placeholder="Porcentaje Máximo"
-                required
-              />
+                required/>
             </ion-item>
 
             <!-- Botón registro -->
@@ -80,7 +76,7 @@
                   <h3>{{ cat.titulo }}</h3>
                   <p>{{ cat.descripcion }}</p>
                   <p>📅 {{ cat.fecha }}</p>
-                  <p>💯 {{ cat.porcentaje }}%</p>
+                  <p>💯{{ cat.porcentaje }}%</p>
 
                   <div class="botones">
                       <ion-button class="ion-bottom"> Eliminar </ion-button>
@@ -135,8 +131,6 @@ const TraerCate = async () =>{
       });
     });
   }
-
-
 };
 
 
@@ -160,7 +154,7 @@ const TraerPorcen = async () => {
 };
 
 onMounted(() => {
-  TraerPorcen(); // 🔹 Cargamos al iniciar
+  TraerPorcen(); //Cargamos al iniciar
   TraerCate();
 
 });

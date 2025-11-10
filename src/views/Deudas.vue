@@ -4,7 +4,6 @@
       <ion-title class="titulo">💳 GESTIÓN DE DEUDAS Y CRÉDITOS</ion-title>
       <div class="wrapper">
         <div class="login-container">
-          
 
           <!-- FORMULARIO -->
           <DeudaForm
@@ -16,8 +15,6 @@
 
           <!-- LISTA -->
           <div v-else>
-            
-
             <ion-list class="lista-deudas">
               <ion-item class="deuda-item" v-for="deuda in deudas" :key="deuda.id">
                 <ion-label>
@@ -44,7 +41,6 @@
             <ion-button expand="block" class="nuevo-volver" router-link="/dashboard">
               VOLVER
             </ion-button>
-
           </div>
         </div>
       </div>
@@ -52,16 +48,24 @@
   </ion-page>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { IonButton, IonList, IonItem, IonLabel, IonIcon } from '@ionic/vue'
+import { IonButton, IonList, IonItem, IonLabel } from '@ionic/vue'
 import DeudaForm from '../components/deudas/DeudaForm.vue'
 
-// Importar Firestore y funciones necesarias
+// 🔹 Importar Firebase
 import { db } from '@/firebase/firebaseConfig'
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
-import { pencilOutline, trashOutline, addCircleOutline } from 'ionicons/icons'
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where
+} from 'firebase/firestore'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 interface Deuda {
   id?: string
@@ -69,35 +73,50 @@ interface Deuda {
   montoTotal: number
   cuotaMinima: number
   fechaLimite: string
+  uid?: string // ← Identificador del usuario
 }
 
 const deudas = ref<Deuda[]>([])
 const mostrarFormulario = ref(false)
 const deudaSeleccionada = ref<Deuda | null>(null)
 const idEdicion = ref<string | null>(null)
+const auth = getAuth()
 
-// Escuchar la colección en tiempo real
+// 🔸 Escuchar autenticación y cargar solo las deudas del usuario logueado
 onMounted(() => {
-  const q = collection(db, 'deudas')
-  onSnapshot(q, (snapshot) => {
-    deudas.value = snapshot.docs.map((d) => ({
-      id: d.id,
-      ...(d.data() as Deuda)
-    }))
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const q = query(collection(db, 'deudas'), where('uid', '==', user.uid))
+      onSnapshot(q, (snapshot) => {
+        deudas.value = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Deuda)
+        }))
+      })
+    } else {
+      deudas.value = [] // Si no hay usuario, limpiar lista
+    }
   })
 })
 
-// ➕ Crear nueva deuda
+// ➕ Nueva deuda
 const nuevaDeuda = () => {
   deudaSeleccionada.value = null
   idEdicion.value = null
   mostrarFormulario.value = true
 }
 
-// Guardar (crear o actualizar)
+// 💾 Guardar (crear o actualizar)
 const guardarDeuda = async (deuda: Deuda) => {
+  const user = auth.currentUser
+  if (!user) {
+    alert('No hay un usuario autenticado.')
+    return
+  }
+
   try {
     if (idEdicion.value) {
+      // Actualizar
       const refDoc = doc(db, 'deudas', idEdicion.value)
       await updateDoc(refDoc, {
         nombre: deuda.nombre,
@@ -105,33 +124,38 @@ const guardarDeuda = async (deuda: Deuda) => {
         cuotaMinima: deuda.cuotaMinima,
         fechaLimite: deuda.fechaLimite
       })
-      alert('Deuda actualizada correctamente.')
+      alert('✅ Deuda actualizada correctamente.')
     } else {
-      await addDoc(collection(db, 'deudas'), deuda)
-      alert('Deuda guardada correctamente.')
+      // Crear nueva con el UID del usuario
+      await addDoc(collection(db, 'deudas'), {
+        ...deuda,
+        uid: user.uid,
+        fechaRegistro: new Date().toISOString()
+      })
+      alert('✅ Deuda guardada correctamente.')
     }
   } catch (error) {
     console.error('Error al guardar deuda:', error)
-    alert('Ocurrió un error al guardar la deuda.')
+    alert('❌ Ocurrió un error al guardar la deuda.')
   } finally {
     cancelarEdicion()
   }
 }
 
-// Editar deuda existente
+// ✏️ Editar deuda
 const editarDeuda = (deuda: Deuda) => {
   deudaSeleccionada.value = { ...deuda }
   idEdicion.value = deuda.id || null
   mostrarFormulario.value = true
 }
 
-// Eliminar deuda
+// 🗑️ Eliminar deuda
 const eliminarDeuda = async (id?: string) => {
   if (!id) return
   if (confirm('¿Deseas eliminar esta deuda?')) {
     try {
       await deleteDoc(doc(db, 'deudas', id))
-      alert('Deuda eliminada correctamente.')
+      alert('🗑️ Deuda eliminada correctamente.')
     } catch (error) {
       console.error('Error al eliminar deuda:', error)
     }
@@ -145,6 +169,7 @@ const cancelarEdicion = () => {
   idEdicion.value = null
 }
 </script>
+
 
 
 <style scoped>

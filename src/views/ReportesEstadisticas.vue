@@ -102,7 +102,6 @@
   </ion-page>
 </template>
 
-
 <script setup lang="ts">
 import {
   IonPage,
@@ -590,7 +589,6 @@ select {
   height: 34px;          
   margin: 15px auto 0;   
 }
-
 
 /* Responsive */
 @media (max-width: 750px) {

@@ -1,6 +1,6 @@
 <template>
   <header class="dashboard-header">
-    <h1>💰 FinanceApp</h1>
+    <h1>💰 MoneyMind</h1>
     <p>Hola, <strong>{{userEmail}}</strong> Tu resumen financiero te espera.</p>
     <p>Gestiona tus recursos de forma inteligente. 📊</p>
   </header>

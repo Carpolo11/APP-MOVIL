@@ -1,56 +1,59 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
-      <ion-title class="app-title">
-        📊 Reportes y Estadísticas
-      </ion-title>
 
-      <div class="card">
-        <div class="create-cat-container">
-          <div class="filtros">
-            <label>Periodo:</label>
-            <select v-model="periodoSeleccionado">
-              <option value="diario">Diario</option>
-              <option value="semanal">Semanal</option>
-              <option value="mensual">Mensual</option>
-              <option value="anual">Anual</option>
-            </select>
+      <ion-title class="app-title">📊 Reportes y Estadísticas</ion-title>
+
+      <div class="dashboard-container">
+
+        <!-- Filtros arriba, sueltos -->
+        <div class="filtros">
+          <label>Periodo:</label>
+          <select v-model="periodoSeleccionado">
+            <option value="diario">Diario</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensual">Mensual</option>
+            <option value="anual">Anual</option>
+          </select>
+        </div>
+
+        <!-- Resumen General -->
+        <div class="resumen-grid">
+          <div class="card-resumen verde">
+            <p>Saldo disponible</p>
+            <h3>${{ saldoDisponible.toFixed(2) }}</h3>
           </div>
 
-          <!-- Resumen General -->
-          <div class="resumen-grid">
-            <div class="card-resumen verde">
-              <p>Saldo disponible</p>
-              <h3>${{ saldoDisponible.toFixed(2) }}</h3>
-            </div>
-            <div class="card-resumen azul">
-              <p>Ingresos totales</p>
-              <h3>${{ ingresosTotales.toFixed(2) }}</h3>
-            </div>
-            <div class="card-resumen rojo">
-              <p>Gastos totales</p>
-              <h3>${{ gastosTotales.toFixed(2) }}</h3>
-            </div>
-            <div class="card-resumen gris">
-              <p>Balance mensual</p>
-              <h3>${{ balanceMensual.toFixed(2) }}</h3>
-            </div>
+          <div class="card-resumen azul">
+            <p>Ingresos totales</p>
+            <h3>${{ ingresosTotales.toFixed(2) }}</h3>
           </div>
 
-          <!-- Gráfico Comparativo -->
+          <div class="card-resumen rojo">
+            <p>Gastos totales</p>
+            <h3>${{ gastosTotales.toFixed(2) }}</h3>
+          </div>
+
+          <div class="card-resumen gris">
+            <p>Balance mensual</p>
+            <h3>${{ balanceMensual.toFixed(2) }}</h3>
+          </div>
+        </div>
+
+        <!-- Secciones de gráficos -->
+        <div class="grid-2col">
+
+          <!-- Comparativa -->
           <div class="seccion-grafico">
             <h4>📈 Comparativa Ingresos vs Gastos</h4>
-            <div class="grafico">
-              <canvas ref="graficoComparativo"></canvas>
-            </div>
+            <div class="grafico"><canvas ref="graficoComparativo"></canvas></div>
           </div>
 
-          <!-- Gráfico de Categorías con Mayor Gasto -->
+          <!-- Categorías -->
           <div class="seccion-grafico">
             <h4>💰 Categorías con Mayor Gasto</h4>
-            <div class="grafico">
-              <canvas ref="graficoCategoriasGasto"></canvas>
-            </div>
+            <div class="grafico"><canvas ref="graficoCategoriasGasto"></canvas></div>
+
             <div class="top-categorias" v-if="topCategoriasGasto.length > 0">
               <div v-for="(cat, idx) in topCategoriasGasto.slice(0, 3)" :key="idx" class="categoria-item">
                 <span class="categoria-nombre">{{ cat.nombre }}</span>
@@ -60,50 +63,45 @@
             </div>
           </div>
 
-          <!-- Gráfico de Distribución por Categorías (Pie Chart) -->
+          <!-- Pie Chart -->
           <div class="seccion-grafico">
             <h4>🎯 Distribución de Gastos</h4>
-            <div class="grafico-pie">
-              <canvas ref="graficoDistribucion"></canvas>
-            </div>
+            <div class="grafico-pie"><canvas ref="graficoDistribucion"></canvas></div>
           </div>
 
-
-
-          <!-- Tendencia Semanal -->
+          <!-- Tendencia -->
           <div class="seccion-grafico">
             <h4>📊 Tendencia Semanal</h4>
-            <div class="grafico">
-              <canvas ref="graficoTendencia"></canvas>
-            </div>
-          </div>
-
-          <!-- Estadísticas Adicionales -->
-          <div class="stats-adicionales">
-            <div class="stat-item">
-              <span class="stat-label">Promedio de gasto diario</span>
-              <span class="stat-value">${{ promedioDiarioGasto.toFixed(2) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Promedio de ingreso diario</span>
-              <span class="stat-value">${{ promedioDiarioIngreso.toFixed(2) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Total de transacciones</span>
-              <span class="stat-value">{{ totalTransacciones }}</span>
-            </div>
+            <div class="grafico"><canvas ref="graficoTendencia"></canvas></div>
           </div>
         </div>
+
+        <!-- Stats Finales -->
+        <div class="stats-adicionales">
+          <div class="stat-item">
+            <span class="stat-label">Promedio de gasto diario</span>
+            <span class="stat-value">${{ promedioDiarioGasto.toFixed(2) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Promedio de ingreso diario</span>
+            <span class="stat-value">${{ promedioDiarioIngreso.toFixed(2) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total de transacciones</span>
+            <span class="stat-value">{{ totalTransacciones }}</span>
+          </div>
+        </div>
+
       </div>
 
       <div class="button-row">
-        <ion-button expand="block" router-link="/dashboard" class="back-btn">
-          VOLVER
-        </ion-button>
+        <ion-button expand="block" router-link="/dashboard" class="back-btn">VOLVER</ion-button>
       </div>
+
     </ion-content>
   </ion-page>
 </template>
+
 
 <script setup lang="ts">
 import {
@@ -460,219 +458,148 @@ watch(periodoSeleccionado, cargarDatos)
   --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
 
-.card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.create-cat-container {
-  width: 95%;
-  max-width: 420px;
-  padding: 30px 20px;
+/* Nuevo contenedor ancho tipo dashboard */
+.dashboard-container {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
   background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
-  backdrop-filter: blur(12px);
   border-radius: 20px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  backdrop-filter: blur(12px);
 }
 
+/* Título */
 .app-title {
   text-align: center;
   font-weight: 800;
-  font-size: 24px;
+  font-size: 26px;
   color: #fff;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  margin-top: 15px;
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
 
+/* Filtros */
 .filtros {
-  margin-bottom: 1rem;
+  margin-bottom: 1.3rem;
 }
 
 .filtros label {
   color: #fff;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  display: block;
 }
 
-/* Estilo del select */
 select {
   width: 100%;
   padding: 0.6rem;
-  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 8px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.2);   
-  color: #fff;                          
-  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255,255,255,0.4);
+  color: #fff;
+  background: rgba(255,255,255,0.2);
 }
 
-
-select option {
-  background: #2c3e50;  
-  color: #fff;         
-}
-
-
-select option:hover {
-  background: #34495e;
-}
-
-
+/* Resumen en 4 cards */
 .resumen-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.6rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .card-resumen {
-  padding: 0.8rem;
-  border-radius: 10px;
-  color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
   text-align: center;
-  font-weight: 600;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
-.card-resumen p {
-  margin: 0;
-  font-size: 0.85rem;
-  opacity: 0.9;
+.card-resumen h3 {
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
 }
 
+/* Colores */
 .verde { background: linear-gradient(135deg, #43e97b, #38f9d7); }
 .azul { background: linear-gradient(135deg, #667eea, #764ba2); }
 .rojo { background: linear-gradient(135deg, #ff6a6a, #ffb199); }
 .gris { background: linear-gradient(135deg, #2c3e50, #bdc3c7); }
 
-.card-resumen h3 {
-  font-size: 1.2rem;
-  margin: 0.3rem 0 0 0;
+/* Grid para gráficos */
+.grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.3rem;
 }
 
+/* Sección de gráficos */
 .seccion-grafico {
-  background: rgba(255, 255, 255, 0.15);
   padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
 }
 
-.seccion-grafico h4 {
-  color: #fff;
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.grafico {
-  height: 220px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+.grafico,
+.grafico-pie {
+  height: 260px;
   padding: 0.5rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
 }
 
 .grafico-pie {
-  height: 250px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.5rem;
+  height: 300px;
 }
 
-.top-categorias {
-  margin-top: 1rem;
-}
-
+/* Categorías */
 .categoria-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.6rem;
-  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  background: rgba(255,255,255,0.2);
   border-radius: 8px;
-  margin-bottom: 0.5rem;
   color: #fff;
-  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }
 
-.categoria-nombre {
-  flex: 1;
-  font-weight: 600;
-}
-
-.categoria-monto {
-  margin: 0 0.5rem;
-  font-weight: 700;
-}
-
-.categoria-porcentaje {
-  background: rgba(255, 255, 255, 0.3);
-  padding: 0.2rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
+/* Stats */
 .stats-adicionales {
-  background: rgba(255, 255, 255, 0.15);
+  margin-top: 1.5rem;
+  background: rgba(255,255,255,0.15);
   padding: 1rem;
   border-radius: 12px;
-  margin-top: 1rem;
 }
 
 .stat-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
-.stat-item:last-child {
-  border-bottom: none;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-.stat-value {
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-/* Responsive */
-@media (max-width: 400px) {
-  .create-cat-container {
-    padding: 20px 15px;
-  }
-  .app-title {
-    font-size: 20px;
-  }
-  .grafico {
-    height: 180px;
-  }
-  .grafico-pie {
-    height: 200px;
-  }
-}
-
+/* BOTÓN */
 .back-btn {
   --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   --color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border-radius: 30px;
-  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;    
+  border-radius: 18px;
+  padding: 4px 10px;     
+  width: 45%;            
+  height: 34px;          
+  margin: 15px auto 0;   
 }
 
-.button-row {
-  display: flex;
-  justify-content: center;
-  padding-bottom: 20px;
+
+/* Responsive */
+@media (max-width: 750px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
 </style>

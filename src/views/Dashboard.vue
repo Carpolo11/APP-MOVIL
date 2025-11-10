@@ -23,6 +23,13 @@
             <p>{{ opcion.nombre }}</p>
           </div>
         </div>
+
+        <!-- 🔴 BOTÓN DE CERRAR SESIÓN -->
+        <div class="cerrar-sesion-container">
+          <button class="btn-cerrar-sesion" @click="cerrarSesion">
+            🔒 Cerrar sesión
+          </button>
+        </div>
       </section>
     </ion-content>
   </ion-page>
@@ -33,8 +40,9 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 
+// 🔐 Instancia de autenticación
 const auth = getAuth();
 
 // Componentes
@@ -59,10 +67,19 @@ const opciones = [
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
 ];
 
-const cargarEntradas = async () => {
+// 🔚 Función para cerrar sesión
+const cerrarSesion = async () => {
+  try {
+    await signOut(auth);
+    router.push("/login"); // Redirige al login
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
+};
 
+const cargarEntradas = async () => {
   const user = auth.currentUser;
-  const q = query(collection(db,"entradas"), where("userId", "==", user?.uid));
+  const q = query(collection(db, "entradas"), where("userId", "==", user?.uid));
   onSnapshot(q, (snapshot) => {
     let totalMonto = 0;
     snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
@@ -76,7 +93,6 @@ const cargarCategorias = async () => {
   const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
   const snapshot = await getDocs(q);
   totalCategorias.value = snapshot.size;
-  return totalCategorias.value;
 };
 
 onMounted(() => {
@@ -91,10 +107,8 @@ onMounted(() => {
   --background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
   color: white;
   min-height: 100vh;
-    /* ✅ Claves para scroll correcto */
-  min-height: 100vh; /* Mantiene altura mínima */
-  overflow-y: auto;  /* Activa el scroll vertical */
-  overflow-x: hidden; /* Evita desplazamiento lateral */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .opciones-title {
@@ -133,9 +147,25 @@ onMounted(() => {
   font-size: 2rem;
 }
 
-ion-content {
-  --overflow: auto;
+/* 🔴 Estilos del botón de cerrar sesión */
+.cerrar-sesion-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
 }
 
+.btn-cerrar-sesion {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
+.btn-cerrar-sesion:hover {
+  background-color: #d62828;
+}
 </style>

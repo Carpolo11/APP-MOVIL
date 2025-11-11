@@ -65,6 +65,7 @@ const opciones = [
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
   { nombre: "Ahorros", icono: "🏦", route: "/ahorros" },
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
+  { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
 
 // 🔚 Función para cerrar sesión

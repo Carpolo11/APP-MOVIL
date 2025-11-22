@@ -259,6 +259,8 @@ const cancelarEdicion = () => {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-left: 6px;
+  margin-right: 6px;
   margin-bottom: 15px;
 }
 

@@ -26,8 +26,10 @@
 </template>
 
 <script setup lang="ts">
+// Define las props que recibe el componente
 const props = defineProps<{ entrada: any }>();
 
+// Convierte fecha a formato legible en español 
 const formatFecha = (fecha: string) => {
   return new Date(fecha).toLocaleDateString("es-CO", {
     day: "numeric",
@@ -36,6 +38,7 @@ const formatFecha = (fecha: string) => {
   });
 };
 
+// Formatea número con separadores de miles y dos decimales 
 const formatNumber = (num: number) => {
   return num.toLocaleString("es-CO", {
     minimumFractionDigits: 2,
@@ -125,7 +128,6 @@ const formatNumber = (num: number) => {
   font-weight: 700;
 }
 
-/* Responsive */
 @media (max-width: 400px) {
   .entrada-card {
     padding: 1rem;

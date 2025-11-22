@@ -54,37 +54,42 @@ import {
 } from "@ionic/vue";
 import { ref } from "vue";
 
+// Define el evento que se emitirá al componente padre
 const emit = defineEmits(["crear-entrada"]);
 
+// Variables reactivas para los campos del formulario
 const descripcion = ref("");
 const monto = ref("");
 const fecha = ref("");
 
-// Fecha máxima (hoy)
+// Obtiene la fecha actual en formato ISO y la usa como fecha máxima
 const maxDate = new Date().toISOString().split('T')[0];
 
+// Valida los datos del formulario y emite el evento para crear la entrada
 const emitirEntrada = () => {
-  // Validaciones
+  // Verifica que los campos obligatorios estén completos
   if (!monto.value || !fecha.value) {
     alert("Por favor completa todos los campos obligatorios");
     return;
   }
 
+  // Convierte el monto a número
   const montoNum = Number(monto.value);
 
+  // Valida que el monto sea positivo
   if (montoNum <= 0) {
     alert("Ingresa un monto válido mayor a 0");
     return;
   }
 
-  // Emitir evento con los datos
+  // Emite los datos al componente padre
   emit("crear-entrada", {
     descripcion: descripcion.value,
     monto: montoNum,
     fecha: fecha.value
   });
 
-  // Limpiar formulario
+  // Resetea todos los campos del formulario
   descripcion.value = "";
   monto.value = "";
   fecha.value = "";

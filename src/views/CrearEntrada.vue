@@ -23,20 +23,24 @@ import { collection, addDoc, onSnapshot, orderBy, query, where } from "firebase/
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 
+// Obtiene instancia de autenticación
 const auth = getAuth();
+// Array reactivo para almacenar las entradas
 const entradas = ref<any[]>([]);
 
-// Cargar entradas en tiempo real
+// Carga entradas del usuario en tiempo real desde Firebase
 const cargarEntradas = () => {
   const user = auth.currentUser;
   if (!user) return;
 
+  // Crea consulta para obtener entradas del usuario ordenadas por fecha
   const q = query(
     collection(db, "entradas"),
     where("userId", "==", user.uid),
     orderBy("fecha", "desc")
   );
 
+  // Escucha cambios en tiempo real
   onSnapshot(q, (snapshot) => {
     const lista: any[] = [];
     snapshot.forEach((doc) => {
@@ -50,12 +54,15 @@ const cargarEntradas = () => {
   });
 };
 
+// Agrega nueva entrada a Firebase después de validar
 const agregarEntrada = async (entrada: any) => {
+  // Valida que monto y fecha estén presentes
   if (!entrada.monto || !entrada.fecha) {
     alert("Por favor completa todos los campos obligatorios");
     return;
   }
   
+  // Valida que el monto sea mayor a 0
   if (entrada.monto <= 0) {
     alert("Ingresa un monto válido mayor a 0");
     return;
@@ -65,6 +72,7 @@ const agregarEntrada = async (entrada: any) => {
     const user = auth.currentUser;
 
     if (user) {
+      // Agrega documento a la colección de entradas
       await addDoc(collection(db, "entradas"), {
         descripcion: entrada.descripcion || "",
         monto: Number(entrada.monto),
@@ -81,6 +89,7 @@ const agregarEntrada = async (entrada: any) => {
   }
 };
 
+// Carga las entradas cuando el componente se monta
 onMounted(() => {
   cargarEntradas();
 });

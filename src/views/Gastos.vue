@@ -103,11 +103,11 @@
 
           </div>
           <div class="acciones">
-            <ion-button class="boton-edit" size="small" @click="$emit('editar')">
+            <ion-button class="boton-edit" size="small" @click="editarGasto(gast)">
               Editar
             </ion-button>
 
-            <ion-button class="boton-elim" size="small" @click="$emit('eliminar')">
+            <ion-button class="boton-elim" size="small" @click="eliminarGasto(gast.id)">
               Eliminar
             </ion-button>
             
@@ -137,144 +137,173 @@ import {
   IonSelectOption,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+  onSnapshot
+} from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router";
-import { onSnapshot } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { toFormData } from "axios";
 
 const auth = getAuth();
-
 const router = useRouter();
 
 const titulo = ref("");
-const monto = ref<number>();
+const monto = ref<number>(0);
 const descripcion = ref("");
-const categorias = ref<any[]>([]);
 const cate = ref("");
-const entradas = ref<number>(0);
+const categorias = ref<any[]>([]);
 const gastos = ref<any[]>([]);
+const entradas = ref<number>(0);
 
-//Trae las categorias
+// Para EDITAR
+const editando = ref(false);
+const idEditando = ref<string | null>(null);
+
+//==============================
+// CARGAR CATEGORÍAS
+//==============================
 const cargarCategorias = async () => {
-  try {
+  const user = auth.currentUser;
+  if (!user) return;
 
-    const user = auth.currentUser;
-    const q = query(collection(db,"categorias"), where("userId", "==", user?.uid));
-    const snapshot = await getDocs(q);
-    const lista: any[] = [];
-    snapshot.forEach((doc) => {
-      lista.push(doc.data());
-    });
-    categorias.value = lista;
-    console.log("Categorías cargadas:", categorias.value);
-  } catch (error) {
-    console.error("Error al obtener categorías:", error);
-  }
+  const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
+  const snapshot = await getDocs(q);
+
+  categorias.value = snapshot.docs.map((d) => d.data());
 };
 
-
-//Trae las entradas
+//==============================
+// CARGAR ENTRADAS EN TIEMPO REAL
+//==============================
 const traerEntradas = async () => {
-
   const user = auth.currentUser;
+  if (!user) return;
 
-  if(user){
+  const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
 
-    const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
   onSnapshot(q, (snapshot) => {
-    let totalEntradas = 0;
+    let total = 0;
     snapshot.forEach((doc) => {
-      totalEntradas += Number(doc.data().monto) || 0;
+      total += Number(doc.data().monto) || 0;
     });
-    entradas.value = totalEntradas;
-    console.log("Entradas actualizadas en tiempo real:", entradas.value);
+    entradas.value = total;
   });
+};
 
-  };
-
-  };
-  
-
-  
-//Trae los Gastos
+//==============================
+// CARGAR GASTOS EN TIEMPO REAL
+//==============================
 const TrearGastos = async () => {
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const q = query(collection(db, "gastos"), where("UserId", "==", user.uid));
-      onSnapshot(q, (snapshot) => {
-        const nuevosGastos: any[] = [];
-        snapshot.forEach((doc) => {
-          nuevosGastos.push({ id: doc.id, ...doc.data() });
-        });
+    if (!user) return;
 
-        gastos.value = nuevosGastos;
-        console.log("✅ Gastos actualizados en tiempo real:", gastos.value);
-      });
-    } else {
-      console.log("❌ No hay usuario autenticado.");
-    }
+    const q = query(collection(db, "gastos"), where("UserId", "==", user.uid));
+
+    onSnapshot(q, (snapshot) => {
+      gastos.value = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+    });
   });
-  
 };
 
-    onMounted(() => {
-     cargarCategorias();
-     traerEntradas(); 
-     TrearGastos();
-  });
-
-
+//==============================
+// CREAR O EDITAR GASTO
+//==============================
 const crearGas = async () => {
   if (!titulo.value || !monto.value || !cate.value) {
-    alert("Por favor completa todos los campos");
-    return;
-  }
-  if (monto.value < 0) {
-    alert("Ingresa un gasto válido");
-    return;
-  }  
-
-
-  const nuevoTotal = Number(entradas.value) - Number(gastos.value);
-  if (monto.value > nuevoTotal) {
-    alert(
-      `⚠️ No puedes crear este gasto. El monto ($${monto.value}) supera el saldo disponible actual. Saldo disponible: ($${nuevoTotal})`
-    );
+    alert("Completa todos los campos");
     return;
   }
 
-  try {
+  const user = auth.currentUser;
+  if (!user) return;
 
-    const user = auth.currentUser;
+  // Modo EDITAR
+  if (editando.value && idEditando.value) {
+    const refDoc = doc(db, "gastos", idEditando.value);
 
-    if(user){
-    await addDoc(collection(db, "gastos"), {
+    await updateDoc(refDoc, {
       titulo: titulo.value,
       monto: Number(monto.value),
       descripcion: descripcion.value,
       categoria: cate.value,
-      fechaRegistro: new Date(),
-      UserId: user.uid
     });
 
-    };
+    alert("Gasto actualizado correctamente");
 
-    alert(`Creación exitosa: ${titulo.value}`);
-    titulo.value = "";
-    monto.value = 0;
-    descripcion.value = "";
-    cate.value = "";
-
-    router.push("/gasto");
-  } catch (error) {
-    console.error("Error al crear gasto:", error);
-    alert("Hubo un error al crear el gasto");
+    limpiarFormulario();
+    return;
   }
 
+  // Modo CREAR
+  await addDoc(collection(db, "gastos"), {
+    titulo: titulo.value,
+    monto: Number(monto.value),
+    descripcion: descripcion.value,
+    categoria: cate.value,
+    fechaRegistro: new Date(),
+    UserId: user.uid,
+  });
+
+  alert("Gasto creado correctamente");
+  limpiarFormulario();
 };
+
+//==============================
+// CARGAR DATOS PARA EDITAR
+//==============================
+const editarGasto = (gasto: any) => {
+  editando.value = true;
+  idEditando.value = gasto.id;
+
+  titulo.value = gasto.titulo;
+  monto.value = gasto.monto;
+  descripcion.value = gasto.descripcion;
+  cate.value = gasto.categoria;
+};
+
+//==============================
+// ELIMINAR GASTO
+//==============================
+const eliminarGasto = async (id: string) => {
+  if (!confirm("¿Seguro que deseas eliminar este gasto?")) return;
+
+  const refDoc = doc(db, "gastos", id);
+  await deleteDoc(refDoc);
+
+  alert("Gasto eliminado");
+};
+
+//==============================
+// LIMPIAR FORMULARIO
+//==============================
+const limpiarFormulario = () => {
+  editando.value = false;
+  idEditando.value = null;
+  titulo.value = "";
+  monto.value = 0;
+  descripcion.value = "";
+  cate.value = "";
+};
+
+//==============================
+onMounted(() => {
+  cargarCategorias();
+  traerEntradas();
+  TrearGastos();
+});
 </script>
+
 
 
 

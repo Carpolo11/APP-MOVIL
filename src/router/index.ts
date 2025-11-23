@@ -14,6 +14,7 @@ import Metas  from '@/views/Metas.vue'
 import GastosRecurrentes from "@/views/GastosRecurrentes.vue";
 import ReportesEstadisticas from "@/views/ReportesEstadisticas.vue";
 import conversorModenas from "@/views/ConversorMonedas.vue"
+import Alertas from '@/views/Alertas.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // Redirección inicial
@@ -109,6 +110,14 @@ const routes: Array<RouteRecordRaw> = [
     path: '/conversor',
     name: 'ConversorMonedas',
     component: conversorModenas
+  },
+
+
+  // Alertas
+  {
+    path: '/alertas',
+    name: 'Alertas',
+    component: Alertas
   },
 
 

@@ -31,6 +31,14 @@
           </button>
         </div>
       </section>
+
+        <ion-fab vertical="top" horizontal="end" slot="fixed">
+          <ion-fab-button class="notificaciones" @click="verAlertas">
+            🔔
+          </ion-fab-button>
+        </ion-fab>
+
+
     </ion-content>
   </ion-page>
 </template>
@@ -100,6 +108,14 @@ onMounted(() => {
   cargarEntradas();
   cargarCategorias();
 });
+
+const verAlertas = () => {
+  router.push("/alertas");
+  console.log("Ver alertas");
+};
+
+
+
 </script>
 
 <style scoped>
@@ -164,9 +180,15 @@ onMounted(() => {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-bottom: 20px;
 }
 
 .btn-cerrar-sesion:hover {
   background-color: #d62828;
+}
+
+
+.notificaciones {
+  --background:  #5f5f5f3f;
 }
 </style>

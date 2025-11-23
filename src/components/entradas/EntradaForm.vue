@@ -33,7 +33,7 @@
 
     <div class="button-row">
       <ion-button expand="block" type="submit" class="back-btn">
-        GUARDAR
+        {{ props.entradaEditando ? "ACTUALIZAR" : "GUARDAR" }}
       </ion-button>
     </div>
 
@@ -53,9 +53,10 @@ import {
   IonIcon
 } from "@ionic/vue";
 import { ref } from "vue";
+import { watch } from "vue";
 
-// Define el evento que se emitirá al componente padre
-const emit = defineEmits(["crear-entrada"]);
+// Define los eventos que se emitirán al componente padre
+const emit = defineEmits(["crear-entrada", "actualizar-entrada", "cancelar-edicion"]);
 
 // Variables reactivas para los campos del formulario
 const descripcion = ref("");
@@ -67,33 +68,39 @@ const maxDate = new Date().toISOString().split('T')[0];
 
 // Valida los datos del formulario y emite el evento para crear la entrada
 const emitirEntrada = () => {
-  // Verifica que los campos obligatorios estén completos
-  if (!monto.value || !fecha.value) {
-    alert("Por favor completa todos los campos obligatorios");
-    return;
-  }
-
-  // Convierte el monto a número
-  const montoNum = Number(monto.value);
-
-  // Valida que el monto sea positivo
-  if (montoNum <= 0) {
-    alert("Ingresa un monto válido mayor a 0");
-    return;
-  }
-
-  // Emite los datos al componente padre
-  emit("crear-entrada", {
+  const datos = {
     descripcion: descripcion.value,
-    monto: montoNum,
-    fecha: fecha.value
-  });
+    monto: Number(monto.value),
+    fecha: fecha.value,
+    id: props.entradaEditando?.id
+  };
 
-  // Resetea todos los campos del formulario
+  if (props.entradaEditando) {
+    emit("actualizar-entrada", datos);
+  } else {
+    emit("crear-entrada", datos);
+  }
+
   descripcion.value = "";
   monto.value = "";
   fecha.value = "";
+
+  if (props.entradaEditando) {
+    emit("cancelar-edicion");
+  }
 };
+
+
+const props = defineProps(["entradaEditando"]);
+
+watch(() => props.entradaEditando, (value) => {
+  if (value) {
+    descripcion.value = value.descripcion;
+    monto.value = value.monto;
+    fecha.value = value.fecha;
+  }
+});
+
 </script>
 
 <style scoped>

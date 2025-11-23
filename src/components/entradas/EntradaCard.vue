@@ -22,6 +22,15 @@
         </div>
       </div>
     </div>
+    <div class="acciones">
+      <ion-button class="boton-edit" size="small" @click="$emit('editar', entrada)">
+        Editar
+      </ion-button>
+
+      <ion-button class="boton-elim" size="small" @click="$emit('eliminar', entrada.id)">
+        Eliminar
+      </ion-button>
+</div>
   </div>
 </template>
 
@@ -141,4 +150,27 @@ const formatNumber = (num: number) => {
     font-size: 1.5rem;
   }
 }
+
+
+.boton-elim {
+  --background: linear-gradient(90deg, #c73154, #ff7a5f);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.boton-edit {
+  --background: linear-gradient(90deg, #13c2ad, #32af19);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.acciones {
+  display: flex;
+  margin-top: 15px;
+  justify-content: center;
+  gap: 6px;
+}
+
 </style>

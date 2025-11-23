@@ -4,9 +4,15 @@
       <ion-title class="app-title">💰 ENTRADAS DE DINERO</ion-title>
       <div class="card">
         <div class="entradas-container">
-          <EntradaForm @crear-entrada="agregarEntrada" />
+          <EntradaForm :entradaEditando="entradaEditando"
+            @crear-entrada="agregarEntrada"
+            @actualizar-entrada="actualizarEntrada"/>
           <div class="entradas-list">
-            <EntradaCard v-for="entrada in entradas" :key="entrada.id" :entrada="entrada" />
+            <EntradaCard v-for="entrada in entradas" 
+            :key="entrada.id" 
+            :entrada="entrada"
+            @editar="iniciarEdicion"
+            @eliminar="eliminarEntrada" />
           </div>
         </div>
       </div>
@@ -21,7 +27,9 @@ import EntradaForm from "@/components/entradas/EntradaForm.vue";
 import EntradaCard from "@/components/entradas/EntradaCard.vue";
 import { collection, addDoc, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+
 
 // Obtiene instancia de autenticación
 const auth = getAuth();
@@ -91,8 +99,52 @@ const agregarEntrada = async (entrada: any) => {
 
 // Carga las entradas cuando el componente se monta
 onMounted(() => {
-  cargarEntradas();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      cargarEntradas(); // 🔥 Se activa SOLO cuando el usuario ya está disponible
+    }
+  });
 });
+
+const entradaEditando = ref(null);
+
+const iniciarEdicion = (entrada: any) => {
+  entradaEditando.value = entrada;
+};
+
+const eliminarEntrada = async (id: string) => {
+  const confirmar = confirm("¿Deseas eliminar esta entrada?");
+  if (!confirmar) return;
+
+  try {
+    await deleteDoc(doc(db, "entradas", id));
+    alert("Entrada eliminada correctamente");
+  } catch (error) {
+    console.error("Error al eliminar:", error);
+    alert("Error eliminando la entrada");
+  }
+};
+
+const actualizarEntrada = async (entrada: any) => {
+  try {
+    await updateDoc(doc(db, "entradas", entrada.id), {
+      descripcion: entrada.descripcion,
+      monto: entrada.monto,
+      fecha: entrada.fecha
+    });
+
+    alert("Entrada actualizada correctamente");
+    entradaEditando.value = null;
+  } catch (error) {
+    console.error("Error actualizando entrada:", error);
+    alert("Error al actualizar");
+  }
+};
+
+
+const emit = defineEmits(["editar", "eliminar"]);
+
+
 </script>
 
 <style scoped>

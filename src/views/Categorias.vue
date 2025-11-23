@@ -57,36 +57,63 @@
             </ion-button>
             </div>
           </form>
-        </div>
-        </div>
-            <div class="categoria-lista ion-margin-top">
-            <h2>🏷️ Mis Categorias</h2>
-              <!-- Cabecera de columnas -->
-            <div class="categoria-header">
-                  <span>Título</span>
-                  <span>Descripción</span>
-                  <span>Fecha</span>
-                  <span>Porcentaje</span>
-           </div>
 
-            <div class="categoria-contenido">
-            <ion-list>
-              <ion-item v-for="cat in categoriasUsuario" :key="cat.id" class="categoria-item">
-                <div class="categoria-info">
-                  <h3>{{ cat.titulo }}</h3>
-                  <p>{{ cat.descripcion }}</p>
-                  <p>📅 {{ cat.fecha }}</p>
-                  <p>💯{{ cat.porcentaje }}%</p>
 
-                  <div class="botones">
-                      <ion-button class="ion-bottom"> Eliminar </ion-button>
-                      <ion-button class="ion-bottom"> Editar </ion-button>
-                  </div>
-                  </div>
-              </ion-item>
-            </ion-list>
-            </div>
+
+          <div v-for="cat in categoriasUsuario" :key="cat.id" class="categoria-item">
+        
+          <div class="cat-info">
+            <h3>{{ cat.titulo }}</h3>
+            <span class="categoria-icon">📋</span>
           </div>
+          
+          <div class="categoria-info">
+            <div class="info-item">
+              <span class="icon">📅</span>
+              <div>
+                <p class="label">Fecha</p>
+                <p class="value">${{ (cat.fecha ) }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <span class="icon">📖</span>
+              <div>
+                <p class="label">Descripción</p>
+                <p class="value">{{ (cat.descripcion) }}</p>
+              </div>
+            </div>
+             
+            <div class="info-item">
+              <span class="icon">💯</span>
+              <div>
+                <p class="label">Porcentaje</p>
+                <p class="value">{{ (cat.porcentaje) }}%</p>
+              </div>
+            </div>
+
+
+
+          </div>
+            <div class="acciones">
+              <ion-button class="boton-edit" size="small" @click="editarCat(cat)">
+                Editar
+              </ion-button>
+
+              <ion-button class="boton-elim" size="small" @click="eliminarCat(cat.id)">
+                Eliminar
+              </ion-button>
+            
+            </div>
+         
+        </div>
+
+
+
+
+        </div>
+        </div>
+            
       
     </ion-content>
   </ion-page>
@@ -282,98 +309,12 @@ const crearCat = async () => {
     background: none; /* Quita el fondo de ion-list si lo tiene por defecto */
 }
 
-/* Estilo base para cada ítem de la categoría (tarjeta) */
-.categoria-item {
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    --min-height: auto;
-    margin: 10px 0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Sombra suave para la tarjeta */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    background-color: white;
-    border-left: 5px solid ; /* Barra de color a la izquierda para destacar */
-}
 
-/* Efecto hover en el ítem */
-.categoria-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
 
 /* Contenedor de la información dentro de ion-item */
-.categoria-info {
-    display: block; /* Vuelve a ser un bloque para el diseño móvil */
-    width: 100%;
-    padding: 15px 20px;
-}
-
-/* Diseño de cada ítem en pantallas más grandes (fila tipo tabla) */
-@media (min-width: 768px) {
-    .categoria-info {
-        display: grid;
-        /* Define la estructura de columnas para la fila */
-        grid-template-columns: 2fr 3fr 1fr 1fr auto;
-        gap: 10px;
-        align-items: center;
-        padding: 10px 20px; /* Menos padding vertical para parecerse más a una fila */
-    }
-
-    /* Oculta los labels redundantes en la vista de tabla */
-    .categoria-info p:not(.botones p) {
-        display: flex;
-        align-items: center; /* Alineación vertical para el contenido de las celdas */
-    }
-
-    .categoria-info h3,
-    .categoria-info p {
-        margin: 0; /* Quita los márgenes por defecto en la vista de tabla */
-    }
-
-    /* Esconde los labels de Fecha y Porcentaje en la vista de tabla */
-    .categoria-info p:nth-of-type(3):before, /* Fecha */
-    .categoria-info p:nth-of-type(4):before { /* Porcentaje */
-        content: none;
-    }
-}
 
 
-/* Estilo para el título del ítem */
-.categoria-info h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
 
-/* Estilo para la descripción y otros párrafos (móvil) */
-.categoria-info p {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
-
-/* Etiquetado para móvil: añade los nombres de las columnas antes del contenido */
-@media (max-width: 767px) {
-    /* Título */
-    .categoria-info h3:before {
-        content: 'Título: ';
-        font-weight: bold;
-    }
-    /* Descripción */
-    .categoria-info p:nth-of-type(1):before {
-        content: 'Descripción: ';
-        font-weight: bold;
-    }
-    /* Fecha */
-    .categoria-info p:nth-of-type(2):before {
-        content: 'Fecha: ';
-        font-weight: bold;
-    }
-    /* Porcentaje */
-    .categoria-info p:nth-of-type(3):before {
-        content: 'Porcentaje: ';
-        font-weight: bold;
-    }
-}
 
 
 
@@ -494,6 +435,125 @@ h2 {
     padding: 25px 20px;
   }
 }
+
+
+.categoria-item {
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  padding: 1.2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+}
+
+.categoria-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+}
+
+
+.cat-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.cat-info h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cat-info h3 {
+    font-size: 1.1rem;
+  }
+
+.categoria-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+
+.categoria-icon {
+    font-size: 1.5rem;
+  }
+
+
+
+  .categoria-info {
+  display: grid;
+  gap: 0.8rem;
+}
+
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.info-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.info-item .icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.info-item .label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-weight: 500;
+}
+
+.info-item .value {
+  font-size: 0.95rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 700;
+}
+
+
+
+.boton-elim {
+  --background: linear-gradient(90deg, #c73154, #ff7a5f);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.boton-edit {
+  --background: linear-gradient(90deg, #13c2ad, #32af19);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.acciones {
+  display: flex;
+  margin-top: 15px;
+  justify-content: center;
+  gap: 6px;
+}
+
 
 
 </style>

@@ -30,7 +30,7 @@
       <ion-button class="boton-elim" size="small" @click="$emit('eliminar', entrada.id)">
         Eliminar
       </ion-button>
-</div>
+    </div>
   </div>
 </template>
 

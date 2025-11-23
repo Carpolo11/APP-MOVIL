@@ -45,8 +45,10 @@
             <!-- Botón registro -->
              <div class="button-row">
 
-            <ion-button expand="block" type="submit" class="back-btn">
-              CREAR CATEGORIA
+            <ion-button expand="block"
+              class="back-btn"
+              @click="categoriaEditando ? guardarEdicion() : crearCat()" >    
+              {{ categoriaEditando ? "GUARDAR CAMBIOS" : "CREAR CATEGORÍA" }}
             </ion-button>
             </div>
 
@@ -72,7 +74,7 @@
               <span class="icon">📅</span>
               <div>
                 <p class="label">Fecha</p>
-                <p class="value">${{ (cat.fecha ) }}</p>
+                <p class="value">{{ (cat.fecha ) }}</p>
               </div>
             </div>
             
@@ -133,6 +135,7 @@ import { collection, addDoc, getDoc, getDocs, query, where, onSnapshot, doc } fr
 import { db } from "@/firebase/firebaseConfig";
 import { useRouter } from "vue-router"; // ✅ Importa el router
 import { getAuth } from "firebase/auth";
+import { updateDoc, deleteDoc } from "firebase/firestore";
 
 const router = useRouter(); // ✅ Instancia de router
 const auth = getAuth();
@@ -243,6 +246,68 @@ const crearCat = async () => {
 
   
 };
+
+
+// =============================
+// 🟦 EDITAR CATEGORÍA
+// =============================
+const editarCat = async (cat: any) => {
+  // Rellenamos el formulario con los datos existentes
+  titulo.value = cat.titulo;
+  fecha.value = cat.fecha;
+  descripcion.value = cat.descripcion;
+  porcentajeMax.value = cat.porcentaje;
+
+  // Guardamos el ID actual
+  categoriaEditando.value = cat.id;
+};
+
+const categoriaEditando = ref<string | null>(null);
+
+// Guardar cambios
+const guardarEdicion = async () => {
+  if (!categoriaEditando.value) return;
+
+  try {
+    const refCat = doc(db, "categorias", categoriaEditando.value);
+
+    await updateDoc(refCat, {
+      titulo: titulo.value,
+      fecha: fecha.value,
+      descripcion: descripcion.value,
+      porcentaje: Number(porcentajeMax.value)
+    });
+
+    alert("Categoría actualizada correctamente ✔");
+
+    // Limpiar formulario
+    titulo.value = "";
+    fecha.value = "";
+    descripcion.value = "";
+    porcentajeMax.value = 0;
+    categoriaEditando.value = null;
+
+  } catch (error) {
+    console.error("Error actualizando:", error);
+  }
+};
+
+// =============================
+// 🟥 ELIMINAR CATEGORÍA
+// =============================
+const eliminarCat = async (id: string) => {
+  const confirmar = confirm("¿Seguro que deseas eliminar esta categoría?");
+  if (!confirmar) return;
+
+  try {
+    await deleteDoc(doc(db, "categorias", id));
+    alert("Categoría eliminada ✔");
+  } catch (error) {
+    console.error("Error al eliminar:", error);
+  }
+};
+
+
 </script>
 
 <style scoped>

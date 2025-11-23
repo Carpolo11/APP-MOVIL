@@ -4,7 +4,7 @@
       <ion-title class="app-title">🎯 METAS DE AHORRO</ion-title>
       <div class="card">
         <div class="metas-container">
-          <MetaForm />
+          <MetaForm :metaEditar="metaSeleccionada" />
           
           <!-- Mensaje si no hay metas -->
           <div v-if="metas.length === 0" class="empty-message">
@@ -13,7 +13,11 @@
           
           <!-- Lista de metas -->
           <div v-else class="metas-list">
-            <MetaCard v-for="meta in metas" :key="meta.id" :meta="meta" />
+            <MetaCard v-for="meta in metas" 
+            :key="meta.id" 
+            :meta="meta"
+            @editar="prepararEdicion"
+            @eliminar="eliminarMeta"/>
           </div>
         </div>
       </div>
@@ -29,6 +33,7 @@ import MetaCard from "@/components/metas/MetaCard.vue";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { doc, deleteDoc } from "firebase/firestore";
 
 const auth = getAuth();
 const metas = ref<any[]>([]);
@@ -62,6 +67,27 @@ const cargarMetas = () => {
 onMounted(() => {
   cargarMetas();
 });
+
+const eliminarMeta = async (id: string) => {
+  const confirmDelete = confirm("¿Seguro que deseas eliminar esta meta?");
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db, "metas", id));
+    alert("Meta eliminada correctamente");
+  } catch (error) {
+    console.error("Error al eliminar meta:", error);
+    alert("No fue posible eliminar la meta");
+  }
+};
+
+const metaSeleccionada = ref<Record<string, any> | undefined>(undefined);
+
+const prepararEdicion = (meta: Record<string, any>) => {
+  metaSeleccionada.value = meta;
+};
+
+
 </script>
 
 <style scoped>

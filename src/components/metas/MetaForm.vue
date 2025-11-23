@@ -60,10 +60,11 @@ import {
   IonButton, 
   IonIcon
 } from "@ionic/vue";
-import { ref } from "vue";
-import { collection, addDoc } from "firebase/firestore";
+import { ref, watch } from "vue";
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
+
 
 const auth = getAuth();
 
@@ -76,56 +77,69 @@ const porcentaje = ref("");
 const minDate = new Date().toISOString().split('T')[0];
 
 const emitirMeta = async () => {
-  // Validaciones
-  if (!nombre.value || !monto.value || !plazo.value || !porcentaje.value) {
-    alert("Por favor completa todos los campos");
-    return;
-  }
 
   const user = auth.currentUser;
-  if (!user) {
-    alert("Debes iniciar sesión para crear metas");
+  if (!user) return alert("Debes iniciar sesión.");
+
+  const data = {
+    nombre: nombre.value,
+    monto: Number(monto.value),
+    plazo: plazo.value,
+    porcentajeAsignado: Number(porcentaje.value)
+  };
+
+  // Si es edición
+  if (props.metaEditar) {
+    try {
+      await updateDoc(doc(db, "metas", props.metaEditar.id), data);
+      alert("Meta actualizada correctamente");
+    } catch (e) {
+      console.error(e);
+      alert("Error al actualizar meta");
+    }
     return;
   }
 
-  const montoNum = Number(monto.value);
-  const porcentajeNum = Number(porcentaje.value);
-
-  if (montoNum <= 0) {
-    alert("Ingresa un monto objetivo válido");
-    return;
-  }
-
-  if (porcentajeNum < 0 || porcentajeNum > 100) {
-    alert("El porcentaje debe estar entre 0 y 100");
-    return;
-  }
-
+  // Si es creación
   try {
     await addDoc(collection(db, "metas"), {
-      nombre: nombre.value,
-      monto: montoNum,
+      ...data,
       acumulado: 0,
-      plazo: plazo.value,
-      porcentajeAsignado: porcentajeNum,
       fechaRegistro: new Date(),
       completada: false,
       userId: user.uid
     });
 
-    alert(`Meta creada exitosamente: ${nombre.value}`);
-    
-    // Limpiar formulario
-    nombre.value = "";
-    monto.value = "";
-    plazo.value = "";
-    porcentaje.value = "";
-    
-  } catch (error) {
-    console.error("Error al crear meta:", error);
-    alert("Hubo un error al crear la meta");
+    alert("Meta creada correctamente");
+  } catch (e) {
+    console.error(e);
+    alert("Error al crear meta");
   }
+
+  nombre.value = "";
+  monto.value = "";
+  plazo.value = "";
+  porcentaje.value = "";
 };
+
+
+const props = defineProps({
+  metaEditar: { type: Object, default: null }
+});
+
+watch(
+  () => props.metaEditar,
+  (nueva) => {
+    if (nueva) {
+      nombre.value = nueva.nombre;
+      monto.value = nueva.monto;
+      plazo.value = nueva.plazo;
+      porcentaje.value = nueva.porcentajeAsignado;
+    }
+  },
+  { immediate: true }
+);
+
 </script>
 
 <style scoped>

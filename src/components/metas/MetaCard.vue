@@ -13,7 +13,7 @@
           <p class="value">${{ formatNumber(meta.monto) }}</p>
         </div>
       </div>
-      
+
       <div class="info-item">
         <span class="icon">📅</span>
         <div>
@@ -21,7 +21,7 @@
           <p class="value">{{ formatFecha(meta.plazo) }}</p>
         </div>
       </div>
-      
+
       <div class="info-item">
         <span class="icon">📊</span>
         <div>
@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="progress-section">
       <div class="progress-header">
         <span class="progress-label">Progreso</span>
@@ -40,25 +40,34 @@
         <div class="progress-fill" :style="{ width: progreso + '%' }"></div>
       </div>
     </div>
+    <div class="actions">
+      <ion-button class="boton-edit" size="small" @click="$emit('editar', meta)">
+        Editar
+      </ion-button>
+
+      <ion-button class="boton-elim" size="small" @click="$emit('eliminar', meta.id)">
+        Eliminar
+      </ion-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{ meta: any }>();
+
 const progreso = (props.meta.acumulado / props.meta.monto) * 100 || 0;
 
 const formatFecha = (fecha: string) => {
   return new Date(fecha).toLocaleDateString("es-CO", {
     day: "numeric",
     month: "short",
-    year: "numeric"
+    year: "numeric",
   });
 };
 
-const formatNumber = (num: number) => {
-  return num.toLocaleString("es-CO");
-};
+const formatNumber = (num: number) => num.toLocaleString("es-CO");
 </script>
+
 
 <style scoped>
 .meta-card {
@@ -192,5 +201,28 @@ background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
   .meta-icon {
     font-size: 1.5rem;
   }
+}
+
+.actions {
+  display: flex;
+  margin-top: 15px;
+  justify-content: center;
+  gap: 6px;
+}
+
+.boton-elim {
+  --background: linear-gradient(90deg, #c73154, #ff7a5f);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+  margin-top: 15px;
+}
+
+.boton-edit {
+  --background: linear-gradient(90deg, #13c2ad, #32af19);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+  margin-top: 15px;
 }
 </style>

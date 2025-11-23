@@ -29,12 +29,27 @@
           <p class="value">{{ formatFecha(gasto.fechaInicio) }}</p>
         </div>
       </div>
+      <!-- BOTONES -->
+    <div class="acciones">
+      <ion-button class="boton-edit" size="small" @click="editar">
+        Editar
+      </ion-button>
+      <ion-button class="boton-elim" size="small" @click="eliminar">
+        Eliminar
+      </ion-button>
+    </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { IonButton } from "@ionic/vue";
+
+const emit = defineEmits(["editar-gasto", "eliminar-gasto"]);
 const props = defineProps<{ gasto: any }>();
+
+const editar = () => emit("editar-gasto", props.gasto);
+const eliminar = () => emit("eliminar-gasto", props.gasto.id);
 
 const formatFecha = (fecha: string) => {
   return new Date(fecha).toLocaleDateString("es-CO", {
@@ -44,16 +59,14 @@ const formatFecha = (fecha: string) => {
   });
 };
 
-const formatNumber = (num: number) => {
-  return num.toLocaleString("es-CO", {
+const formatNumber = (num: number) =>
+  num.toLocaleString("es-CO", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-};
 
-const capitalizar = (texto: string) => {
-  return texto.charAt(0).toUpperCase() + texto.slice(1);
-};
+const capitalizar = (texto: string) =>
+  texto.charAt(0).toUpperCase() + texto.slice(1);
 </script>
 
 <style scoped>
@@ -145,4 +158,28 @@ const capitalizar = (texto: string) => {
     font-size: 1.5rem;
   }
 }
+
+
+.acciones {
+  display: flex;
+  margin-top: 15px;
+  justify-content: center;
+  gap: 6px;
+}
+
+
+.boton-elim {
+  --background: linear-gradient(90deg, #c73154, #ff7a5f);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
+.boton-edit {
+  --background: linear-gradient(90deg, #13c2ad, #32af19);
+  --color: white;
+  font-weight: 70;
+  border-radius: 20px;
+}
+
 </style>

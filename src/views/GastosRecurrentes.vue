@@ -4,7 +4,9 @@
       <ion-title class="app-title">💸 GASTOS RECURRENTES</ion-title>
       <div class="card">
         <div class="metas-container">
-          <GastosRecurrentesForm @crear-gasto="crearGasto" />
+          <GastosRecurrentesForm 
+          @crear-gasto="crearGasto" 
+          :gastoEditado="gastoEditando" />
           
           <!-- Mensaje si no hay gastos -->
           <div v-if="gastos.length === 0" class="empty-message">
@@ -17,6 +19,8 @@
               v-for="gasto in gastos"
               :key="gasto.id"
               :gasto="gasto"
+              @editar-gasto="editarGasto"
+              @eliminar-gasto="eliminarGasto"
             />
           </div>
         </div>
@@ -28,7 +32,7 @@
 <script setup lang="ts">
 import { IonPage, IonContent, IonTitle, toastController } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import { collection, onSnapshot, query, where, addDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, where, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 import GastosRecurrentesForm from "@/components/gastosrecurrentes/GastosRecurrentesForm.vue";
@@ -37,72 +41,77 @@ import GastosRecurrentesCard from "@/components/gastosrecurrentes/GastosRecurren
 const auth = getAuth();
 const gastos = ref<any[]>([]);
 
-// Crear un nuevo gasto recurrente
+const gastoEditando = ref<any | null>(null);
+
+// Crear gasto
 const crearGasto = async (nuevoGasto: any) => {
   const user = auth.currentUser;
-  if (!user) {
-    mostrarToast("Debes iniciar sesión", "danger");
-    return;
-  }
+  if (!user) return mostrarToast("Debes iniciar sesión", "danger");
 
-  try {
-    await addDoc(collection(db, "gastosRecurrentes"), {
-      userId: user.uid,
+  // Si estamos editando un gasto:
+  if (gastoEditando.value) {
+    const refDoc = doc(db, "gastosRecurrentes", gastoEditando.value.id);
+    await updateDoc(refDoc, {
       nombre: nuevoGasto.nombre,
       monto: parseFloat(nuevoGasto.monto),
       frecuencia: nuevoGasto.frecuencia,
-      fechaInicio: nuevoGasto.fechaInicio,
-      fechaCreacion: new Date().toISOString()
+      fechaInicio: nuevoGasto.fechaInicio
     });
-    
-    mostrarToast("¡Gasto recurrente registrado exitosamente!", "success");
-  } catch (error) {
-    console.error("Error al crear gasto:", error);
-    mostrarToast("Error al registrar el gasto", "danger");
+    gastoEditando.value = null;
+    return mostrarToast("Gasto actualizado", "success");
   }
+
+  // Crear uno nuevo:
+  await addDoc(collection(db, "gastosRecurrentes"), {
+    userId: user.uid,
+    nombre: nuevoGasto.nombre,
+    monto: parseFloat(nuevoGasto.monto),
+    frecuencia: nuevoGasto.frecuencia,
+    fechaInicio: nuevoGasto.fechaInicio,
+    fechaCreacion: new Date().toISOString()
+  });
+
+  mostrarToast("¡Gasto registrado!", "success");
 };
 
-// Cargar gastos recurrentes en tiempo real
+// Activar modo edición
+const editarGasto = (gasto: any) => {
+  gastoEditando.value = gasto;
+};
+
+// Eliminar gasto
+const eliminarGasto = async (id: string) => {
+  await deleteDoc(doc(db, "gastosRecurrentes", id));
+  mostrarToast("Gasto eliminado", "success");
+};
+
+// Cargar gastos en tiempo real
 const cargarGastos = () => {
   const user = auth.currentUser;
-  if (!user) {
-    console.log("No hay usuario autenticado");
-    return;
-  }
+  if (!user) return;
 
-  const q = query(
-    collection(db, "gastosRecurrentes"),
-    where("userId", "==", user.uid)
-  );
+  const q = query(collection(db, "gastosRecurrentes"), where("userId", "==", user.uid));
 
   onSnapshot(q, (snapshot) => {
     const lista: any[] = [];
-    snapshot.forEach((doc) => {
-      lista.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
+    snapshot.forEach((doc) => lista.push({ id: doc.id, ...doc.data() }));
     gastos.value = lista;
-    console.log("Gastos recurrentes cargados:", gastos.value);
   });
 };
 
-// Mostrar mensajes toast
 const mostrarToast = async (mensaje: string, color: string) => {
   const toast = await toastController.create({
     message: mensaje,
     duration: 2000,
-    color: color,
+    color,
     position: "top"
   });
-  await toast.present();
+  toast.present();
 };
 
-onMounted(() => {
-  cargarGastos();
-});
+onMounted(() => cargarGastos());
 </script>
+
 
 <style scoped>
 .metas-bg {

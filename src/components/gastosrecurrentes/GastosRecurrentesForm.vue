@@ -68,8 +68,9 @@ import {
   IonSelect,
   IonSelectOption
 } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
+const props = defineProps<{ gastoEditado?: any }>();
 const emit = defineEmits(["crear-gasto"]);
 
 const nombre = ref("");
@@ -90,6 +91,20 @@ const onSubmit = () => {
   frecuencia.value = "";
   fechaInicio.value = "";
 };
+// Cargar datos cuando se edita
+watch(
+  () => props.gastoEditado,
+  (nuevo) => {
+    if (nuevo) {
+      nombre.value = nuevo.nombre;
+      monto.value = nuevo.monto;
+      frecuencia.value = nuevo.frecuencia;
+      fechaInicio.value = nuevo.fechaInicio;
+    }
+  },
+  { immediate: true }
+);
+
 </script>
 
 <style scoped>

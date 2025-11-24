@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content class="ion-padding creatCat-bg">
       <ion-title class="app-title">
-        ðŸ’¸âž• CREA UN NUEVO GASTO
+        💸➕ CREA UN NUEVO GASTO
       </ion-title>
 
       <div class="card">
@@ -44,7 +44,7 @@
                      <ion-item class="input-group">
                        <ion-icon name="list-outline" slot="start"></ion-icon>
                          <ion-select
-                            v-model="cate" placeholder="Selecciona una categorÃ­a" :selected-text="cate"  >
+                            v-model="cate" placeholder="Selecciona una categoría" :selected-text="cate"  >
                              <ion-select-option v-for="categoria in categorias" :key="categoria.titulo" :value="categoria.titulo" >
                              {{ categoria.titulo }}
                             </ion-select-option>
@@ -54,7 +54,7 @@
 
             <div class="button-row">
               <ion-button expand="block" type="submit" class="back-btn">
-                CREAR GASTO
+                {{ editando ? 'ACTUALIZAR GASTO' : 'CREAR GASTO' }}
               </ion-button>
             </div>
 
@@ -70,13 +70,13 @@
       <div v-for="gast in gastos" :key="gast.id" class="gasto-card">
         
           <div class="categoria-info">
-            <h3>{{ gast.titulo || 'Gasto sin descripciÃ³n' }}</h3>
-            <span class="gasto-icon">ðŸ’¸</span>
+            <h3>{{ gast.titulo || 'Gasto sin descripción' }}</h3>
+            <span class="gasto-icon">💸</span>
           </div>
           
           <div class="gasto-info">
             <div class="info-item">
-              <span class="icon">ðŸ’µ</span>
+              <span class="icon">💵</span>
               <div>
                 <p class="label">Monto</p>
                 <p class="value">${{ (gast.monto) }}</p>
@@ -84,15 +84,15 @@
             </div>
             
             <div class="info-item">
-              <span class="icon">ðŸ“–</span>
+              <span class="icon">📖</span>
               <div>
-                <p class="label">DescripciÃ³n</p>
+                <p class="label">Descripción</p>
                 <p class="value">{{ (gast.descripcion) }}</p>
               </div>
             </div>
              
             <div class="info-item">
-              <span class="icon">ðŸ“‹</span>
+              <span class="icon">📋</span>
               <div>
                 <p class="label">Categoria</p>
                 <p class="value">{{ (gast.categoria) }}</p>
@@ -161,15 +161,13 @@ const descripcion = ref("");
 const cate = ref("");
 const categorias = ref<any[]>([]);
 const gastos = ref<any[]>([]);
-const entradas = ref<number>(0);
-const sumaGastosTotal = ref<number>();
 
 // Para EDITAR
 const editando = ref(false);
 const idEditando = ref<string | null>(null);
 
 //==============================
-// CARGAR CATEGORÃAS
+// CARGAR CATEGORÍAS
 //==============================
 const cargarCategorias = async () => {
 
@@ -182,25 +180,9 @@ const cargarCategorias = async () => {
       lista.push(doc.data());
     });
     categorias.value = lista;
-    console.log("CategorÃ­as cargadas:", categorias.value);
+    console.log("Categorías cargadas:", categorias.value);
     };
   }; 
-
-//Trae las entradas
-const traerEntradas = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
-
-  onSnapshot(q, (snapshot) => {
-    let total = 0;
-    snapshot.forEach((doc) => {
-      total += Number(doc.data().monto) || 0;
-    });
-    entradas.value = total;
-  });
-};
 
 //==============================
 // CARGAR GASTOS EN TIEMPO REAL
@@ -217,25 +199,6 @@ const TrearGastos = async () => {
   });
 };
 
-const TraerSumaGastos = async () => {
-
-  const user = auth.currentUser;
-
-  if (user) { 
-    const q = query( collection(db, "gastos"), where("userId", "==", user.uid));
-    onSnapshot(q, (snapshot) => {
-      let SumaGasto = 0;
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        SumaGasto += Number(data.monto) || 0;
-      });
-      sumaGastosTotal.value = SumaGasto;
-    });
-  }
-
-
-};
-
 //==============================
 // CREAR O EDITAR GASTO
 //==============================
@@ -247,12 +210,6 @@ const crearGas = async () => {
 
   const user = auth.currentUser;
   if (!user) return;
-
-  if( Number(sumaGastosTotal.value) + Number(monto.value) > Number(entradas.value)){
-    alert("No tienes fondos suficientes para crear este gasto");
-    
-    return;
-  }
 
   // Modo EDITAR
   if (editando.value && idEditando.value) {
@@ -303,7 +260,7 @@ const editarGasto = (gasto: any) => {
 // ELIMINAR GASTO
 //==============================
 const eliminarGasto = async (id: string) => {
-  if (!confirm("Â¿Seguro que deseas eliminar este gasto?")) return;
+  if (!confirm("¿Seguro que deseas eliminar este gasto?")) return;
 
   const refDoc = doc(db, "gastos", id);
   await deleteDoc(refDoc);
@@ -326,9 +283,7 @@ const limpiarFormulario = () => {
 //==============================
 onMounted(() => {
   cargarCategorias();
-  traerEntradas();
   TrearGastos();
-  TraerSumaGastos();
 });
 </script>
 
@@ -393,7 +348,7 @@ onMounted(() => {
   width: 100%;
 }
 
-/* TÃ­tulo */
+/* Título */
 .app-title {
   text-align: center;
   font-weight: 800;
@@ -403,7 +358,7 @@ onMounted(() => {
   margin-top: 15px;
 }
 
-/* ðŸ“± Responsivo */
+/* 📱 Responsivo */
 @media (max-width: 400px) {
   .create-cat-container {
     width: 95%;
@@ -417,27 +372,27 @@ onMounted(() => {
 
 /* Estilos generales para el contenedor principal de la lista */
 .categoria-lista {
-    max-width: 900px; /* Limita el ancho mÃ¡ximo para una mejor lectura en pantallas grandes */
-    margin: 20px auto; /* Centra el componente y aÃ±ade margen superior/inferior */
+    max-width: 900px; /* Limita el ancho máximo para una mejor lectura en pantallas grandes */
+    margin: 20px auto; /* Centra el componente y añade margen superior/inferior */
     padding: 15px;
     background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave para un efecto elevado */
 }
 
-/* Estilo para el tÃ­tulo de la secciÃ³n */
+/* Estilo para el título de la sección */
 .categoria-lista h2 {
     color: white; 
     font-weight: 700;
     font-size: 1.8rem;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e9ecef; /* LÃ­nea separadora */
+    border-bottom: 2px solid #e9ecef; /* Línea separadora */
     margin-bottom: 20px;
 }
 
 /* Estilo para la cabecera de las columnas (solo visible en pantallas medianas/grandes) */
 .categoria-header {
-    display: none; /* Ocultar por defecto en mÃ³vil */
+    display: none; /* Ocultar por defecto en móvil */
     padding: 10px 20px;
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: white;
@@ -447,23 +402,23 @@ onMounted(() => {
     gap: 10px;
 }
 
-/* DiseÃ±o de la cabecera en pantallas mÃ¡s grandes */
+/* Diseño de la cabecera en pantallas más grandes */
 @media (min-width: 768px) {
     .categoria-header {
         display: grid;
         /* Define la estructura de columnas */
-        grid-template-columns: 2fr 3fr 1fr 1fr 1fr; /* TÃ­tulo, DescripciÃ³n, Fecha, Porcentaje, Acciones (espacio implÃ­cito) */
+        grid-template-columns: 2fr 3fr 1fr 1fr 1fr; /* Título, Descripción, Fecha, Porcentaje, Acciones (espacio implícito) */
         align-items: center;
     }
 }
 
-/* Contenedor de la lista de Ã­tems (dentro de ion-list) */
+/* Contenedor de la lista de ítems (dentro de ion-list) */
 .categoria-contenido ion-list {
     padding: 0;
     background: none; /* Quita el fondo de ion-list si lo tiene por defecto */
 }
 
-/* Estilo base para cada Ã­tem de la categorÃ­a (tarjeta) */
+/* Estilo base para cada ítem de la categoría (tarjeta) */
 .categoria-item {
     --padding-start: 0;
     --inner-padding-end: 0;
@@ -476,38 +431,38 @@ onMounted(() => {
     border-left: 5px solid ; /* Barra de color a la izquierda para destacar */
 }
 
-/* Efecto hover en el Ã­tem */
+/* Efecto hover en el ítem */
 .categoria-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Contenedor de la informaciÃ³n dentro de ion-item */
+/* Contenedor de la información dentro de ion-item */
 .categoria-info {
-    display: block; /* Vuelve a ser un bloque para el diseÃ±o mÃ³vil */
+    display: block; /* Vuelve a ser un bloque para el diseño móvil */
     width: 100%;
     padding: 15px 20px;
 }
 
-/* DiseÃ±o de cada Ã­tem en pantallas mÃ¡s grandes (fila tipo tabla) */
+/* Diseño de cada ítem en pantallas más grandes (fila tipo tabla) */
 @media (min-width: 768px) {
     .categoria-info {
         display: grid;
         grid-template-columns: 2fr 3fr 1fr 1fr auto;
         gap: 10px;
         align-items: center;
-        padding: 10px 20px; /* Menos padding vertical para parecerse mÃ¡s a una fila */
+        padding: 10px 20px; /* Menos padding vertical para parecerse más a una fila */
     }
 
     /* Oculta los labels redundantes en la vista de tabla */
     .categoria-info p:not(.botones p) {
         display: flex;
-        align-items: center; /* AlineaciÃ³n vertical para el contenido de las celdas */
+        align-items: center; /* Alineación vertical para el contenido de las celdas */
     }
 
     .categoria-info h3,
     .categoria-info p {
-        margin: 0; /* Quita los mÃ¡rgenes por defecto en la vista de tabla */
+        margin: 0; /* Quita los márgenes por defecto en la vista de tabla */
     }
 
     /* Esconde los labels de Fecha y Porcentaje en la vista de tabla */
@@ -518,27 +473,27 @@ onMounted(() => {
 }
 
 
-/* Estilo para el tÃ­tulo del Ã­tem */
+/* Estilo para el título del ítem */
 .categoria-info h3 {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 5px;
 }
 
-/* Estilo para la descripciÃ³n y otros pÃ¡rrafos (mÃ³vil) */
+/* Estilo para la descripción y otros párrafos (móvil) */
 .categoria-info p {
     font-size: 0.9rem;
     margin-bottom: 5px;
 }
 
-/* Etiquetado para mÃ³vil: aÃ±ade los nombres de las columnas antes del contenido */
+/* Etiquetado para móvil: añade los nombres de las columnas antes del contenido */
 @media (max-width: 767px) {
-    /* TÃ­tulo */
+    /* Título */
     .categoria-info h3:before {
         
         font-weight: bold;
     }
-    /* DescripciÃ³n */
+    /* Descripción */
     .categoria-info p:nth-of-type(1):before {
         content: 'Monto $: ';
         font-weight: bold;
@@ -561,7 +516,7 @@ onMounted(() => {
 .botones {
     display: flex;
     gap: 3px; /* Espacio entre los botones */
-    margin-top: 15px; /* Espacio superior en vista mÃ³vil */
+    margin-top: 15px; /* Espacio superior en vista móvil */
     justify-content: flex-end; /* Alinea los botones a la derecha en vista de tabla */
 }
 
@@ -575,19 +530,19 @@ onMounted(() => {
 
 /* Estilo de los botones */
 .botones ion-button {
-    --border-radius: 20px; /* Botones mÃ¡s redondeados */
+    --border-radius: 20px; /* Botones más redondeados */
     font-size: 0.8rem;
     height: 35px;
     text-transform: capitalize;
 }
 
-/* Estilo para el botÃ³n de Eliminar */
+/* Estilo para el botón de Eliminar */
 .botones ion-button:nth-child(1) { /* Eliminar */
     --background: #dc3545; /* Rojo */
     --background-hover: red;
 }
 
-/* Estilo para el botÃ³n de Editar */
+/* Estilo para el botón de Editar */
 .botones ion-button:nth-child(2) { /* Editar */
     --background: #ffc107; /* Amarillo/Naranja */
     --background-hover: #e0a800;
@@ -707,6 +662,7 @@ onMounted(() => {
 .gasto-icon {
     font-size: 1.5rem;
   }
+
 
 
 </style>

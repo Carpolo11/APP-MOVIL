@@ -38,6 +38,8 @@
               <ion-input
                 v-model="porcentajeMax"
                 type="number"
+                  min="0"
+                  max="100"
                 placeholder="Porcentaje Máximo"
                 required/>
             </ion-item>
@@ -166,9 +168,7 @@ const TraerCate = async () =>{
 
 //Traer pocentaje
 const TraerPorcen = async () => {
-
   const user = auth.currentUser;
-
   if (user) { 
     const q = query( collection(db, "categorias"), where("userId", "==", user.uid));
     onSnapshot(q, (snapshot) => {
@@ -215,10 +215,7 @@ const crearCat = async () => {
    
       try {
 
-        const user = auth.currentUser;
-
-    // Guarda en la colección "Categorias"
-
+      const user = auth.currentUser;
     if (user){
     await addDoc(collection(db, "categorias"), {
       titulo: titulo.value,

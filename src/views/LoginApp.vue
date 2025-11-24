@@ -64,11 +64,11 @@
     
   } from "@ionic/vue";
   import { ref } from "vue";
-  import { useRouter } from "vue-router"; // ✅ Importa el router
+  import { useRouter } from "vue-router"; 
   import { signInWithEmailAndPassword } from "firebase/auth";
   import { auth } from "@/firebase/firebaseConfig";
 
-  const router = useRouter(); // ✅ Instancia de router
+  const router = useRouter(); 
   const email = ref("");
   const password = ref("");
 

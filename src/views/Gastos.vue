@@ -161,6 +161,8 @@ const descripcion = ref("");
 const cate = ref("");
 const categorias = ref<any[]>([]);
 const gastos = ref<any[]>([]);
+const sumaGastosTotal = ref<number>();
+const entradas = ref<number>(0);
 
 // Para EDITAR
 const editando = ref(false);
@@ -199,6 +201,49 @@ const TrearGastos = async () => {
   });
 };
 
+//Trae las entradas
+const traerEntradas = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
+
+  onSnapshot(q, (snapshot) => {
+    let total = 0;
+    snapshot.forEach((doc) => {
+      total += Number(doc.data().monto) || 0;
+    });
+    entradas.value = total;
+  });
+};
+
+
+//Suma de gastos totales
+const TraerSumaGastos = async () => {
+
+  const user = auth.currentUser;
+
+  if (user) { 
+    const q = query(
+      collection(db, "gastos"),
+      where("userId", "==", user.uid)
+    );
+
+    onSnapshot(q, (snapshot) => {
+      let SumaGasto = 0;
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        SumaGasto += Number(data.monto) || 0;
+      });
+
+      sumaGastosTotal.value = SumaGasto;
+    });
+  }
+
+};
+
+
 //==============================
 // CREAR O EDITAR GASTO
 //==============================
@@ -210,6 +255,12 @@ const crearGas = async () => {
 
   const user = auth.currentUser;
   if (!user) return;
+
+    if( Number(sumaGastosTotal.value) + Number(monto.value) > Number(entradas.value)){
+    alert("No tienes fondos suficientes para crear este gasto");
+    
+    return;
+  }
 
   // Modo EDITAR
   if (editando.value && idEditando.value) {
@@ -284,6 +335,8 @@ const limpiarFormulario = () => {
 onMounted(() => {
   cargarCategorias();
   TrearGastos();
+  TraerSumaGastos();
+  traerEntradas();
 });
 </script>
 

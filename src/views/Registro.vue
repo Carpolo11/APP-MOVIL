@@ -117,19 +117,16 @@ const register = async () => {
     );
     const user = userCredential.user;
 
-    // 2. 📝 GUARDAR DATOS ADICIONALES (Nombre) EN FIRESTORE
-    // Es CRUCIAL usar el 'uid' generado por Firebase Auth como identificador.
     await addDoc(collection(db, "usuarios"), {
       uid: user.uid, // ✅ ID único generado por Auth
       nombre: name.value,
       email: email.value,
       fechaRegistro: new Date(),
-      // ⚠️ No guardamos la contraseña en Firestore
+ 
     });
 
     alert(`Cuenta creada correctamente para: ${name.value}. ¡Ahora puedes iniciar sesión!`);
     
-    // 3. ↩️ REDIRIGIR AL LOGIN
     router.push("/home"); // Asumo que '/home' es tu ruta de login
     
   } catch (error: any) {

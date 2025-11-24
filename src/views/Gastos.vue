@@ -171,6 +171,7 @@ const idEditando = ref<string | null>(null);
 // CARGAR CATEGORÍAS
 //==============================
 const cargarCategorias = async () => {
+<<<<<<< Updated upstream
   const user = auth.currentUser;
   if (!user) return;
 
@@ -183,6 +184,23 @@ const cargarCategorias = async () => {
 //==============================
 // CARGAR ENTRADAS EN TIEMPO REAL
 //==============================
+=======
+
+    const user = auth.currentUser;
+    if(user){
+    const q = query(collection(db,"categorias"), where("userId", "==", user?.uid));
+    const snapshot = await getDocs(q);
+    const lista: any[] = [];
+    snapshot.forEach((doc) => {
+      lista.push(doc.data());
+    });
+    categorias.value = lista;
+    console.log("Categorías cargadas:", categorias.value);
+    };
+  }; 
+
+//Trae las entradas
+>>>>>>> Stashed changes
 const traerEntradas = async () => {
   const user = auth.currentUser;
   if (!user) return;

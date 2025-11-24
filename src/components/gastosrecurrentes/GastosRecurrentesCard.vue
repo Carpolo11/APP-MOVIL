@@ -1,11 +1,17 @@
 <template>
+  <!-- Tarjeta que muestra la información del gasto -->
   <div class="meta-card">
+
+    <!-- Encabezado con nombre del gasto e ícono -->
     <div class="card-header">
       <h3>{{ gasto.nombre }}</h3>
       <span class="meta-icon">💸</span>
     </div>
     
+    <!-- Contenedor de la información -->
     <div class="meta-info">
+
+      <!-- Item: monto -->
       <div class="info-item">
         <span class="icon">💰</span>
         <div>
@@ -14,6 +20,7 @@
         </div>
       </div>
       
+      <!-- Item: frecuencia -->
       <div class="info-item">
         <span class="icon">🔄</span>
         <div>
@@ -22,6 +29,7 @@
         </div>
       </div>
       
+      <!-- Item: fecha de inicio -->
       <div class="info-item">
         <span class="icon">📅</span>
         <div>
@@ -29,28 +37,38 @@
           <p class="value">{{ formatFecha(gasto.fechaInicio) }}</p>
         </div>
       </div>
-      <!-- BOTONES -->
-    <div class="acciones">
-      <ion-button class="boton-edit" size="small" @click="editar">
-        Editar
-      </ion-button>
-      <ion-button class="boton-elim" size="small" @click="eliminar">
-        Eliminar
-      </ion-button>
-    </div>
+
+      <!-- Botones de editar y eliminar -->
+      <div class="acciones">
+        <ion-button class="boton-edit" size="small" @click="editar">
+          Editar
+        </ion-button>
+        <ion-button class="boton-elim" size="small" @click="eliminar">
+          Eliminar
+        </ion-button>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+/* Botones de Ionic */
 import { IonButton } from "@ionic/vue";
 
+/* Eventos que el componente envía al padre */
 const emit = defineEmits(["editar-gasto", "eliminar-gasto"]);
+
+/* Prop que recibe la información de un gasto */
 const props = defineProps<{ gasto: any }>();
 
+/* Envía el gasto completo para editar */
 const editar = () => emit("editar-gasto", props.gasto);
+
+/* Envía solo el ID para eliminar */
 const eliminar = () => emit("eliminar-gasto", props.gasto.id);
 
+/* Formatea la fecha a estilo colombiano */
 const formatFecha = (fecha: string) => {
   return new Date(fecha).toLocaleDateString("es-CO", {
     day: "numeric",
@@ -59,17 +77,20 @@ const formatFecha = (fecha: string) => {
   });
 };
 
+/* Formatea números con decimales y separadores */
 const formatNumber = (num: number) =>
   num.toLocaleString("es-CO", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 
+/* Convierte la primera letra en mayúscula */
 const capitalizar = (texto: string) =>
   texto.charAt(0).toUpperCase() + texto.slice(1);
 </script>
 
 <style scoped>
+/* Estilo visual de la tarjeta */
 .meta-card {
   background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
   padding: 1.2rem;
@@ -78,11 +99,13 @@ const capitalizar = (texto: string) =>
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Efecto hover */
 .meta-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
 }
 
+/* Encabezado de la tarjeta */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -97,69 +120,40 @@ const capitalizar = (texto: string) =>
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .meta-icon {
   font-size: 1.8rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+/* Información del gasto */
 .meta-info {
   display: grid;
   gap: 0.8rem;
 }
 
+/* Elemento individual de información */
 .info-item {
   display: flex;
   align-items: center;
   gap: 0.8rem;
   background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
   padding: 0.6rem 0.8rem;
   border-radius: 12px;
-  transition: background 0.2s ease;
-}
-
-.info-item:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.info-item .icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .info-item .label {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.8);
-  margin: 0;
-  font-weight: 500;
 }
 
 .info-item .value {
   font-size: 0.95rem;
   color: #ffffff;
-  margin: 0;
   font-weight: 700;
 }
 
-/* Responsive */
-@media (max-width: 400px) {
-  .meta-card {
-    padding: 1rem;
-  }
-  
-  .card-header h3 {
-    font-size: 1.1rem;
-  }
-  
-  .meta-icon {
-    font-size: 1.5rem;
-  }
-}
-
-
+/* Contenedor de botones */
 .acciones {
   display: flex;
   margin-top: 15px;
@@ -167,19 +161,17 @@ const capitalizar = (texto: string) =>
   gap: 6px;
 }
 
-
+/* Botón eliminar */
 .boton-elim {
   --background: linear-gradient(90deg, #c73154, #ff7a5f);
   --color: white;
-  font-weight: 70;
   border-radius: 20px;
 }
 
+/* Botón editar */
 .boton-edit {
   --background: linear-gradient(90deg, #13c2ad, #32af19);
   --color: white;
-  font-weight: 70;
   border-radius: 20px;
 }
-
 </style>

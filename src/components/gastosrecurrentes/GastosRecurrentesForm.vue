@@ -1,7 +1,11 @@
 <template>
+  <!-- Formulario que ejecuta onSubmit sin refrescar -->
   <form @submit.prevent="onSubmit" class="formulario">
+
+    <!-- Campo: Nombre del gasto -->
     <ion-item class="input-group">
       <ion-icon name="receipt-outline" slot="start"></ion-icon>
+      <!-- Entrada vinculada a nombre -->
       <ion-input 
         v-model="nombre" 
         placeholder="Nombre del Gasto" 
@@ -9,8 +13,10 @@
       />
     </ion-item>
 
+    <!-- Campo: Monto -->
     <ion-item class="input-group">
       <ion-icon name="cash-outline" slot="start"></ion-icon>
+      <!-- Entrada numérica -->
       <ion-input 
         v-model="monto" 
         type="number" 
@@ -21,8 +27,10 @@
       />
     </ion-item>
 
+    <!-- Campo: Frecuencia -->
     <ion-item class="input-group">
       <ion-icon name="sync-outline" slot="start"></ion-icon>
+      <!-- Select para elegir tipo de frecuencia -->
       <ion-select 
         v-model="frecuencia" 
         placeholder="Selecciona la frecuencia"
@@ -35,8 +43,10 @@
       </ion-select>
     </ion-item>
 
+    <!-- Campo: Fecha de inicio -->
     <ion-item class="input-group">
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <!-- Input de fecha -->
       <input 
         v-model="fechaInicio" 
         type="date" 
@@ -45,21 +55,25 @@
       />
     </ion-item>
 
+    <!-- Botón para enviar -->
     <div class="button-row">
       <ion-button expand="block" type="submit" class="back-btn">
         REGISTRAR GASTO
       </ion-button>
     </div>
 
+    <!-- Botón para volver -->
     <div class="button-row">
       <ion-button expand="block" router-link="/dashboard" class="back-btn">
         VOLVER
       </ion-button>
     </div>
+
   </form>
 </template>
 
 <script setup lang="ts">
+/* Importación de componentes de Ionic */
 import { 
   IonItem, 
   IonInput, 
@@ -68,16 +82,23 @@ import {
   IonSelect,
   IonSelectOption
 } from "@ionic/vue";
+
+/* Importación de reactividad de Vue */
 import { ref, watch } from "vue";
 
+/* Props que reciben un gasto a editar */
 const props = defineProps<{ gastoEditado?: any }>();
+
+/* Evento que se envía al padre al crear o editar */
 const emit = defineEmits(["crear-gasto"]);
 
+/* Variables reactivas del formulario */
 const nombre = ref("");
 const monto = ref<number | null>(null);
 const frecuencia = ref("");
 const fechaInicio = ref("");
 
+/* Función que envía los datos y limpia el formulario */
 const onSubmit = () => {
   emit("crear-gasto", {
     nombre: nombre.value.trim(),
@@ -86,12 +107,14 @@ const onSubmit = () => {
     fechaInicio: fechaInicio.value
   });
 
+  // Limpiar campos
   nombre.value = "";
   monto.value = null;
   frecuencia.value = "";
   fechaInicio.value = "";
 };
-// Cargar datos cuando se edita
+
+/* Watcher: carga los datos cuando se va a editar un gasto */
 watch(
   () => props.gastoEditado,
   (nuevo) => {
@@ -102,12 +125,13 @@ watch(
       fechaInicio.value = nuevo.fechaInicio;
     }
   },
-  { immediate: true }
+  { immediate: true } // se ejecuta apenas carga
 );
 
 </script>
 
 <style scoped>
+/* Estilos visuales del formulario y entradas */
 .formulario {
   display: flex;
   flex-direction: column;
@@ -122,7 +146,6 @@ watch(
   --padding-start: 12px;
   --padding-end: 12px;
 }
-
 
 ion-select {
   width: 100%;
@@ -146,10 +169,6 @@ ion-select::part(text) {
   font-size: 1rem;
   color: #2c3e50;
   font-weight: 500;
-}
-
-.date-input:focus {
-  outline: none;
 }
 
 .back-btn {

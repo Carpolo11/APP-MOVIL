@@ -115,7 +115,10 @@ import { db } from '@/firebase/firebaseConfig'
 import { getAuth } from "firebase/auth";
 import Chart from 'chart.js/auto'
 
+/* Obtener usuario autenticado */
 const auth = getAuth();
+
+/* Valores del resumen */
 const periodoSeleccionado = ref('mensual')
 const saldoDisponible = ref(0)
 const ingresosTotales = ref(0)
@@ -243,7 +246,7 @@ function renderGraficos() {
   renderGraficoTendencia();
 }
 
-// Gráfico comparativo (ya existente)
+// Gráfico comparativo 
 function renderGraficoComparativo() {
   if (!graficoComparativo.value) return;
 

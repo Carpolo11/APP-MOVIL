@@ -1,15 +1,20 @@
 <template>
+
+  <!-- Página principal del Dashboard -->
   <ion-page>
     <ion-content scroll-y="true" class="dashboard-content">
       <section class="dashboard">
         <DashboardHeader />
-
+        
+        <!-- Tarjetas con información general: saldo, entradas y categorías -->
         <DashboardCards
           :saldo-total="saldoTotal"
           :total-entradas="totalEntradas"
           :total-categorias="totalCategorias"
         />
 
+
+         <!-- Sección de opciones -->
         <h2 class="opciones-title">Opciones Disponibles</h2>
 
         <div class="opciones-grid">
@@ -24,7 +29,7 @@
           </div>
         </div>
 
-        <!-- 🔴 BOTÓN DE CERRAR SESIÓN -->
+        <!--  BOTÓN DE CERRAR SESIÓN -->
         <div class="cerrar-sesion-container">
           <button class="btn-cerrar-sesion" @click="cerrarSesion">
             🔒 Cerrar sesión
@@ -32,6 +37,7 @@
         </div>
       </section>
 
+            <!-- Botón flotante de notificaciones -->
         <ion-fab vertical="top" horizontal="end" slot="fixed">
           <ion-fab-button class="notificaciones" @click="verAlertas">
             🔔
@@ -57,15 +63,18 @@ const auth = getAuth();
 import DashboardHeader from "@/components/dashboard/DashboardHeader.vue";
 import DashboardCards from "@/components/dashboard/DashboardCards.vue";
 
+/* Variables reactivas */
 const totalEntradas = ref(0);
 const totalCategorias = ref(0);
 const saldoTotal = ref(0);
 const totalGastos = ref(0);
 const totalGastosRecurrentes = ref(0);
 
+/* Navegación con router */
 const router = useRouter();
 const irARuta = (ruta) => router.push(ruta);
 
+/* Opciones */
 const opciones = [
   { nombre: "Categorías", icono: "🗂️", route: "/categoria" },
   { nombre: "Entradas", icono: "💰", route: "/crear-entrada" },
@@ -78,7 +87,7 @@ const opciones = [
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
 
-// 📚 Función para cerrar sesión
+//  Función para cerrar sesión
 const cerrarSesion = async () => {
   try {
     await signOut(auth);
@@ -88,7 +97,7 @@ const cerrarSesion = async () => {
   }
 };
 
-// 🔥 Cargar entradas y calcular saldo total
+// Cargar entradas y calcular saldo total
 const cargarEntradas = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "entradas"), where("userId", "==", user?.uid));
@@ -100,7 +109,7 @@ const cargarEntradas = async () => {
   });
 };
 
-// 🔥 Cargar gastos normales
+// Cargar gastos normales
 const cargarGastos = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "gastos"), where("UserId", "==", user?.uid));
@@ -112,7 +121,7 @@ const cargarGastos = async () => {
   });
 };
 
-// 🔥 Cargar gastos recurrentes
+//  Cargar gastos recurrentes
 const cargarGastosRecurrentes = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "gastosRecurrentes"), where("userId", "==", user?.uid));
@@ -124,7 +133,7 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
-// 💰 Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
+// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
 const calcularSaldoTotal = (montoEntradas = null) => {
   if (montoEntradas !== null) {
     saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
@@ -140,6 +149,7 @@ const calcularSaldoTotal = (montoEntradas = null) => {
   }
 };
 
+/* Cargar total de categorías */
 const cargarCategorias = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
@@ -147,6 +157,7 @@ const cargarCategorias = async () => {
   totalCategorias.value = snapshot.size;
 };
 
+/* Cuando el componente se monta  carga las funciones*/
 onMounted(() => {
   cargarEntradas();
   cargarGastos();
@@ -154,6 +165,8 @@ onMounted(() => {
   cargarCategorias();
 });
 
+
+/* Redirigir a la vista de alertas */
 const verAlertas = () => {
   router.push("/alertas");
   console.log("Ver alertas");

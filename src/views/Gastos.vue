@@ -54,7 +54,7 @@
 
             <div class="button-row">
               <ion-button expand="block" type="submit" class="back-btn">
-                CREAR GASTO
+                {{ editando ? 'ACTUALIZAR GASTO' : 'CREAR GASTO' }}
               </ion-button>
             </div>
 
@@ -161,8 +161,6 @@ const descripcion = ref("");
 const cate = ref("");
 const categorias = ref<any[]>([]);
 const gastos = ref<any[]>([]);
-const entradas = ref<number>(0);
-const sumaGastosTotal = ref<number>();
 
 // Para EDITAR
 const editando = ref(false);
@@ -186,22 +184,6 @@ const cargarCategorias = async () => {
     };
   }; 
 
-//Trae las entradas
-const traerEntradas = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const q = query(collection(db, "entradas"), where("userId", "==", user.uid));
-
-  onSnapshot(q, (snapshot) => {
-    let total = 0;
-    snapshot.forEach((doc) => {
-      total += Number(doc.data().monto) || 0;
-    });
-    entradas.value = total;
-  });
-};
-
 //==============================
 // CARGAR GASTOS EN TIEMPO REAL
 //==============================
@@ -217,25 +199,6 @@ const TrearGastos = async () => {
   });
 };
 
-const TraerSumaGastos = async () => {
-
-  const user = auth.currentUser;
-
-  if (user) { 
-    const q = query( collection(db, "gastos"), where("userId", "==", user.uid));
-    onSnapshot(q, (snapshot) => {
-      let SumaGasto = 0;
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        SumaGasto += Number(data.monto) || 0;
-      });
-      sumaGastosTotal.value = SumaGasto;
-    });
-  }
-
-
-};
-
 //==============================
 // CREAR O EDITAR GASTO
 //==============================
@@ -247,12 +210,6 @@ const crearGas = async () => {
 
   const user = auth.currentUser;
   if (!user) return;
-
-  if( Number(sumaGastosTotal.value) + Number(monto.value) > Number(entradas.value)){
-    alert("No tienes fondos suficientes para crear este gasto");
-    
-    return;
-  }
 
   // Modo EDITAR
   if (editando.value && idEditando.value) {
@@ -326,9 +283,7 @@ const limpiarFormulario = () => {
 //==============================
 onMounted(() => {
   cargarCategorias();
-  traerEntradas();
   TrearGastos();
-  TraerSumaGastos();
 });
 </script>
 

@@ -60,6 +60,8 @@ import DashboardCards from "@/components/dashboard/DashboardCards.vue";
 const totalEntradas = ref(0);
 const totalCategorias = ref(0);
 const saldoTotal = ref(0);
+const totalGastos = ref(0);
+const totalGastosRecurrentes = ref(0);
 
 const router = useRouter();
 const irARuta = (ruta) => router.push(ruta);
@@ -76,7 +78,7 @@ const opciones = [
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
 
-// 🔚 Función para cerrar sesión
+// 📚 Función para cerrar sesión
 const cerrarSesion = async () => {
   try {
     await signOut(auth);
@@ -86,6 +88,7 @@ const cerrarSesion = async () => {
   }
 };
 
+// 🔥 Cargar entradas y calcular saldo total
 const cargarEntradas = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "entradas"), where("userId", "==", user?.uid));
@@ -93,8 +96,48 @@ const cargarEntradas = async () => {
     let totalMonto = 0;
     snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
     totalEntradas.value = snapshot.size;
-    saldoTotal.value = totalMonto;
+    calcularSaldoTotal(totalMonto);
   });
+};
+
+// 🔥 Cargar gastos normales
+const cargarGastos = async () => {
+  const user = auth.currentUser;
+  const q = query(collection(db, "gastos"), where("UserId", "==", user?.uid));
+  onSnapshot(q, (snapshot) => {
+    let totalMonto = 0;
+    snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
+    totalGastos.value = totalMonto;
+    calcularSaldoTotal();
+  });
+};
+
+// 🔥 Cargar gastos recurrentes
+const cargarGastosRecurrentes = async () => {
+  const user = auth.currentUser;
+  const q = query(collection(db, "gastosRecurrentes"), where("userId", "==", user?.uid));
+  onSnapshot(q, (snapshot) => {
+    let totalMonto = 0;
+    snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
+    totalGastosRecurrentes.value = totalMonto;
+    calcularSaldoTotal();
+  });
+};
+
+// 💰 Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
+const calcularSaldoTotal = (montoEntradas = null) => {
+  if (montoEntradas !== null) {
+    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
+  } else {
+    // Recalcular con el valor actual de entradas
+    const user = auth.currentUser;
+    const q = query(collection(db, "entradas"), where("userId", "==", user?.uid));
+    getDocs(q).then((snapshot) => {
+      let totalMonto = 0;
+      snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
+      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value;
+    });
+  }
 };
 
 const cargarCategorias = async () => {
@@ -106,6 +149,8 @@ const cargarCategorias = async () => {
 
 onMounted(() => {
   cargarEntradas();
+  cargarGastos();
+  cargarGastosRecurrentes();
   cargarCategorias();
 });
 

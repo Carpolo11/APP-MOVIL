@@ -268,6 +268,22 @@ const categoriaEditando = ref<string | null>(null);
 const guardarEdicion = async () => {
   if (!categoriaEditando.value) return;
 
+    // Validar porcentaje válido
+  if (Number(porcentajeMax.value) < 0 || Number(porcentajeMax.value) > 100) {
+    alert("Ingresa un porcentaje válido (0–100)");
+    return;
+  }
+
+      // Validar que la suma no supere el 100 %
+  const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
+  const sobrante =  100 - (Number(sumaPorcentajes.value));
+  if (nuevoTotal > 100) {
+    alert(
+      `⚠️ No puedes Editar esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
+    );
+    return;
+  }
+
   try {
     const refCat = doc(db, "categorias", categoriaEditando.value);
 

@@ -162,6 +162,7 @@ const cate = ref("");
 const categorias = ref<any[]>([]);
 const gastos = ref<any[]>([]);
 const entradas = ref<number>(0);
+const sumaGastosTotal = ref<number>();
 
 // Para EDITAR
 const editando = ref(false);
@@ -171,20 +172,6 @@ const idEditando = ref<string | null>(null);
 // CARGAR CATEGORÍAS
 //==============================
 const cargarCategorias = async () => {
-<<<<<<< Updated upstream
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const q = query(collection(db, "categorias"), where("userId", "==", user.uid));
-  const snapshot = await getDocs(q);
-
-  categorias.value = snapshot.docs.map((d) => d.data());
-};
-
-//==============================
-// CARGAR ENTRADAS EN TIEMPO REAL
-//==============================
-=======
 
     const user = auth.currentUser;
     if(user){
@@ -200,7 +187,6 @@ const cargarCategorias = async () => {
   }; 
 
 //Trae las entradas
->>>>>>> Stashed changes
 const traerEntradas = async () => {
   const user = auth.currentUser;
   if (!user) return;
@@ -226,12 +212,28 @@ const TrearGastos = async () => {
     const q = query(collection(db, "gastos"), where("UserId", "==", user.uid));
 
     onSnapshot(q, (snapshot) => {
-      gastos.value = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      }));
+      gastos.value = snapshot.docs.map((d) => ({id: d.id,...d.data(),}));
     });
   });
+};
+
+const TraerSumaGastos = async () => {
+
+  const user = auth.currentUser;
+
+  if (user) { 
+    const q = query( collection(db, "gastos"), where("userId", "==", user.uid));
+    onSnapshot(q, (snapshot) => {
+      let SumaGasto = 0;
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        SumaGasto += Number(data.monto) || 0;
+      });
+      sumaGastosTotal.value = SumaGasto;
+    });
+  }
+
+
 };
 
 //==============================
@@ -246,8 +248,15 @@ const crearGas = async () => {
   const user = auth.currentUser;
   if (!user) return;
 
+  if( Number(sumaGastosTotal.value) + Number(monto.value) > Number(entradas.value)){
+    alert("No tienes fondos suficientes para crear este gasto");
+    
+    return;
+  }
+
   // Modo EDITAR
   if (editando.value && idEditando.value) {
+
     const refDoc = doc(db, "gastos", idEditando.value);
 
     await updateDoc(refDoc, {
@@ -319,6 +328,7 @@ onMounted(() => {
   cargarCategorias();
   traerEntradas();
   TrearGastos();
+  TraerSumaGastos();
 });
 </script>
 

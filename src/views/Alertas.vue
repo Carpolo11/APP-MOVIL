@@ -33,6 +33,12 @@
 
       </div>
 
+      <ion-button
+        class="btn-volver-flotante"
+        @click="volverDashboard">
+        VOLVER
+      </ion-button>
+
     </ion-content>
   </ion-page>
 </template>
@@ -43,8 +49,8 @@ import { ref } from "vue";
 const alertas = ref([
   {
     id: 1,
-    titulo: "Límite superado",
-    descripcion: "Has superado el 80% del presupuesto asignado a la categoría 'Comida'.",
+    titulo: "Entrada",
+    descripcion: "La entrada de 'Nómina' por $1'000.000 se ha registrado exitosamente.",
     fecha: "Hoy"
   },
   {
@@ -55,11 +61,23 @@ const alertas = ref([
   },
   {
     id: 3,
-    titulo: "Registrar gasto recurrente",
-    descripcion: "Es hora de registrar el gasto recurrente de 'Transporte'.",
+    titulo: "Pago aplicado",
+    descripcion: "Se ha descontado el gasto recurrente de 'Transporte'.",
     fecha: "Hace 3 días"
   }
 ]);
+
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
+const volverDashboard = () => {
+  // Navega por path
+  router.push('/dashboard');
+
+  // Alternativa por name (si tu ruta tiene name: 'Dashboard'):
+  // router.push({ name: 'Dashboard' });
+};
+
 </script>
 
 <style scoped>
@@ -138,5 +156,28 @@ const alertas = ref([
   --background: linear-gradient(90deg, #a8edea, #fed6e3);
   color: #001f3f;
 }
+
+.btn-volver-flotante {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  /* MISMO ESTILO QUE TU botón "nuevo-ahorro" */
+  width: 90%;
+  max-width: 400px;
+  --background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --color: white;
+  border-radius: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Hover opcional */
+.btn-volver-flotante:hover {
+  transform: translateX(-50%) scale(1.02);
+}
+
 
 </style>

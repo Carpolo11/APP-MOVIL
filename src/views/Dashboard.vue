@@ -83,11 +83,7 @@ const opciones = [
   { nombre: "Metas", icono: "🎯", route: "/metas" },
   { nombre: "Recurrentes", icono: "♻️", route: "/recurrentes" },
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
-<<<<<<< Updated upstream
-  { nombre: "Ahorros", icono: "🦁", route: "/ahorros" },
-=======
   { nombre: "Alcancia", icono: "🏦", route: "/ahorros" },
->>>>>>> Stashed changes
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];

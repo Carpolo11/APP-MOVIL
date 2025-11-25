@@ -1,5 +1,4 @@
 <template>
-
   <!-- Página principal del Dashboard -->
   <ion-page>
     <ion-content scroll-y="true" class="dashboard-content">
@@ -12,7 +11,6 @@
           :total-entradas="totalEntradas"
           :total-categorias="totalCategorias"
         />
-
 
          <!-- Sección de opciones -->
         <h2 class="opciones-title">Opciones Disponibles</h2>
@@ -36,15 +34,6 @@
           </button>
         </div>
       </section>
-
-            <!-- Botón flotante de notificaciones -->
-        <!-- <ion-fab vertical="top" horizontal="end" slot="fixed">
-          <ion-fab-button class="notificaciones" @click="verAlertas">
-            🔔
-          </ion-fab-button>
-        </ion-fab> -->
-
-
     </ion-content>
   </ion-page>
 </template>
@@ -69,7 +58,7 @@ const totalCategorias = ref(0);
 const saldoTotal = ref(0);
 const totalGastos = ref(0);
 const totalGastosRecurrentes = ref(0);
-const totalMetasAcumulado = ref(0);
+const totalMetasObjetivo = ref(0); // 🆕 Suma del monto objetivo de todas las metas
 
 /* Navegación con router */
 const router = useRouter();
@@ -85,14 +74,14 @@ const opciones = [
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
   { nombre: "Alcancia", icono: "🏦", route: "/ahorros" },
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
-  { nombre: "Conversor", icono: "💰", route: "/conversor" },
+  { nombre: "Conversor", icono: "💱", route: "/conversor" },
 ];
 
-//  Función para cerrar sesión
+// 🔐 Función para cerrar sesión
 const cerrarSesion = async () => {
   try {
     await signOut(auth);
-    router.push("/login"); // Redirige al login
+    router.push("/login");
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
   }
@@ -122,7 +111,7 @@ const cargarGastos = async () => {
   });
 };
 
-//  Cargar gastos recurrentes
+// 🔄 Cargar gastos recurrentes
 const cargarGastosRecurrentes = async () => {
   const user = auth.currentUser;
   const q = query(collection(db, "gastosRecurrentes"), where("userId", "==", user?.uid));
@@ -134,10 +123,25 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
-// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
+// 🆕 Cargar metas y sumar el monto objetivo de todas
+const cargarMetas = async () => {
+  const user = auth.currentUser;
+  const q = query(collection(db, "metas"), where("userId", "==", user?.uid));
+  onSnapshot(q, (snapshot) => {
+    let totalObjetivo = 0;
+    snapshot.forEach((doc) => {
+      totalObjetivo += Number(doc.data().monto) || 0; // Suma el monto OBJETIVO
+    });
+    totalMetasObjetivo.value = totalObjetivo;
+    console.log("Total metas objetivo:", totalObjetivo);
+    calcularSaldoTotal();
+  });
+};
+
+// 🆕 Calcular saldo total = Entradas - Gastos - Gastos Recurrentes - Metas Objetivo
 const calcularSaldoTotal = (montoEntradas = null) => {
   if (montoEntradas !== null) {
-    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
+    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value - totalMetasObjetivo.value;
   } else {
     // Recalcular con el valor actual de entradas
     const user = auth.currentUser;
@@ -145,7 +149,8 @@ const calcularSaldoTotal = (montoEntradas = null) => {
     getDocs(q).then((snapshot) => {
       let totalMonto = 0;
       snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
-      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value;
+      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value - totalMetasObjetivo.value;
+      console.log("Saldo total calculado:", saldoTotal.value);
     });
   }
 };
@@ -158,23 +163,20 @@ const cargarCategorias = async () => {
   totalCategorias.value = snapshot.size;
 };
 
-/* Cuando el componente se monta  carga las funciones*/
+/* Cuando el componente se monta carga las funciones */
 onMounted(() => {
   cargarEntradas();
   cargarGastos();
   cargarGastosRecurrentes();
+  cargarMetas(); // 🆕 Cargar metas
   cargarCategorias();
 });
-
 
 /* Redirigir a la vista de alertas */
 const verAlertas = () => {
   router.push("/alertas");
   console.log("Ver alertas");
 };
-
-
-
 </script>
 
 <style scoped>
@@ -214,6 +216,7 @@ const verAlertas = () => {
   transition: transform 0.2s ease;
   cursor: pointer;
 }
+
 .opcion-card:hover {
   transform: scale(1.05);
   background: #ffffff20;
@@ -246,8 +249,7 @@ const verAlertas = () => {
   background-color: #d62828;
 }
 
-
 .notificaciones {
-  --background:  #5f5f5f3f;
+  --background: #5f5f5f3f;
 }
 </style>

@@ -38,11 +38,11 @@
       </section>
 
             <!-- Botón flotante de notificaciones -->
-        <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <!-- <ion-fab vertical="top" horizontal="end" slot="fixed">
           <ion-fab-button class="notificaciones" @click="verAlertas">
             🔔
           </ion-fab-button>
-        </ion-fab>
+        </ion-fab> -->
 
 
     </ion-content>
@@ -83,7 +83,7 @@ const opciones = [
   { nombre: "Metas", icono: "🎯", route: "/metas" },
   { nombre: "Recurrentes", icono: "♻️", route: "/recurrentes" },
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
-  { nombre: "Ahorros", icono: "🦁", route: "/ahorros" },
+  { nombre: "Alcancia", icono: "🏦", route: "/ahorros" },
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
@@ -134,25 +134,10 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
-// 🎯 Cargar total acumulado en metas
-const cargarMetasAcumulado = async () => {
-  const user = auth.currentUser;
-  const q = query(collection(db, "metas"), where("userId", "==", user?.uid));
-  onSnapshot(q, (snapshot) => {
-    let totalMonto = 0;
-    snapshot.forEach((doc) => {
-      totalMonto += Number(doc.data().acumulado) || 0;
-    });
-    totalMetasAcumulado.value = totalMonto;
-    console.log("Total acumulado en metas:", totalMetasAcumulado.value);
-    calcularSaldoTotal();
-  });
-};
-
-// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes - Metas Acumulado
+// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
 const calcularSaldoTotal = (montoEntradas = null) => {
   if (montoEntradas !== null) {
-    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
+    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
   } else {
     // Recalcular con el valor actual de entradas
     const user = auth.currentUser;
@@ -160,7 +145,7 @@ const calcularSaldoTotal = (montoEntradas = null) => {
     getDocs(q).then((snapshot) => {
       let totalMonto = 0;
       snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
-      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
+      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value;
     });
   }
 };
@@ -178,7 +163,6 @@ onMounted(() => {
   cargarEntradas();
   cargarGastos();
   cargarGastosRecurrentes();
-  cargarMetasAcumulado(); // 🎯 Nueva función para cargar metas
   cargarCategorias();
 });
 

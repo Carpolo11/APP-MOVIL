@@ -2,7 +2,7 @@
   <ion-card style="--background: transparent; box-shadow: none;">
     <ion-card-header>
       <ion-card-title>
-        {{ ahorroEditado ? 'Editar Ahorro' : 'Nuevo Ahorro' }}
+        {{ ahorroEditado ? 'Editar Alcancia' : 'Nuevo alcancia' }}
       </ion-card-title>
     </ion-card-header>
 

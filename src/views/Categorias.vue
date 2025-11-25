@@ -33,7 +33,7 @@
             </ion-item>
 
             <!-- Porcentaje Maximo -->
-            <ion-item class="input-group">
+            <!-- <ion-item class="input-group">
               <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
               <ion-input
                 v-model="porcentajeMax"
@@ -42,7 +42,7 @@
                   max="100"
                 placeholder="Porcentaje Máximo"
                 required/>
-            </ion-item>
+            </ion-item> -->
 
             <!-- Botón registro -->
              <div class="button-row">
@@ -88,13 +88,13 @@
               </div>
             </div>
              
-            <div class="info-item">
+            <!-- <div class="info-item">
               <span class="icon">💯</span>
               <div>
                 <p class="label">Porcentaje</p>
                 <p class="value">{{ (cat.porcentaje) }}%</p>
               </div>
-            </div>
+            </div> -->
 
 
 
@@ -146,7 +146,7 @@ const auth = getAuth();
 const titulo = ref("");
 const fecha = ref("");
 const descripcion = ref("");
-const porcentajeMax = ref<number>();
+// const porcentajeMax = ref<number>();
 const sumaPorcentajes = ref<number>();
 const categoriasUsuario = ref<any[]>([]);
 
@@ -167,24 +167,24 @@ const TraerCate = async () =>{
 
 
 //Traer pocentaje
-const TraerPorcen = async () => {
-  const user = auth.currentUser;
-  if (user) { 
-    const q = query( collection(db, "categorias"), where("userId", "==", user.uid));
-    onSnapshot(q, (snapshot) => {
-      let SumaPorcen = 0;
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        SumaPorcen += Number(data.porcentaje) || 0;
-      });
-      sumaPorcentajes.value = SumaPorcen;
-    });
-  }
+// const TraerPorcen = async () => {
+//   const user = auth.currentUser;
+//   if (user) { 
+//     const q = query( collection(db, "categorias"), where("userId", "==", user.uid));
+//     onSnapshot(q, (snapshot) => {
+//       let SumaPorcen = 0;
+//       snapshot.forEach((doc) => {
+//         const data = doc.data();
+//         SumaPorcen += Number(data.porcentaje) || 0;
+//       });
+//       sumaPorcentajes.value = SumaPorcen;
+//     });
+//   }
 
-};
+// };
 
 onMounted(() => {
-  TraerPorcen(); //Cargamos al iniciar
+  // TraerPorcen(); //Cargamos al iniciar
   TraerCate();
 
 });
@@ -192,26 +192,26 @@ onMounted(() => {
 
 
 const crearCat = async () => {
-  if (!titulo.value || !fecha.value || !porcentajeMax.value) {
+  if (!titulo.value || !fecha.value ) {
     alert("Por favor completa todos los campos");
     return;
   }
-  if (porcentajeMax.value > 100 || porcentajeMax.value < 0) {
-    alert("Ingresa un porcentaje válido (0–100)");
-    return;
-  }
+  // if (porcentajeMax.value > 100 || porcentajeMax.value < 0) {
+  //   alert("Ingresa un porcentaje válido (0–100)");
+  //   return;
+  // }
 
-  await TraerPorcen();
+  // await TraerPorcen();
 
     // Validar que la suma no supere el 100 %
-  const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
-  const sobrante =  100 - (Number(sumaPorcentajes.value));
-  if (nuevoTotal > 100) {
-    alert(
-      `⚠️ No puedes crear esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
-    );
-    return;
-  }
+  // const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
+  // const sobrante =  100 - (Number(sumaPorcentajes.value));
+  // if (nuevoTotal > 100) {
+  //   alert(
+  //     `⚠️ No puedes crear esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
+  //   );
+  //   return;
+  // }
    
       try {
 
@@ -221,7 +221,7 @@ const crearCat = async () => {
       titulo: titulo.value,
       fecha: fecha.value,
       descripcion: descripcion.value,
-      porcentaje: Number(porcentajeMax.value), 
+      // porcentaje: Number(porcentajeMax.value), 
       fechaRegistro: new Date(),
       userId: user.uid
     });
@@ -231,7 +231,7 @@ const crearCat = async () => {
     titulo.value = "";
     fecha.value = "";
     descripcion.value = "";
-    porcentajeMax.value = 0;
+    // porcentajeMax.value = 0;
 
     alert(`Creacion exitosa: ${titulo.value}`);
     // Aquí podrías redirigir a la página de login
@@ -253,7 +253,7 @@ const editarCat = async (cat: any) => {
   titulo.value = cat.titulo;
   fecha.value = cat.fecha;
   descripcion.value = cat.descripcion;
-  porcentajeMax.value = cat.porcentaje;
+  // porcentajeMax.value = cat.porcentaje;
 
   // Guardamos el ID actual
   categoriaEditando.value = cat.id;
@@ -266,20 +266,20 @@ const guardarEdicion = async () => {
   if (!categoriaEditando.value) return;
 
     // Validar porcentaje válido
-  if (Number(porcentajeMax.value) < 0 || Number(porcentajeMax.value) > 100) {
-    alert("Ingresa un porcentaje válido (0–100)");
-    return;
-  }
+  // if (Number(porcentajeMax.value) < 0 || Number(porcentajeMax.value) > 100) {
+  //   alert("Ingresa un porcentaje válido (0–100)");
+  //   return;
+  // }
 
       // Validar que la suma no supere el 100 %
-  const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
-  const sobrante =  100 - (Number(sumaPorcentajes.value));
-  if (nuevoTotal > 100) {
-    alert(
-      `⚠️ No puedes Editar esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
-    );
-    return;
-  }
+  // const nuevoTotal = Number(sumaPorcentajes.value) + Number(porcentajeMax.value);
+  // const sobrante =  100 - (Number(sumaPorcentajes.value));
+  // if (nuevoTotal > 100) {
+  //   alert(
+  //     `⚠️ No puedes Editar esta categoría. El total de porcentajes (${nuevoTotal}%) supera el 100%. porcentaje disponible (${sobrante}%)`
+  //   );
+  //   return;
+  // }
 
   try {
     const refCat = doc(db, "categorias", categoriaEditando.value);
@@ -288,7 +288,7 @@ const guardarEdicion = async () => {
       titulo: titulo.value,
       fecha: fecha.value,
       descripcion: descripcion.value,
-      porcentaje: Number(porcentajeMax.value)
+      // porcentaje: Number(porcentajeMax.value)
     });
 
     alert("Categoría actualizada correctamente ✔");
@@ -297,7 +297,7 @@ const guardarEdicion = async () => {
     titulo.value = "";
     fecha.value = "";
     descripcion.value = "";
-    porcentajeMax.value = 0;
+    // porcentajeMax.value = 0;
     categoriaEditando.value = null;
 
   } catch (error) {

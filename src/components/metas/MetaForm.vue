@@ -15,10 +15,16 @@
         v-model="monto" 
         type="number" 
         min="1" 
+        :max="saldoDisponible"
         placeholder="Monto objetivo" 
         required 
       />
     </ion-item>
+
+    <!-- Mostrar saldo disponible -->
+    <div class="saldo-info">
+      <p>💰 Saldo disponible: ${{ formatNumber(saldoDisponible) }}</p>
+    </div>
 
     <!-- Fecha límite -->
     <ion-item class="input-group">
@@ -32,23 +38,10 @@
       />
     </ion-item>
 
-    <!-- Porcentaje de ingreso asignado -->
-    <ion-item class="input-group">
-      <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-      <ion-input 
-        v-model="porcentaje" 
-        type="number" 
-        min="0" 
-        max="100" 
-        placeholder="% de ingreso" 
-        required 
-      />
-    </ion-item>
-
     <!-- Botón crear o actualizar -->
     <div class="button-row">
       <ion-button expand="block" type="submit" class="back-btn">
-        CREAR META
+        {{ metaEditar ? 'ACTUALIZAR META' : 'CREAR META' }}
       </ion-button>
     </div>
 
@@ -70,8 +63,8 @@ import {
   IonButton, 
   IonIcon
 } from "@ionic/vue";
-import { ref, watch } from "vue";
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
+import { ref, watch, onMounted, computed } from "vue";
+import { collection, addDoc, doc, updateDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 
@@ -82,22 +75,83 @@ const auth = getAuth();
 const nombre = ref("");
 const monto = ref("");
 const plazo = ref("");
-const porcentaje = ref("");
+
+// Saldo disponible
+const saldoDisponible = ref(0);
 
 // Fecha mínima = hoy
 const minDate = new Date().toISOString().split('T')[0];
+
+// Calcular saldo disponible
+const calcularSaldoDisponible = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    // Obtener total de entradas
+    const entradasQuery = query(collection(db, "entradas"), where("userId", "==", user.uid));
+    const entradasSnapshot = await getDocs(entradasQuery);
+    let totalEntradas = 0;
+    entradasSnapshot.forEach((doc) => {
+      totalEntradas += Number(doc.data().monto) || 0;
+    });
+
+    // Obtener total de gastos
+    const gastosQuery = query(collection(db, "gastos"), where("UserId", "==", user.uid));
+    const gastosSnapshot = await getDocs(gastosQuery);
+    let totalGastos = 0;
+    gastosSnapshot.forEach((doc) => {
+      totalGastos += Number(doc.data().monto) || 0;
+    });
+
+    // Obtener total de gastos recurrentes
+    const recurrentesQuery = query(collection(db, "gastosRecurrentes"), where("userId", "==", user.uid));
+    const recurrentesSnapshot = await getDocs(recurrentesQuery);
+    let totalRecurrentes = 0;
+    recurrentesSnapshot.forEach((doc) => {
+      totalRecurrentes += Number(doc.data().monto) || 0;
+    });
+
+    // Obtener total de metas (solo el monto objetivo, no el acumulado)
+    const metasQuery = query(collection(db, "metas"), where("userId", "==", user.uid));
+    const metasSnapshot = await getDocs(metasQuery);
+    let totalMetas = 0;
+    metasSnapshot.forEach((doc) => {
+      const metaData = doc.data();
+      // Si estamos editando, excluimos esta meta del cálculo
+      if (props.metaEditar && doc.id === props.metaEditar.id) {
+        return;
+      }
+      totalMetas += Number(metaData.monto) || 0;
+    });
+
+    // Calcular saldo disponible
+    saldoDisponible.value = totalEntradas - totalGastos - totalRecurrentes - totalMetas;
+    
+    console.log("Saldo disponible:", saldoDisponible.value);
+  } catch (error) {
+    console.error("Error al calcular saldo disponible:", error);
+  }
+};
 
 // Función que crea o actualiza la meta
 const emitirMeta = async () => {
   const user = auth.currentUser;
   if (!user) return alert("Debes iniciar sesión.");
 
+  const montoIngresado = Number(monto.value);
+
+  // Validar que el monto no exceda el saldo disponible
+  if (montoIngresado > saldoDisponible.value) {
+    alert(`❌ El monto objetivo no puede exceder tu saldo disponible de $${formatNumber(saldoDisponible.value)}`);
+    return;
+  }
+
   // Datos de la meta
   const data = {
     nombre: nombre.value,
-    monto: Number(monto.value),
-    plazo: plazo.value,
-    porcentajeAsignado: Number(porcentaje.value)
+    monto: montoIngresado,
+    plazo: plazo.value
   };
 
   // Si está editando una meta existente
@@ -105,6 +159,7 @@ const emitirMeta = async () => {
     try {
       await updateDoc(doc(db, "metas", props.metaEditar.id), data);
       alert("Meta actualizada correctamente");
+      await calcularSaldoDisponible(); // Recalcular saldo
     } catch (e) {
       console.error(e);
       alert("Error al actualizar meta");
@@ -122,7 +177,8 @@ const emitirMeta = async () => {
       userId: user.uid
     });
 
-    alert("Meta creada correctamente");
+    alert("✅ Meta creada correctamente");
+    await calcularSaldoDisponible(); // Recalcular saldo
   } catch (e) {
     console.error(e);
     alert("Error al crear meta");
@@ -132,7 +188,6 @@ const emitirMeta = async () => {
   nombre.value = "";
   monto.value = "";
   plazo.value = "";
-  porcentaje.value = "";
 };
 
 // Recibe metaEditar cuando se quiere editar una meta
@@ -148,11 +203,18 @@ watch(
       nombre.value = nueva.nombre;
       monto.value = nueva.monto;
       plazo.value = nueva.plazo;
-      porcentaje.value = nueva.porcentajeAsignado;
     }
   },
   { immediate: true }
 );
+
+// Formatear números
+const formatNumber = (num: number) => num.toLocaleString("es-CO");
+
+// Cargar saldo disponible al montar el componente
+onMounted(() => {
+  calcularSaldoDisponible();
+});
 
 </script>
 
@@ -170,6 +232,22 @@ watch(
   border-radius: 18px;
   margin-bottom: 20px;
   position: relative;
+}
+
+/* Información del saldo */
+.saldo-info {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.saldo-info p {
+  margin: 0;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 /* Estilo del input de fecha */

@@ -69,6 +69,7 @@ const totalCategorias = ref(0);
 const saldoTotal = ref(0);
 const totalGastos = ref(0);
 const totalGastosRecurrentes = ref(0);
+const totalMetasAcumulado = ref(0);
 
 /* Navegación con router */
 const router = useRouter();
@@ -82,7 +83,7 @@ const opciones = [
   { nombre: "Metas", icono: "🎯", route: "/metas" },
   { nombre: "Recurrentes", icono: "♻️", route: "/recurrentes" },
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
-  { nombre: "Ahorros", icono: "🏦", route: "/ahorros" },
+  { nombre: "Ahorros", icono: "🦁", route: "/ahorros" },
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
@@ -133,10 +134,25 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
-// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
+// 🎯 Cargar total acumulado en metas
+const cargarMetasAcumulado = async () => {
+  const user = auth.currentUser;
+  const q = query(collection(db, "metas"), where("userId", "==", user?.uid));
+  onSnapshot(q, (snapshot) => {
+    let totalMonto = 0;
+    snapshot.forEach((doc) => {
+      totalMonto += Number(doc.data().acumulado) || 0;
+    });
+    totalMetasAcumulado.value = totalMonto;
+    console.log("Total acumulado en metas:", totalMetasAcumulado.value);
+    calcularSaldoTotal();
+  });
+};
+
+// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes - Metas Acumulado
 const calcularSaldoTotal = (montoEntradas = null) => {
   if (montoEntradas !== null) {
-    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
+    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
   } else {
     // Recalcular con el valor actual de entradas
     const user = auth.currentUser;
@@ -144,7 +160,7 @@ const calcularSaldoTotal = (montoEntradas = null) => {
     getDocs(q).then((snapshot) => {
       let totalMonto = 0;
       snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
-      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value;
+      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
     });
   }
 };
@@ -162,6 +178,7 @@ onMounted(() => {
   cargarEntradas();
   cargarGastos();
   cargarGastosRecurrentes();
+  cargarMetasAcumulado(); // 🎯 Nueva función para cargar metas
   cargarCategorias();
 });
 

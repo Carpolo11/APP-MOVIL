@@ -9,7 +9,7 @@
         <div class="metas-container">
 
           <!-- Formulario de crear/editar meta -->
-          <MetaForm :metaEditar="metaSeleccionada" />
+          <MetaForm :metaEditar="metaSeleccionada" @meta-guardada="limpiarEdicion" />
           
           <!-- Si no hay metas -->
           <div v-if="metas.length === 0" class="empty-message">
@@ -46,7 +46,7 @@ import MetaForm from "@/components/metas/MetaForm.vue";
 import MetaCard from "@/components/metas/MetaCard.vue";
 
 // Firebase
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
@@ -65,10 +65,12 @@ const cargarMetas = () => {
     return;
   }
 
-  // Consulta metas del usuario actual
+  // Consulta metas del usuario actual, ordenadas por completada y fecha
   const q = query(
     collection(db, "metas"),
-    where("userId", "==", user.uid)
+    where("userId", "==", user.uid),
+    orderBy("completada", "asc"),
+    orderBy("fechaRegistro", "desc")
   );
 
   // Escucha en tiempo real
@@ -80,7 +82,7 @@ const cargarMetas = () => {
         ...doc.data()
       });
     });
-    metas.value = lista; // Actualiza lista
+    metas.value = lista;
     console.log("Metas cargadas:", metas.value);
   });
 };
@@ -110,6 +112,11 @@ const metaSeleccionada = ref<Record<string, any> | undefined>(undefined);
 // Pone los datos de la meta en el formulario
 const prepararEdicion = (meta: Record<string, any>) => {
   metaSeleccionada.value = meta;
+};
+
+// Limpia la selección después de guardar
+const limpiarEdicion = () => {
+  metaSeleccionada.value = undefined;
 };
 
 </script>

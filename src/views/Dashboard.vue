@@ -38,11 +38,11 @@
       </section>
 
             <!-- Botón flotante de notificaciones -->
-        <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <!-- <ion-fab vertical="top" horizontal="end" slot="fixed">
           <ion-fab-button class="notificaciones" @click="verAlertas">
             🔔
           </ion-fab-button>
-        </ion-fab>
+        </ion-fab> -->
 
 
     </ion-content>
@@ -83,7 +83,11 @@ const opciones = [
   { nombre: "Metas", icono: "🎯", route: "/metas" },
   { nombre: "Recurrentes", icono: "♻️", route: "/recurrentes" },
   { nombre: "Reportes", icono: "📈", route: "/reportes" },
+<<<<<<< Updated upstream
   { nombre: "Ahorros", icono: "🦁", route: "/ahorros" },
+=======
+  { nombre: "Alcancia", icono: "🏦", route: "/ahorros" },
+>>>>>>> Stashed changes
   { nombre: "Deudas", icono: "💳", route: "/deudas" },
   { nombre: "Conversor", icono: "💰", route: "/conversor" },
 ];
@@ -134,6 +138,7 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
+<<<<<<< Updated upstream
 // 🎯 Cargar total acumulado en metas
 const cargarMetasAcumulado = async () => {
   const user = auth.currentUser;
@@ -162,8 +167,36 @@ const calcularSaldoTotal = (montoEntradas = null) => {
       snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
       saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
     });
+=======
+const cargarAhorrosDashboard = async () => {
+  const user = auth.currentUser
+  if (!user) return
+
+  const q = query(collection(db, "ahorros"), where("userId", "==", user.uid))
+  const snapshot = await getDocs(q)
+  let totalAhorros = 0
+  snapshot.forEach(doc => {
+    const data = doc.data()
+    totalAhorros += (Number(data.montoMeta) * Number(data.porcentaje)) / 100
+  })
+  return totalAhorros
+}
+
+const calcularSaldoTotal = async (montoEntradas = null) => {
+  let saldoBase = montoEntradas !== null ? montoEntradas : 0
+  if (montoEntradas === null) {
+    const user = auth.currentUser
+    if (!user) return
+    const q = query(collection(db, "entradas"), where("userId", "==", user.uid))
+    const snapshot = await getDocs(q)
+    snapshot.forEach((doc) => saldoBase += Number(doc.data().monto) || 0)
+>>>>>>> Stashed changes
   }
-};
+
+  const totalAhorros = await cargarAhorrosDashboard()
+  saldoTotal.value = saldoBase - totalGastos.value - totalGastosRecurrentes.value - totalAhorros
+}
+
 
 /* Cargar total de categorías */
 const cargarCategorias = async () => {
@@ -175,11 +208,19 @@ const cargarCategorias = async () => {
 
 /* Cuando el componente se monta  carga las funciones*/
 onMounted(() => {
+<<<<<<< Updated upstream
   cargarEntradas();
   cargarGastos();
   cargarGastosRecurrentes();
   cargarMetasAcumulado(); // 🎯 Nueva función para cargar metas
   cargarCategorias();
+=======
+  cargarEntradas()
+  cargarGastos()
+  cargarGastosRecurrentes()
+  cargarCategorias()
+  calcularSaldoTotal()
+>>>>>>> Stashed changes
 });
 
 

@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content class="ion-padding ahorros-view">
-      <ion-title class="titulo">🏦 GESTIÓN DE AHORROS</ion-title>
+      <ion-title class="titulo">🏦 ALCANCIA</ion-title>
       <div class="wrapper">
         <div class="login-container">
           
@@ -53,7 +53,7 @@
 
             <!-- Botones -->
             <ion-button expand="block" class="nuevo-ahorro" @click="nuevoAhorro">
-              Nuevo Ahorro
+              Nueva Alcancia
             </ion-button>
             <ion-button expand="block" class="nuevo-ahorro" router-link="/dashboard">
               VOLVER
@@ -95,6 +95,13 @@ const ahorros = ref<Ahorro[]>([])
 const mostrarFormulario = ref(false)
 const ahorroSeleccionado = ref<Ahorro | null>(null)
 const idEdicion = ref<string | null>(null)
+const saldoTotal = ref(0) 
+
+
+
+
+
+
 
 // referencia a la colección de Firestore
 const ahorrosRef = collection(db, 'ahorros')
@@ -130,7 +137,6 @@ const nuevoAhorro = () => {
   mostrarFormulario.value = true
 }
 
-// guardar ahorro (nuevo o editado)
 const guardarAhorro = async (ahorro: Ahorro) => {
   const auth = getAuth()
   const user = auth.currentUser
@@ -142,7 +148,6 @@ const guardarAhorro = async (ahorro: Ahorro) => {
 
   try {
     if (idEdicion.value) {
-      // actualizar existente
       const docRef = doc(db, 'ahorros', idEdicion.value)
       await updateDoc(docRef, {
         nombre: ahorro.nombre,
@@ -151,7 +156,7 @@ const guardarAhorro = async (ahorro: Ahorro) => {
       })
       await mostrarAlerta('✅ Ahorro actualizado con éxito.')
     } else {
-      // agregar nuevo con el UID del usuario
+      // Agregar nuevo ahorro
       await addDoc(ahorrosRef, {
         nombre: ahorro.nombre,
         montoMeta: ahorro.montoMeta,
@@ -159,6 +164,10 @@ const guardarAhorro = async (ahorro: Ahorro) => {
         userId: user.uid
       })
       await mostrarAlerta('✅ Ahorro guardado con éxito.')
+
+      // 🔴 Descontar automáticamente el porcentaje del saldo total
+      const descuento = (ahorro.montoMeta * ahorro.porcentaje) / 100
+      saldoTotal.value -= descuento
     }
 
     await cargarAhorros()
@@ -168,6 +177,7 @@ const guardarAhorro = async (ahorro: Ahorro) => {
     await mostrarAlerta('Ocurrió un error al guardar el ahorro.')
   }
 }
+
 
 // editar ahorro existente
 const editarAhorro = (ahorro: Ahorro) => {

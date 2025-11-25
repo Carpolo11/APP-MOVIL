@@ -134,26 +134,10 @@ const cargarGastosRecurrentes = async () => {
   });
 };
 
-<<<<<<< Updated upstream
-// 🎯 Cargar total acumulado en metas
-const cargarMetasAcumulado = async () => {
-  const user = auth.currentUser;
-  const q = query(collection(db, "metas"), where("userId", "==", user?.uid));
-  onSnapshot(q, (snapshot) => {
-    let totalMonto = 0;
-    snapshot.forEach((doc) => {
-      totalMonto += Number(doc.data().acumulado) || 0;
-    });
-    totalMetasAcumulado.value = totalMonto;
-    console.log("Total acumulado en metas:", totalMetasAcumulado.value);
-    calcularSaldoTotal();
-  });
-};
-
-// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes - Metas Acumulado
+// Calcular saldo total = Entradas - Gastos - Gastos Recurrentes
 const calcularSaldoTotal = (montoEntradas = null) => {
   if (montoEntradas !== null) {
-    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
+    saldoTotal.value = montoEntradas - totalGastos.value - totalGastosRecurrentes.value;
   } else {
     // Recalcular con el valor actual de entradas
     const user = auth.currentUser;
@@ -161,38 +145,10 @@ const calcularSaldoTotal = (montoEntradas = null) => {
     getDocs(q).then((snapshot) => {
       let totalMonto = 0;
       snapshot.forEach((doc) => (totalMonto += Number(doc.data().monto) || 0));
-      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value - totalMetasAcumulado.value;
+      saldoTotal.value = totalMonto - totalGastos.value - totalGastosRecurrentes.value;
     });
-=======
-const cargarAhorrosDashboard = async () => {
-  const user = auth.currentUser
-  if (!user) return
-
-  const q = query(collection(db, "ahorros"), where("userId", "==", user.uid))
-  const snapshot = await getDocs(q)
-  let totalAhorros = 0
-  snapshot.forEach(doc => {
-    const data = doc.data()
-    totalAhorros += (Number(data.montoMeta) * Number(data.porcentaje)) / 100
-  })
-  return totalAhorros
-}
-
-const calcularSaldoTotal = async (montoEntradas = null) => {
-  let saldoBase = montoEntradas !== null ? montoEntradas : 0
-  if (montoEntradas === null) {
-    const user = auth.currentUser
-    if (!user) return
-    const q = query(collection(db, "entradas"), where("userId", "==", user.uid))
-    const snapshot = await getDocs(q)
-    snapshot.forEach((doc) => saldoBase += Number(doc.data().monto) || 0)
->>>>>>> Stashed changes
   }
-
-  const totalAhorros = await cargarAhorrosDashboard()
-  saldoTotal.value = saldoBase - totalGastos.value - totalGastosRecurrentes.value - totalAhorros
-}
-
+};
 
 /* Cargar total de categorías */
 const cargarCategorias = async () => {
@@ -204,19 +160,10 @@ const cargarCategorias = async () => {
 
 /* Cuando el componente se monta  carga las funciones*/
 onMounted(() => {
-<<<<<<< Updated upstream
   cargarEntradas();
   cargarGastos();
   cargarGastosRecurrentes();
-  cargarMetasAcumulado(); // 🎯 Nueva función para cargar metas
   cargarCategorias();
-=======
-  cargarEntradas()
-  cargarGastos()
-  cargarGastosRecurrentes()
-  cargarCategorias()
-  calcularSaldoTotal()
->>>>>>> Stashed changes
 });
 
 

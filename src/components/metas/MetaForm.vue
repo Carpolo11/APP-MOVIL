@@ -21,10 +21,7 @@
       />
     </ion-item>
 
-    <!-- Mostrar saldo disponible -->
-    <div class="saldo-info">
-      <p>💰 Saldo disponible: ${{ formatNumber(saldoDisponible) }}</p>
-    </div>
+    
 
     <!-- Fecha límite -->
     <ion-item class="input-group">
@@ -63,7 +60,7 @@ import {
   IonButton, 
   IonIcon
 } from "@ionic/vue";
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { collection, addDoc, doc, updateDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
@@ -81,6 +78,9 @@ const saldoDisponible = ref(0);
 
 // Fecha mínima = hoy
 const minDate = new Date().toISOString().split('T')[0];
+
+// Definir el emit
+const emit = defineEmits(['meta-guardada']);
 
 // Calcular saldo disponible
 const calcularSaldoDisponible = async () => {
@@ -160,6 +160,10 @@ const emitirMeta = async () => {
       await updateDoc(doc(db, "metas", props.metaEditar.id), data);
       alert("Meta actualizada correctamente");
       await calcularSaldoDisponible(); // Recalcular saldo
+      
+      // Limpiar formulario y emitir evento
+      limpiarFormulario();
+      emit('meta-guardada');
     } catch (e) {
       console.error(e);
       alert("Error al actualizar meta");
@@ -179,12 +183,18 @@ const emitirMeta = async () => {
 
     alert("✅ Meta creada correctamente");
     await calcularSaldoDisponible(); // Recalcular saldo
+    
+    // Limpiar formulario y emitir evento
+    limpiarFormulario();
+    emit('meta-guardada');
   } catch (e) {
     console.error(e);
     alert("Error al crear meta");
   }
+};
 
-  // Limpia el formulario
+// Función para limpiar el formulario
+const limpiarFormulario = () => {
   nombre.value = "";
   monto.value = "";
   plazo.value = "";
@@ -203,6 +213,8 @@ watch(
       nombre.value = nueva.nombre;
       monto.value = nueva.monto;
       plazo.value = nueva.plazo;
+    } else {
+      limpiarFormulario();
     }
   },
   { immediate: true }

@@ -23,7 +23,7 @@
 
     
 
-    <!-- Fecha límite -->
+    <!-- Fecha lÃ­mite -->
     <ion-item class="input-group">
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
       <input 
@@ -35,14 +35,14 @@
       />
     </ion-item>
 
-    <!-- Botón crear o actualizar -->
+    <!-- BotÃ³n crear o actualizar -->
     <div class="button-row">
       <ion-button expand="block" type="submit" class="back-btn">
         {{ metaEditar ? 'ACTUALIZAR META' : 'CREAR META' }}
       </ion-button>
     </div>
 
-    <!-- Botón volver -->
+    <!-- BotÃ³n volver -->
     <div class="button-row">
       <ion-button expand="block" router-link="/dashboard" class="back-btn">
         VOLVER
@@ -65,7 +65,7 @@ import { collection, addDoc, doc, updateDoc, query, where, getDocs } from "fireb
 import { db } from "@/firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 
-// Instancia de autenticación
+// Instancia de autenticaciÃ³n
 const auth = getAuth();
 
 // Campos del formulario
@@ -76,7 +76,7 @@ const plazo = ref("");
 // Saldo disponible
 const saldoDisponible = ref(0);
 
-// Fecha mínima = hoy
+// Fecha mÃ­nima = hoy
 const minDate = new Date().toISOString().split('T')[0];
 
 // Definir el emit
@@ -118,7 +118,7 @@ const calcularSaldoDisponible = async () => {
     let totalMetas = 0;
     metasSnapshot.forEach((doc) => {
       const metaData = doc.data();
-      // Si estamos editando, excluimos esta meta del cálculo
+      // Si estamos editando, excluimos esta meta del cÃ¡lculo
       if (props.metaEditar && doc.id === props.metaEditar.id) {
         return;
       }
@@ -134,16 +134,16 @@ const calcularSaldoDisponible = async () => {
   }
 };
 
-// Función que crea o actualiza la meta
+// FunciÃ³n que crea o actualiza la meta
 const emitirMeta = async () => {
   const user = auth.currentUser;
-  if (!user) return alert("Debes iniciar sesión.");
+  if (!user) return alert("Debes iniciar sesiÃ³n.");
 
   const montoIngresado = Number(monto.value);
 
   // Validar que el monto no exceda el saldo disponible
   if (montoIngresado > saldoDisponible.value) {
-    alert(`❌ El monto objetivo no puede exceder tu saldo disponible de $${formatNumber(saldoDisponible.value)}`);
+    alert(`âŒ El monto objetivo no puede exceder tu saldo disponible de $${formatNumber(saldoDisponible.value)}`);
     return;
   }
 
@@ -154,7 +154,7 @@ const emitirMeta = async () => {
     plazo: plazo.value
   };
 
-  // Si está editando una meta existente
+  // Si estÃ¡ editando una meta existente
   if (props.metaEditar) {
     try {
       await updateDoc(doc(db, "metas", props.metaEditar.id), data);
@@ -171,7 +171,7 @@ const emitirMeta = async () => {
     return;
   }
 
-  // Si está creando una nueva meta
+  // Si estÃ¡ creando una nueva meta
   try {
     await addDoc(collection(db, "metas"), {
       ...data,
@@ -181,7 +181,7 @@ const emitirMeta = async () => {
       userId: user.uid
     });
 
-    alert("✅ Meta creada correctamente");
+    alert("âœ… Meta creada correctamente");
     await calcularSaldoDisponible(); // Recalcular saldo
     
     // Limpiar formulario y emitir evento
@@ -193,7 +193,7 @@ const emitirMeta = async () => {
   }
 };
 
-// Función para limpiar el formulario
+// FunciÃ³n para limpiar el formulario
 const limpiarFormulario = () => {
   nombre.value = "";
   monto.value = "";
@@ -205,7 +205,7 @@ const props = defineProps({
   metaEditar: { type: Object, default: null }
 });
 
-// Rellena el formulario con los datos de la meta que se está editando
+// Rellena el formulario con los datos de la meta que se estÃ¡ editando
 watch(
   () => props.metaEditar,
   (nueva) => {
@@ -220,7 +220,7 @@ watch(
   { immediate: true }
 );
 
-// Formatear números
+// Formatear nÃºmeros
 const formatNumber = (num: number) => num.toLocaleString("es-CO");
 
 // Cargar saldo disponible al montar el componente
@@ -246,7 +246,7 @@ onMounted(() => {
   position: relative;
 }
 
-/* Información del saldo */
+/* InformaciÃ³n del saldo */
 .saldo-info {
   background: rgba(255, 255, 255, 0.2);
   padding: 12px;
